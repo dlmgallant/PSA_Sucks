@@ -2,136 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-  <title>Pokemon Centering Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>PSA Sucks - Centering Tool V5</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="app">
-    <header class="topbar">
-      <div class="title-wrap">
-        <h1>Pokemon Centering</h1>
-        <div class="subtitle">Mobile precision grading pre-screen</div>
-      </div>
-      <button id="settingsBtn" class="icon-btn" aria-label="Open settings">⚙️</button>
-    </header>
-
-    <div class="tabs">
-      <button class="tab active" data-side="front">Front</button>
-      <button class="tab" data-side="back">Back</button>
+  <header class="topbar">
+    <div class="brand">PSA Sucks <span>V5</span></div>
+    <div class="side-toggle" role="tablist" aria-label="Card side">
+      <button id="frontTab" class="active" data-side="front">Front</button>
+      <button id="backTab" data-side="back">Back</button>
     </div>
+    <button id="settingsBtn" class="ghost">Settings</button>
+  </header>
 
-    <main class="workspace">
-      <div id="canvasWrap" class="canvas-wrap">
-        <canvas id="cardCanvas"></canvas>
+  <main class="app-shell">
+    <section class="toolbar">
+      <label class="file-btn">
+        <input id="imageLoader" type="file" accept="image/*" />
+        Load Image
+      </label>
+      <button id="fitBtn">Fit</button>
+      <button id="rotateLeftBtn">⟲</button>
+      <button id="rotateRightBtn">⟳</button>
+      <button id="contrastBtn">Contrast</button>
+      <button id="resetGuidesBtn">Reset Guides</button>
+      <button id="panModeBtn" aria-pressed="false">Pan Mode</button>
+      <button id="saveSessionBtn">Save</button>
+      <label class="file-btn compact">
+        <input id="loadSessionInput" type="file" accept="application/json" />
+        Load
+      </label>
+      <button id="csvBtn">CSV</button>
+    </section>
+
+    <section class="viewer-wrap">
+      <canvas id="canvas"></canvas>
+      <div id="statusBar" class="statusbar">Load a front image to start.</div>
+    </section>
+
+    <section class="results">
+      <div class="result-card">
+        <h3>Current Side</h3>
+        <div id="currentSideResult">No image loaded.</div>
       </div>
-    </main>
-
-    <section class="controls">
-      <div class="file-row">
-        <label class="file-btn">
-          Load Front
-          <input id="frontInput" type="file" accept="image/*" />
-        </label>
-        <label class="file-btn">
-          Load Back
-          <input id="backInput" type="file" accept="image/*" />
-        </label>
-      </div>
-
-      <div class="tool-row compact-grid">
-        <button id="fitBtn">Fit</button>
-        <button id="rotateLeftBtn">⟲</button>
-        <button id="rotateRightBtn">⟳</button>
-        <button id="toggleGridBtn">Grid</button>
-        <button id="toggleContrastBtn">Contrast</button>
-        <button id="measureBtn" class="accent">Measure</button>
-      </div>
-
-      <div class="tool-row compact-grid">
-        <button id="selectOuterBtn" class="active">Outer</button>
-        <button id="selectInnerBtn">Inner</button>
-        <button id="resetOuterBtn">Reset Outer</button>
-        <button id="resetInnerBtn">Reset Inner</button>
-      </div>
-
-      <div class="tool-row compact-grid nudge-grid">
-        <button data-nudge="up">↑</button>
-        <button data-nudge="left">←</button>
-        <button data-nudge="right">→</button>
-        <button data-nudge="down">↓</button>
-        <button id="microModeBtn">Micro 0.5px</button>
-      </div>
-
-      <div class="tool-row compact-grid">
-        <button id="saveSessionBtn">Save Session</button>
-        <label class="file-btn small-btn">
-          Load Session
-          <input id="loadSessionInput" type="file" accept="application/json" />
-        </label>
-        <button id="exportSummaryBtn">Export Summary</button>
-      </div>
-
-      <div class="status-panel">
-        <div id="statusText">Load a front or back scan to begin.</div>
-        <div id="measurements" class="measurements"></div>
-      </div>
-
-      <div class="help-text">
-        Drag corner anchors. Pinch to zoom. One-finger drag on empty space pans. Anchors stay inside the scan; inner box stays inside outer box.
+      <div class="result-card">
+        <h3>Front / Back Summary</h3>
+        <div id="summaryResult">Load both sides for a summary.</div>
       </div>
     </section>
-  </div>
+  </main>
 
-  <div id="settingsModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2>Options</h2>
-        <button id="closeSettingsBtn" class="icon-btn">✕</button>
-      </div>
+  <aside id="settingsPanel" class="settings-panel hidden" aria-hidden="true">
+    <div class="settings-header">
+      <h2>Settings</h2>
+      <button id="closeSettingsBtn" class="ghost">Close</button>
+    </div>
 
+    <div class="settings-grid">
       <label>
-        Grid color
-        <input id="gridColorInput" type="color" value="#aeb4be" />
+        Grid Density
+        <input id="gridDensity" type="range" min="4" max="60" step="1" />
       </label>
       <label>
-        Grid opacity
-        <input id="gridOpacityInput" type="range" min="0.02" max="0.6" step="0.02" value="0.18" />
+        Major Grid Every
+        <input id="majorEvery" type="range" min="2" max="10" step="1" />
       </label>
       <label>
-        Major grid spacing (px)
-        <input id="gridMajorInput" type="range" min="10" max="100" step="2" value="24" />
+        Grid Opacity
+        <input id="gridOpacity" type="range" min="0.02" max="0.5" step="0.01" />
       </label>
       <label>
-        Minor divisions per major
-        <input id="gridMinorInput" type="range" min="1" max="8" step="1" value="4" />
+        Grid Color
+        <input id="gridColor" type="color" />
       </label>
       <label>
-        Anchor size
-        <input id="anchorSizeInput" type="range" min="4" max="16" step="1" value="7" />
+        Anchor Size
+        <input id="anchorSize" type="range" min="4" max="18" step="1" />
       </label>
       <label>
-        Scan boundary color
-        <input id="boundaryColorInput" type="color" value="#00d1ff" />
+        Boundary Color
+        <input id="boundaryColor" type="color" />
+      </label>
+      <label>
+        Line Hitbox
+        <input id="hitPadding" type="range" min="6" max="28" step="1" />
+      </label>
+      <label>
+        Zoom Step
+        <input id="zoomStep" type="range" min="0.003" max="0.06" step="0.001" />
       </label>
       <label class="checkbox-row">
-        <input id="dimOutsideInput" type="checkbox" checked />
+        <input id="dimOutside" type="checkbox" />
         Dim outside image bounds
       </label>
       <label class="checkbox-row">
-        <input id="showMajorGridInput" type="checkbox" checked />
-        Show major grid
+        <input id="showGrid" type="checkbox" />
+        Show grid
       </label>
       <label class="checkbox-row">
-        <input id="showMinorGridInput" type="checkbox" checked />
-        Show minor grid
+        <input id="highlightHover" type="checkbox" />
+        Highlight hovered guide
       </label>
       <label class="checkbox-row">
-        <input id="snapGridInput" type="checkbox" />
-        Snap nudges to grid
+        <input id="showMagnifier" type="checkbox" />
+        Show magnifier while dragging
       </label>
     </div>
-  </div>
+  </aside>
 
   <script src="app.js"></script>
 </body>
