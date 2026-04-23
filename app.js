@@ -433,7 +433,10 @@ canvas.addEventListener('wheel', (evt) => {
   const x = evt.clientX - rect.left, y = evt.clientY - rect.top;
   const side = active();
   const imgPt = screenToImage(x, y, side);
-  const factor = evt.deltaY < 0 ? 1.08 : 0.92;
+
+  const zoomStep = 0.03;
+  const factor = evt.deltaY < 0 ? (1 + zoomStep) : (1 - zoomStep);
+
   side.view.scale = clamp(side.view.scale * factor, 0.05, 30);
   side.view.offsetX = x - imgPt.x * side.view.scale;
   side.view.offsetY = y - imgPt.y * side.view.scale;
