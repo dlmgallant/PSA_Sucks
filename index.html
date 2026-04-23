@@ -1,0 +1,243 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Card Centering & Deep Review Tool V8</title>
+<style>
+:root{
+  --bg:#0d1016; --panel:#171c25; --panel2:#202838; --text:#f2f5fb; --muted:#a9b5c8;
+  --blue:#67adff; --green:#68d89b; --red:#ff7070; --yellow:#ffd36a; --line:#bfc7d455;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{padding:14px 16px;border-bottom:1px solid #ffffff18;background:#111620;position:sticky;top:0;z-index:5}
+h1{font-size:1.05rem;margin:0}
+.version{font-size:.8rem;color:var(--green);font-weight:800;margin-top:3px}
+main{padding:12px;display:grid;gap:12px;max-width:1200px;margin:auto}
+.card{background:var(--panel);border:1px solid #ffffff14;border-radius:16px;padding:12px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button,input,select{font:inherit;border-radius:12px;border:1px solid #ffffff18;background:var(--panel2);color:var(--text);padding:10px}
+button{font-weight:800}
+button.active{border-color:#67adff;background:#20324a}
+label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+canvas{width:100%;height:auto;display:block;background:#05070b;border-radius:14px;touch-action:none;border:1px solid #ffffff18}
+.small{font-size:.8rem;color:var(--muted);line-height:1.35}
+.hidden{display:none!important}
+.output{white-space:pre-wrap;line-height:1.35;background:#0d1320;border:1px solid #ffffff12;border-radius:12px;padding:12px}
+.pillgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pill{background:#0d1320;border:1px solid #ffffff12;border-radius:12px;padding:10px}
+.good{color:var(--green)}.warn{color:var(--yellow)}.bad{color:var(--red)}
+@media(max-width:700px){.grid2,.pillgrid{grid-template-columns:1fr}.toolbar{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Card Centering & Deep Review Tool</h1>
+  <div class="version">V8 — Centering + Deep Review + Grid Options</div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button id="btnCenter" class="active">Centering Mode</button>
+    <button id="btnDeep">Deep Review Mode</button>
+  </div>
+
+  <section id="centerSec">
+    <div class="card">
+      <h3>Load front/back scans or photos</h3>
+      <div class="grid2">
+        <div><label>Front image</label><input id="frontFile" type="file" accept="image/*"></div>
+        <div><label>Back image</label><input id="backFile" type="file" accept="image/*"></div>
+      </div>
+      <p class="small">Use red for the card edge and blue for the inner printed border. The tool measures border thickness and reports centering ratios.</p>
+    </div>
+
+    <div class="card">
+      <div class="grid2">
+        <div><label>Working image</label><select id="side"><option value="front">Front</option><option value="back">Back</option></select></div>
+        <div><label>Selected guide</label><select id="guide"><option value="outer">Outer red box</option><option value="inner">Inner blue box</option></select></div>
+      </div>
+      <br>
+      <div class="toolbar">
+        <button id="fit">Fit</button>
+        <button id="zin">Zoom +</button>
+        <button id="zout">Zoom -</button>
+        <button id="rot">Rotate</button>
+        <button id="reset">Reset Guides</button>
+        <button id="contrast">Contrast</button>
+        <button id="exportCsv">Export CSV</button>
+        <button id="clear">Clear</button>
+      </div>
+      <p class="small">Drag corners or drag inside a guide box. Arrow keys move the selected guide. Shift + arrows moves 10 px.</p>
+    </div>
+
+    <div class="card">
+      <canvas id="canvas" width="1400" height="950"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Grid Options</h3>
+      <div class="grid2">
+        <div><label>Grid color</label><input id="gridColor" type="color" value="#bfc7d4"></div>
+        <div><label>Grid opacity</label><input id="gridOpacity" type="range" min="0" max="100" value="18"></div>
+        <div><label>Major grid px</label><input id="gridMajor" type="range" min="10" max="200" value="40"></div>
+        <div><label>Minor divisions</label><input id="gridMinor" type="range" min="1" max="10" value="4"></div>
+        <div><label>Anchor size</label><input id="anchorSize" type="range" min="2" max="18" value="6"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Centering Results</h3>
+      <div class="pillgrid">
+        <div class="pill"><b>Front L/R</b><br><span id="frontLR">—</span></div>
+        <div class="pill"><b>Front T/B</b><br><span id="frontTB">—</span></div>
+        <div class="pill"><b>Back L/R</b><br><span id="backLR">—</span></div>
+        <div class="pill"><b>Back T/B</b><br><span id="backTB">—</span></div>
+      </div>
+      <br>
+      <div id="centerSummary" class="output">Load an image and align the red/blue guides.</div>
+    </div>
+  </section>
+
+  <section id="deepSec" class="hidden">
+    <div class="card">
+      <h3>Deep Review Mode</h3>
+      <p class="small">Upload flat and angled photos. This gives a pre-screen summary for glare, blur, edge whitening risk, and reflective surface activity. It is not a guaranteed grade.</p>
+      <div class="grid2">
+        <div><label>Flat front photo/scan</label><input id="flatFront" type="file" accept="image/*"></div>
+        <div><label>Flat back photo/scan</label><input id="flatBack" type="file" accept="image/*"></div>
+        <div><label>Angled front photos</label><input id="angledFront" type="file" accept="image/*" multiple></div>
+        <div><label>Angled back photos</label><input id="angledBack" type="file" accept="image/*" multiple></div>
+      </div>
+      <br>
+      <div class="grid3">
+        <button id="runDeep">Run Deep Review</button>
+        <button id="exportDeep">Export Summary</button>
+        <button id="clearDeep">Clear</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Deep Review Output</h3>
+      <div id="deepOut" class="output">Upload photos, then tap Run Deep Review.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+let active='center';
+let side='front';
+let selected='outer';
+let settings={gridColor:'#bfc7d4',gridOpacity:18,gridMajor:40,gridMinor:4,anchorSize:6,contrast:false};
+let states={
+ front:{img:null,name:'',w:0,h:0,zoom:1,ox:0,oy:0,outer:null,inner:null},
+ back:{img:null,name:'',w:0,h:0,zoom:1,ox:0,oy:0,outer:null,inner:null}
+};
+let drag=null,last=null;
+const canvas=$('#canvas'), ctx=canvas.getContext('2d');
+
+function tab(t){
+ active=t;
+ $('#btnCenter').classList.toggle('active',t==='center');
+ $('#btnDeep').classList.toggle('active',t==='deep');
+ $('#centerSec').classList.toggle('hidden',t!=='center');
+ $('#deepSec').classList.toggle('hidden',t!=='deep');
+}
+$('#btnCenter').onclick=()=>tab('center'); $('#btnDeep').onclick=()=>tab('deep');
+$('#side').onchange=e=>{side=e.target.value; draw()}; $('#guide').onchange=e=>selected=e.target.value;
+
+function load(file,s){
+ if(!file)return;
+ let img=new Image(); img.onload=()=>{let st=states[s]; st.img=img; st.name=file.name; st.w=img.width; st.h=img.height; resetGuides(s); fit(s); draw(); update();};
+ img.src=URL.createObjectURL(file);
+}
+$('#frontFile').onchange=e=>load(e.target.files[0],'front');
+$('#backFile').onchange=e=>load(e.target.files[0],'back');
+
+function resetGuides(s){
+ let st=states[s]; if(!st.img)return;
+ st.outer={x:st.w*.08,y:st.h*.06,w:st.w*.84,h:st.h*.88};
+ st.inner={x:st.w*.15,y:st.h*.12,w:st.w*.70,h:st.h*.76};
+ clamp(st,'outer'); clamp(st,'inner');
+}
+function fit(s){let st=states[s]; if(!st.img)return; st.zoom=Math.min((canvas.width-40)/st.w,(canvas.height-40)/st.h); st.ox=(canvas.width-st.w*st.zoom)/2; st.oy=(canvas.height-st.h*st.zoom)/2;}
+function st(){return states[side]}
+function clamp(s,which){
+ let r=s[which];
+ if(which==='outer'){r.w=Math.max(20,Math.min(r.w,s.w));r.h=Math.max(20,Math.min(r.h,s.h));r.x=Math.max(0,Math.min(r.x,s.w-r.w));r.y=Math.max(0,Math.min(r.y,s.h-r.h));}
+ else{let o=s.outer;r.w=Math.max(20,Math.min(r.w,o.w));r.h=Math.max(20,Math.min(r.h,o.h));r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w));r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h));}
+}
+function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
+function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
+function handles(r){return{tl:{x:r.x,y:r.y},tr:{x:r.x+r.w,y:r.y},bl:{x:r.x,y:r.y+r.h},br:{x:r.x+r.w,y:r.y+r.h}}}
+function hit(s,x,y){
+ let p=s2i(s,x,y);
+ for(let name of ['inner','outer']){
+  let r=s[name], hs=handles(r);
+  for(let k in hs){if(Math.hypot(p.x-hs[k].x,p.y-hs[k].y)<(settings.anchorSize+9)/s.zoom)return{shape:name,kind:k}}
+  if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:name,kind:'move'}
+ }
+ return null;
+}
+function moveRect(s,shape,kind,dx,dy){
+ let r=s[shape];
+ if(kind==='move'){r.x+=dx;r.y+=dy}
+ if(kind==='tl'){r.x+=dx;r.y+=dy;r.w-=dx;r.h-=dy}
+ if(kind==='tr'){r.y+=dy;r.w+=dx;r.h-=dy}
+ if(kind==='bl'){r.x+=dx;r.w-=dx;r.h+=dy}
+ if(kind==='br'){r.w+=dx;r.h+=dy}
+ clamp(s,shape); if(shape==='outer')clamp(s,'inner');
+}
+function drawGrid(s){
+ let major=settings.gridMajor, minor=major/settings.gridMinor;
+ let a=Math.round(settings.gridOpacity*2.55).toString(16).padStart(2,'0');
+ let amin=Math.round(settings.gridOpacity*.35*2.55).toString(16).padStart(2,'0');
+ ctx.save(); ctx.beginPath(); ctx.rect(s.ox,s.oy,s.w*s.zoom,s.h*s.zoom); ctx.clip(); ctx.lineWidth=1;
+ for(let x=0;x<=s.w;x+=minor){ctx.strokeStyle=settings.gridColor+(Math.abs(x%major)<.01?a:amin); let sx=s.ox+x*s.zoom; ctx.beginPath();ctx.moveTo(sx,s.oy);ctx.lineTo(sx,s.oy+s.h*s.zoom);ctx.stroke()}
+ for(let y=0;y<=s.h;y+=minor){ctx.strokeStyle=settings.gridColor+(Math.abs(y%major)<.01?a:amin); let sy=s.oy+y*s.zoom; ctx.beginPath();ctx.moveTo(s.ox,sy);ctx.lineTo(s.ox+s.w*s.zoom,sy);ctx.stroke()}
+ ctx.restore();
+}
+function drawRect(s,r,color,sel){
+ let p=i2s(s,r.x,r.y); ctx.strokeStyle=color; ctx.lineWidth=2; ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom);
+ for(let h of Object.values(handles(r))){let q=i2s(s,h.x,h.y); ctx.beginPath(); ctx.moveTo(q.x-settings.anchorSize,q.y); ctx.lineTo(q.x+settings.anchorSize,q.y); ctx.moveTo(q.x,q.y-settings.anchorSize); ctx.lineTo(q.x,q.y+settings.anchorSize); ctx.stroke(); if(sel){ctx.strokeStyle='#fff';ctx.strokeRect(q.x-2,q.y-2,4,4);ctx.strokeStyle=color}}
+}
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height); let s=st();
+ if(!s.img){ctx.fillStyle='#a9b5c8';ctx.font='22px system-ui';ctx.fillText('Load a front or back image.',40,60);return}
+ ctx.fillStyle='#05070b';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.filter=settings.contrast?'contrast(1.25) saturate(.9)':'none';
+ ctx.drawImage(s.img,s.ox,s.oy,s.w*s.zoom,s.h*s.zoom); ctx.filter='none';
+ drawGrid(s); ctx.strokeStyle='#8aa2ff';ctx.lineWidth=2;ctx.strokeRect(s.ox,s.oy,s.w*s.zoom,s.h*s.zoom);
+ drawRect(s,s.outer,'#ff7070',selected==='outer'); drawRect(s,s.inner,'#67adff',selected==='inner');
+}
+canvas.onpointerdown=e=>{let s=st(); if(!s.img)return; canvas.setPointerCapture(e.pointerId); let x=e.offsetX*devicePixelRatio,y=e.offsetY*devicePixelRatio; last={x,y}; drag=hit(s,x,y)||{shape:'pan',kind:'pan'}; if(drag.shape!=='pan'){selected=drag.shape;$('#guide').value=selected}};
+canvas.onpointermove=e=>{let s=st(); if(!s.img||!drag)return; let x=e.offsetX*devicePixelRatio,y=e.offsetY*devicePixelRatio,dx=x-last.x,dy=y-last.y; if(drag.shape==='pan'){s.ox+=dx;s.oy+=dy}else{moveRect(s,drag.shape,drag.kind,dx/s.zoom,dy/s.zoom);update()} last={x,y}; draw()};
+canvas.onpointerup=canvas.onpointercancel=()=>drag=null;
+canvas.onwheel=e=>{e.preventDefault();let s=st();if(!s.img)return;let f=e.deltaY<0?1.1:.9;s.zoom=Math.max(.1,Math.min(20,s.zoom*f));draw()};
+
+function metrics(s){if(!s.img)return null;let o=s.outer,i=s.inner;let L=i.x-o.x,R=o.x+o.w-i.x-i.w,T=i.y-o.y,B=o.y+o.h-i.y-i.h;let ratio=(a,b)=>`${Math.round(100*a/(a+b))}/${Math.round(100*b/(a+b))}`;return{L,R,T,B,lr:ratio(Math.min(L,R),Math.max(L,R)),tb:ratio(Math.min(T,B),Math.max(T,B))}}
+function update(){let f=metrics(states.front),b=metrics(states.back);$('#frontLR').textContent=f?`${f.lr} | L ${f.L.toFixed(1)} / R ${f.R.toFixed(1)}`:'—';$('#frontTB').textContent=f?`${f.tb} | T ${f.T.toFixed(1)} / B ${f.B.toFixed(1)}`:'—';$('#backLR').textContent=b?`${b.lr} | L ${b.L.toFixed(1)} / R ${b.R.toFixed(1)}`:'—';$('#backTB').textContent=b?`${b.tb} | T ${b.T.toFixed(1)} / B ${b.B.toFixed(1)}`:'—';$('#centerSummary').textContent=`Front: ${f?f.lr+' L/R, '+f.tb+' T/B':'not loaded'}\nBack: ${b?b.lr+' L/R, '+b.tb+' T/B':'not loaded'}\n\nManual pre-screen only. Compare against the grading company’s current standards.`}
+$('#fit').onclick=()=>{fit(side);draw()};$('#zin').onclick=()=>{st().zoom*=1.15;draw()};$('#zout').onclick=()=>{st().zoom*=.85;draw()};$('#reset').onclick=()=>{resetGuides(side);draw();update()};$('#contrast').onclick=()=>{settings.contrast=!settings.contrast;draw()};$('#clear').onclick=()=>location.reload();
+$('#rot').onclick=()=>{let s=st();if(!s.img)return;let c=document.createElement('canvas'),x=c.getContext('2d');c.width=s.h;c.height=s.w;x.translate(c.width/2,c.height/2);x.rotate(Math.PI/2);x.drawImage(s.img,-s.w/2,-s.h/2);let n=new Image();n.onload=()=>{s.img=n;s.w=n.width;s.h=n.height;resetGuides(side);fit(side);draw();update()};n.src=c.toDataURL()};
+['gridColor','gridOpacity','gridMajor','gridMinor','anchorSize'].forEach(id=>$('#'+id).oninput=e=>{settings[id]=id==='gridColor'?e.target.value:+e.target.value;draw()});
+window.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;let s=st();if(!s.img)return;e.preventDefault();let step=e.shiftKey?10:1;moveRect(s,selected,'move',e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0,e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0);draw();update()};
+$('#exportCsv').onclick=()=>{let rows=[['side','LR','TB','L','R','T','B']];for(let k of ['front','back']){let m=metrics(states[k]);if(m)rows.push([k,m.lr,m.tb,m.L,m.R,m.T,m.B])}download('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv')};
+
+let deep={flatFront:null,flatBack:null,angledFront:[],angledBack:[]};
+function imgs(files,cb){let arr=[...files],out=[],done=0;if(!arr.length)return cb([]);arr.forEach((f,i)=>{let im=new Image();im.onload=()=>{out[i]={file:f,img:im};if(++done===arr.length)cb(out)};im.src=URL.createObjectURL(f)})}
+$('#flatFront').onchange=e=>imgs(e.target.files,a=>deep.flatFront=a[0]);$('#flatBack').onchange=e=>imgs(e.target.files,a=>deep.flatBack=a[0]);$('#angledFront').onchange=e=>imgs(e.target.files,a=>deep.angledFront=a);$('#angledBack').onchange=e=>imgs(e.target.files,a=>deep.angledBack=a);
+function stat(im){let c=document.createElement('canvas'),x=c.getContext('2d');c.width=Math.min(900,im.width);c.height=Math.round(im.height*c.width/im.width);x.drawImage(im,0,0,c.width,c.height);let d=x.getImageData(0,0,c.width,c.height).data,n=d.length/4,gl=0,br=0;for(let i=0;i<d.length;i+=4){let y=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];br+=y;if(y>245)gl++}return{brightness:br/n,glare:gl/n*100,w:c.width,h:c.height}}
+function summarize(name,arr){if(!arr.length)return `${name}: no images uploaded`;let ss=arr.map(o=>stat(o.img));let avg=k=>ss.reduce((a,b)=>a+b[k],0)/ss.length;return `${name}: ${arr.length} image(s)\n- Glare/hotspot estimate: ${avg('glare').toFixed(2)}% ${avg('glare')>3?'⚠ review lighting/glare':'✓ low'}\n- Brightness: ${avg('brightness').toFixed(1)} ${avg('brightness')<55?'⚠ possibly dark':avg('brightness')>210?'⚠ possibly overexposed':'✓ usable'}`}
+$('#runDeep').onclick=()=>{let parts=[];parts.push(summarize('Flat front',deep.flatFront?[deep.flatFront]:[]));parts.push(summarize('Flat back',deep.flatBack?[deep.flatBack]:[]));parts.push(summarize('Angled front',deep.angledFront));parts.push(summarize('Angled back',deep.angledBack));parts.push('\nSurface/defect pre-screen notes:\n- Review bright edge activity as possible whitening.\n- Review angled-photo hot spots for scratches, print lines, dents, or gloss interruptions.\n- This tool flags risk; it does not guarantee PSA/CGC/BGS outcome.');$('#deepOut').textContent=parts.join('\n\n')};
+$('#exportDeep').onclick=()=>download('deep_review_summary.txt',$('#deepOut').textContent,'text/plain');$('#clearDeep').onclick=()=>location.reload();
+function download(name,text,type){let b=new Blob([text],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
+function resize(){let w=Math.min(innerWidth-24,1100);canvas.width=w*devicePixelRatio;canvas.height=Math.max(520,innerHeight*.56)*devicePixelRatio;canvas.style.width=w+'px';canvas.style.height=(canvas.height/devicePixelRatio)+'px';draw()}
+addEventListener('resize',resize);resize();
+</script>
+</body>
+</html>
