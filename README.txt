@@ -1,47 +1,31 @@
-Pokemon Centering Mobile Web App
 
-Files:
-- index.html
-- styles.css
-- app.js
+Card Centering & Pre-Screen Tool
 
-What it is:
-A self-contained mobile web app for iPhone/Safari that lets you load front and back Pokemon card scans or photos, manually align outer and inner border boxes, and measure centering.
+Files included:
+- index.html (self-contained app)
+- README.txt
 
-Main features:
-- Front/back tabs
-- Pinch zoom
-- One-finger pan when not dragging an anchor
-- Small crosshair anchors for precision
-- Grid settings menu (color, opacity, density, anchor size)
-- Hard image boundaries
-- Inner box constrained inside outer box
-- Fit, rotate, contrast toggle
-- CSV summary export
-- JSON session save/load
-
-How to use on iPhone:
-Option 1: Put the folder on any simple web host and open index.html in Safari.
-Option 2: Serve it locally from a computer on the same network.
-Option 3: Use a phone app that can open local HTML projects.
-
-Simple local hosting from a PC or Mac:
-1. Put the files in one folder.
-2. Open a terminal in that folder.
-3. Run one of these:
-   - Python: python -m http.server 8000
-   - Node: npx serve
-4. On your iPhone, open Safari and go to:
-   http://YOUR-COMPUTER-IP:8000
+How to use:
+1. Open index.html in a browser, or upload it to static hosting.
+2. Centering tab:
+   - Upload front and/or back image.
+   - Select outer or inner box.
+   - Drag the red outer box to the card edge.
+   - Drag the blue inner box to the printed border.
+   - Use Fit / Zoom / Rotate as needed.
+   - Export CSV if desired.
+3. Deep Review tab:
+   - Upload flat front/back and optional angled photos.
+   - Run Deep Review.
+   - Read the heuristic summary.
+   - Export text summary.
 
 Notes:
-- This is a manual precision tool, not auto edge detection.
-- The current centering measurement uses border thickness between the outer and inner boxes.
-- The grading hint is only a rough pre-screening hint.
+- This is a manual precision centering tool plus an image-based pre-screen.
+- It does not guarantee a grade.
+- Scans are best for centering. Straight-on phone photos can work.
+- Angled photos help surface pre-screening, but faint defects may still be missed.
 
-Suggested next upgrades:
-- Auto border detection for Pokemon fronts and backs
-- Loupe/magnifier while dragging
-- Synchronized front/back zoom regions
-- Perspective correction from angled photos
-- Dedicated iPhone install packaging later if desired
+Hosting:
+- Works as a single static file app.
+- Good fit for GitHub Pages, Netlify, Vercel, or Cloudflare Pages.
