@@ -1,243 +1,1651 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Card Centering & Deep Review Tool V8</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Squirrel Girl Curls · Paige Rosenberg · Fitness Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 <style>
-:root{
-  --bg:#0d1016; --panel:#171c25; --panel2:#202838; --text:#f2f5fb; --muted:#a9b5c8;
-  --blue:#67adff; --green:#68d89b; --red:#ff7070; --yellow:#ffd36a; --line:#bfc7d455;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-header{padding:14px 16px;border-bottom:1px solid #ffffff18;background:#111620;position:sticky;top:0;z-index:5}
-h1{font-size:1.05rem;margin:0}
-.version{font-size:.8rem;color:var(--green);font-weight:800;margin-top:3px}
-main{padding:12px;display:grid;gap:12px;max-width:1200px;margin:auto}
-.card{background:var(--panel);border:1px solid #ffffff14;border-radius:16px;padding:12px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-button,input,select{font:inherit;border-radius:12px;border:1px solid #ffffff18;background:var(--panel2);color:var(--text);padding:10px}
-button{font-weight:800}
-button.active{border-color:#67adff;background:#20324a}
-label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-canvas{width:100%;height:auto;display:block;background:#05070b;border-radius:14px;touch-action:none;border:1px solid #ffffff18}
-.small{font-size:.8rem;color:var(--muted);line-height:1.35}
-.hidden{display:none!important}
-.output{white-space:pre-wrap;line-height:1.35;background:#0d1320;border:1px solid #ffffff12;border-radius:12px;padding:12px}
-.pillgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pill{background:#0d1320;border:1px solid #ffffff12;border-radius:12px;padding:10px}
-.good{color:var(--green)}.warn{color:var(--yellow)}.bad{color:var(--red)}
-@media(max-width:700px){.grid2,.pillgrid{grid-template-columns:1fr}.toolbar{grid-template-columns:repeat(2,1fr)}}
+  :root {
+    --pink: #f472b6;
+    --pink-light: #fce7f3;
+    --pink-mid: #fbcfe8;
+    --pink-dark: #be185d;
+    --black: #0a0a0a;
+    --off-white: #fdf8f9;
+    --gray: #71717a;
+    --card-radius: 24px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--black);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+    line-height: 1.15;
+  }
+
+  a { text-decoration: none; color: inherit; }
+
+  img { max-width: 100%; display: block; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .fade-up-2 { animation: fadeUp 0.7s 0.15s ease both; }
+  .fade-up-3 { animation: fadeUp 0.7s 0.3s ease both; }
+  .fade-up-4 { animation: fadeUp 0.7s 0.45s ease both; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(253, 248, 249, 0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--pink-mid);
+    padding: 16px 0;
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-logo-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--black);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    color: var(--pink);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .nav-logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .nav-logo-sub {
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray);
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--black); }
+
+  .nav-cta {
+    background: var(--black);
+    color: #fff !important;
+    padding: 10px 22px;
+    border-radius: 99px;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: opacity 0.2s !important;
+  }
+
+  .nav-cta:hover { opacity: 0.85 !important; }
+
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--black);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  .nav-mobile {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+    border-top: 1px solid var(--pink-mid);
+    margin-top: 12px;
+  }
+
+  .nav-mobile.open { display: flex; }
+  .nav-mobile a { font-size: 15px; font-weight: 500; padding: 4px 0; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 0 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -180px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #fce7f3 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--pink-light);
+    border: 1px solid var(--pink-mid);
+    color: var(--pink-dark);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 99px;
+    margin-bottom: 20px;
+  }
+
+  .hero-eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--pink);
+    border-radius: 50%;
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 6vw, 68px);
+    color: var(--black);
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--pink-dark);
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--gray);
+    line-height: 1.75;
+    max-width: 480px;
+    font-weight: 300;
+    margin-bottom: 36px;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .btn-primary {
+    background: var(--black);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--black);
+    padding: 14px 28px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1.5px solid var(--pink-mid);
+    transition: background 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary:hover { background: var(--pink-light); transform: translateY(-1px); }
+
+  .hero-stats {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--black);
+  }
+
+  .hero-stat-label {
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  .hero-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .hero-card {
+    border-radius: var(--card-radius);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-card-dark {
+    background: var(--black);
+    color: #fff;
+    grid-column: span 2;
+    padding: 32px;
+  }
+
+  .hero-card-dark .card-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 10px;
+  }
+
+  .hero-card-dark h3 {
+    font-size: 22px;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .hero-card-dark p {
+    font-size: 13px;
+    color: #d4d4d8;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  .hero-card-photo {
+    background: var(--pink-light);
+    border: 2px dashed var(--pink-mid);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .photo-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--pink-mid);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .hero-card-photo p {
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+
+  .hero-card-pink {
+    background: var(--pink);
+    color: #fff;
+  }
+
+  .hero-card-pink .card-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 8px;
+  }
+
+  .hero-card-pink h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .hero-card-pink p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero::before { display: none; }
+  }
+
+  /* ── SECTION BASE ── */
+  section { padding: 80px 0; }
+
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pink-dark);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: var(--gray);
+    font-weight: 300;
+    max-width: 520px;
+    line-height: 1.75;
+    margin-bottom: 48px;
+  }
+
+  /* ── ABOUT ── */
+  .about { background: #fff; }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 16px;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .about-accs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 32px;
+  }
+
+  .acc-card {
+    background: var(--off-white);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--pink-mid);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .acc-card:hover { transform: translateY(-3px); border-color: var(--pink); }
+
+  .acc-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .acc-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .acc-sub {
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+
+  .about-photo-placeholder {
+    background: var(--pink-light);
+    border-radius: var(--card-radius);
+    border: 2px dashed var(--pink-mid);
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 32px;
+  }
+
+  .about-photo-placeholder .photo-icon { width: 60px; height: 60px; font-size: 28px; }
+
+  .about-photo-placeholder p {
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── SERVICES ── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .service-card {
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 32px 28px;
+    border: 1px solid var(--pink-mid);
+    transition: transform 0.25s, box-shadow 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--pink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(244,114,182,0.15); }
+  .service-card:hover::after { transform: scaleX(1); }
+
+  .service-icon-wrap {
+    width: 52px;
+    height: 52px;
+    background: var(--pink-light);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .service-card h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .service-card p {
+    font-size: 14px;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .service-tag {
+    display: inline-block;
+    background: var(--pink-light);
+    color: var(--pink-dark);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 99px;
+  }
+
+  @media (max-width: 768px) {
+    .services-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── CLIENT WINS ── */
+  .wins { background: var(--black); color: #fff; }
+
+  .wins .section-eyebrow { color: var(--pink); }
+  .wins .section-title { color: #fff; }
+  .wins .section-desc { color: #a1a1aa; }
+
+  .wins-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .win-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--card-radius);
+    padding: 28px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .win-card:hover {
+    background: rgba(244,114,182,0.08);
+    border-color: rgba(244,114,182,0.3);
+  }
+
+  .win-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 16px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .win-name { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+  .win-result { font-size: 12px; color: var(--pink); margin-bottom: 16px; font-weight: 500; }
+
+  .win-quote {
+    font-size: 14px;
+    color: #a1a1aa;
+    font-weight: 300;
+    line-height: 1.75;
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .win-stars { color: var(--pink); font-size: 13px; letter-spacing: 2px; }
+
+  .wins-proof {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .proof-stat {
+    background: rgba(255,255,255,0.04);
+    padding: 36px;
+    text-align: center;
+  }
+
+  .proof-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--pink) 0%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .proof-label { font-size: 13px; color: #a1a1aa; font-weight: 300; margin-top: 6px; }
+
+  @media (max-width: 768px) {
+    .wins-grid { grid-template-columns: 1fr; }
+    .wins-proof { grid-template-columns: 1fr; }
+  }
+
+  /* ── COOKBOOK ── */
+  .cookbook { background: #fff; }
+
+  .cookbook-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .cookbook-feature {
+    background: var(--black);
+    border-radius: var(--card-radius);
+    padding: 48px 40px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cookbook-feature::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(244,114,182,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cookbook-feature .section-eyebrow { color: var(--pink); }
+  .cookbook-feature h2 { color: #fff; font-size: 32px; margin-bottom: 16px; }
+  .cookbook-feature p { font-size: 14px; color: #a1a1aa; font-weight: 300; line-height: 1.8; margin-bottom: 24px; }
+
+  .cookbook-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .cookbook-tag {
+    background: rgba(244,114,182,0.15);
+    color: var(--pink);
+    border: 1px solid rgba(244,114,182,0.3);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 99px;
+  }
+
+  .cookbook-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: #d4d4d8;
+    font-weight: 300;
+  }
+
+  .cookbook-categories {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .cookbook-cat {
+    background: var(--off-white);
+    border-radius: 18px;
+    padding: 22px 20px;
+    border: 1px solid var(--pink-mid);
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: default;
+  }
+
+  .cookbook-cat:hover { transform: translateY(-3px); border-color: var(--pink); }
+
+  .cookbook-cat-emoji { font-size: 24px; margin-bottom: 10px; }
+  .cookbook-cat-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .cookbook-cat-desc { font-size: 12px; color: var(--gray); font-weight: 300; line-height: 1.5; margin-bottom: 8px; }
+  .cookbook-cat-count { font-size: 11px; color: var(--pink-dark); font-weight: 500; }
+
+  @media (max-width: 768px) {
+    .cookbook-layout { grid-template-columns: 1fr; }
+  }
+
+  /* ── PLANS ── */
+  .plans { background: var(--off-white); }
+
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .plan-card {
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 32px 28px;
+    border: 1.5px solid var(--pink-mid);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+  }
+
+  .plan-card:hover { transform: translateY(-4px); }
+
+  .plan-card.featured {
+    background: var(--black);
+    border-color: var(--black);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .plan-card.featured::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(244,114,182,0.2) 0%, transparent 70%);
+  }
+
+  .plan-badge {
+    display: inline-block;
+    background: var(--pink);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+    width: fit-content;
+  }
+
+  .plan-name { font-size: 20px; margin-bottom: 8px; }
+  .plan-card.featured .plan-name { color: #fff; }
+
+  .plan-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 4px;
+  }
+
+  .plan-card.featured .plan-price { color: var(--pink); }
+
+  .plan-period { font-size: 13px; color: var(--gray); font-weight: 300; margin-bottom: 16px; }
+  .plan-card.featured .plan-period { color: #a1a1aa; }
+
+  .plan-desc { font-size: 13px; color: var(--gray); font-weight: 300; line-height: 1.7; margin-bottom: 20px; }
+  .plan-card.featured .plan-desc { color: #a1a1aa; }
+
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex: 1;
+  }
+
+  .plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+
+  .plan-card.featured .plan-features li { color: #d4d4d8; }
+
+  .plan-features li::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--pink-light);
+    border: 1.5px solid var(--pink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23be185d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  .plan-card.featured .plan-features li::before {
+    background-color: rgba(244,114,182,0.2);
+    border-color: var(--pink);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23f472b6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  .plan-btn {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .plan-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .plan-card:not(.featured) .plan-btn {
+    background: var(--black);
+    color: #fff;
+  }
+
+  .plan-card.featured .plan-btn {
+    background: var(--pink);
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .plans-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── FAQ ── */
+  .faq { background: #fff; }
+
+  .faq-list { display: flex; flex-direction: column; gap: 12px; max-width: 720px; }
+
+  .faq-item {
+    background: var(--off-white);
+    border: 1px solid var(--pink-mid);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .faq-item.open { border-color: var(--pink); }
+
+  .faq-q {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 20px 24px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--black);
+  }
+
+  .faq-chevron {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--pink-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s, background 0.2s;
+    font-size: 12px;
+    color: var(--pink-dark);
+  }
+
+  .faq-item.open .faq-chevron { transform: rotate(180deg); background: var(--pink); color: #fff; }
+
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.2s;
+    padding: 0 24px;
+    font-size: 14px;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
+
+  /* ── CONTACT ── */
+  .contact { background: var(--off-white); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .contact-info h2 { margin-bottom: 16px; }
+  .contact-info p { font-size: 15px; color: var(--gray); font-weight: 300; line-height: 1.8; margin-bottom: 28px; }
+
+  .contact-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid var(--pink-mid);
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: border-color 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .contact-email:hover { border-color: var(--pink); }
+
+  .contact-social {
+    background: var(--black);
+    border-radius: 20px;
+    padding: 24px;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  .contact-social-label { font-size: 11px; color: var(--pink); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .contact-social h4 { font-size: 16px; color: #fff; margin-bottom: 8px; }
+  .contact-social p { font-size: 13px; color: #a1a1aa; font-weight: 300; line-height: 1.6; margin-bottom: 12px; }
+  .contact-social a { color: var(--pink); font-size: 13px; font-weight: 500; }
+  .contact-social a:hover { text-decoration: underline; }
+
+  .contact-steps {
+    background: var(--pink-light);
+    border: 1px solid var(--pink-mid);
+    border-radius: 20px;
+    padding: 24px;
+  }
+
+  .contact-steps h4 { font-size: 15px; margin-bottom: 16px; }
+
+  .contact-step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--pink);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .contact-form {
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 36px;
+    border: 1px solid var(--pink-mid);
+  }
+
+  .contact-form h3 { font-size: 22px; margin-bottom: 8px; }
+  .contact-form .form-sub { font-size: 13px; color: var(--gray); font-weight: 300; margin-bottom: 24px; }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    background: var(--off-white);
+    border: 1.5px solid var(--pink-mid);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus { border-color: var(--pink); }
+
+  .form-group textarea { resize: none; height: 110px; }
+
+  .form-submit {
+    width: 100%;
+    background: var(--black);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    margin-top: 4px;
+  }
+
+  .form-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+  .form-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .form-note { font-size: 12px; color: var(--gray); font-weight: 300; text-align: center; margin-top: 10px; }
+
+  .form-success {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    min-height: 280px;
+  }
+
+  .form-success.show { display: flex; }
+  .form-success-icon { font-size: 48px; }
+  .form-success h4 { font-size: 22px; }
+  .form-success p { font-size: 14px; color: var(--gray); font-weight: 300; max-width: 280px; }
+
+  @media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black);
+    color: #fff;
+    padding: 40px 0 24px;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; }
+  .footer-tagline { font-size: 12px; color: #71717a; font-weight: 300; margin-top: 4px; }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a { font-size: 13px; color: #71717a; font-weight: 300; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--pink); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 20px;
+    font-size: 12px;
+    color: #52525b;
+    font-weight: 300;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Card Centering & Deep Review Tool</h1>
-  <div class="version">V8 — Centering + Deep Review + Grid Options</div>
-</header>
 
-<main>
-  <div class="tabs">
-    <button id="btnCenter" class="active">Centering Mode</button>
-    <button id="btnDeep">Deep Review Mode</button>
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#top" class="nav-logo">
+        <div class="nav-logo-icon">SGC</div>
+        <div>
+          <div class="nav-logo-text">Squirrel Girl Curls</div>
+          <div class="nav-logo-sub">Paige Rosenberg · Fitness Coach</div>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#cookbook">Cookbook</a></li>
+        <li><a href="#plans">Plans</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact" class="nav-cta">Apply Now</a></li>
+      </ul>
+      <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="nav-mobile" id="navMobile">
+      <a href="#about" onclick="closeMenu()">About</a>
+      <a href="#services" onclick="closeMenu()">Services</a>
+      <a href="#results" onclick="closeMenu()">Results</a>
+      <a href="#cookbook" onclick="closeMenu()">Cookbook</a>
+      <a href="#plans" onclick="closeMenu()">Plans</a>
+      <a href="#faq" onclick="closeMenu()">FAQ</a>
+      <a href="#contact" onclick="closeMenu()" class="btn-primary" style="text-align:center;justify-content:center;">Apply Now</a>
+    </div>
   </div>
+</nav>
 
-  <section id="centerSec">
-    <div class="card">
-      <h3>Load front/back scans or photos</h3>
-      <div class="grid2">
-        <div><label>Front image</label><input id="frontFile" type="file" accept="image/*"></div>
-        <div><label>Back image</label><input id="backFile" type="file" accept="image/*"></div>
+<!-- HERO -->
+<section id="top" class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow fade-up">
+          <div class="hero-eyebrow-dot"></div>
+          Fitness · Macros · Confidence
+        </div>
+        <h1 class="fade-up-2">
+          Strong Body.<br><em>Real Life</em><br>Habits.
+        </h1>
+        <p class="hero-desc fade-up-3">
+          Coaching by Paige Rosenberg — helping women build real confidence, improve fitness, and master nutrition without extremes, burnout, or confusion.
+        </p>
+        <div class="hero-btns fade-up-4">
+          <a href="#contact" class="btn-primary">Start Coaching →</a>
+          <a href="#plans" class="btn-secondary">View Plans</a>
+        </div>
+        <div class="hero-stats fade-up-4">
+          <div>
+            <div class="hero-stat-num">50+</div>
+            <div class="hero-stat-label">Women coached</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">4.9★</div>
+            <div class="hero-stat-label">Client rating</div>
+          </div>
+          <div>
+            <div class="hero-stat-num">CrossFit</div>
+            <div class="hero-stat-label">Athlete & coach</div>
+          </div>
+        </div>
       </div>
-      <p class="small">Use red for the card edge and blue for the inner printed border. The tool measures border thickness and reports centering ratios.</p>
-    </div>
 
-    <div class="card">
-      <div class="grid2">
-        <div><label>Working image</label><select id="side"><option value="front">Front</option><option value="back">Back</option></select></div>
-        <div><label>Selected guide</label><select id="guide"><option value="outer">Outer red box</option><option value="inner">Inner blue box</option></select></div>
+      <div class="hero-right">
+        <div class="hero-card hero-card-dark">
+          <div class="card-label">Coach Spotlight</div>
+          <h3>Competitive CrossFit Athlete</h3>
+          <p>Paige brings real competition experience, discipline, and a high-performance mindset into practical coaching for everyday women — wherever they're starting from.</p>
+        </div>
+        <div class="hero-card hero-card-photo">
+          <div class="photo-icon">📸</div>
+          <p>Replace with<br>Paige's photo</p>
+        </div>
+        <div class="hero-card hero-card-pink">
+          <div class="card-label">Signature Promise</div>
+          <h4>Macros made simple</h4>
+          <p>Clean structure, clear support, and coaching built for real life.</p>
+        </div>
       </div>
-      <br>
-      <div class="toolbar">
-        <button id="fit">Fit</button>
-        <button id="zin">Zoom +</button>
-        <button id="zout">Zoom -</button>
-        <button id="rot">Rotate</button>
-        <button id="reset">Reset Guides</button>
-        <button id="contrast">Contrast</button>
-        <button id="exportCsv">Export CSV</button>
-        <button id="clear">Clear</button>
-      </div>
-      <p class="small">Drag corners or drag inside a guide box. Arrow keys move the selected guide. Shift + arrows moves 10 px.</p>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <canvas id="canvas" width="1400" height="950"></canvas>
+<!-- ABOUT -->
+<section id="about" class="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-eyebrow">About Paige</p>
+        <h2 class="section-title">Strong coaching with a <em>feminine, confident edge.</em></h2>
+        <p>Squirrel Girl Curls is built around helping women feel stronger, more confident, and more in control of their routines. Paige combines years of CrossFit competition experience with an approachable, encouraging coaching style that makes fitness and nutrition actually feel achievable.</p>
+        <p>She's competed at a regional level, coached dozens of women across all experience levels, and built her methods around one core belief: <strong>sustainable always beats extreme.</strong></p>
+        <p>You can add her competition accomplishments, certifications, and media features here when ready.</p>
+        <div class="about-accs">
+          <div class="acc-card">
+            <div class="acc-icon">🏆</div>
+            <div class="acc-title">CrossFit Competitor</div>
+            <div class="acc-sub">Regional & local competitions</div>
+          </div>
+          <div class="acc-card">
+            <div class="acc-icon">⚡</div>
+            <div class="acc-title">Certified Coach</div>
+            <div class="acc-sub">Nutrition & strength training</div>
+          </div>
+          <div class="acc-card">
+            <div class="acc-icon">👥</div>
+            <div class="acc-title">50+ Clients</div>
+            <div class="acc-sub">Women of all fitness levels</div>
+          </div>
+          <div class="acc-card">
+            <div class="acc-icon">🥇</div>
+            <div class="acc-title">Podium Finishes</div>
+            <div class="acc-sub">Multiple competition placings</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-photo-placeholder">
+        <div class="photo-icon">📸</div>
+        <p>Replace with a brand photo of Paige</p>
+      </div>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <h3>Grid Options</h3>
-      <div class="grid2">
-        <div><label>Grid color</label><input id="gridColor" type="color" value="#bfc7d4"></div>
-        <div><label>Grid opacity</label><input id="gridOpacity" type="range" min="0" max="100" value="18"></div>
-        <div><label>Major grid px</label><input id="gridMajor" type="range" min="10" max="200" value="40"></div>
-        <div><label>Minor divisions</label><input id="gridMinor" type="range" min="1" max="10" value="4"></div>
-        <div><label>Anchor size</label><input id="anchorSize" type="range" min="2" max="18" value="6"></div>
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <p class="section-eyebrow">Services</p>
+    <h2 class="section-title">How clients work with Paige.</h2>
+    <p class="section-desc">Every coaching package is built around your goals, your schedule, and your real life — not a one-size-fits-all template.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon-wrap">🏋️</div>
+        <h3>1:1 Fitness Coaching</h3>
+        <p>Custom programming built around your goals, training history, and lifestyle. Weekly check-ins, form feedback, and programming that adapts as you progress.</p>
+        <span class="service-tag">Weekly check-ins · Custom workouts</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon-wrap">✨</div>
+        <h3>Macro Coaching</h3>
+        <p>Learn to fuel your body with confidence. Simple, flexible nutrition guidance that fits into your real life — no food rules, no restriction, just clarity.</p>
+        <span class="service-tag">Macro targets · Flexible eating</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon-wrap">💬</div>
+        <h3>Accountability & Support</h3>
+        <p>Consistent check-ins, honest feedback, and real encouragement to keep you moving forward every single week. Direct messaging access included.</p>
+        <span class="service-tag">Direct messaging · Habit tracking</span>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <h3>Centering Results</h3>
-      <div class="pillgrid">
-        <div class="pill"><b>Front L/R</b><br><span id="frontLR">—</span></div>
-        <div class="pill"><b>Front T/B</b><br><span id="frontTB">—</span></div>
-        <div class="pill"><b>Back L/R</b><br><span id="backLR">—</span></div>
-        <div class="pill"><b>Back T/B</b><br><span id="backTB">—</span></div>
+<!-- CLIENT WINS -->
+<section id="results" class="wins">
+  <div class="container">
+    <p class="section-eyebrow">Client Wins</p>
+    <h2 class="section-title">Real women, real results.</h2>
+    <p class="section-desc">Placeholder stories — swap these out with Paige's real client transformations when ready.</p>
+    <div class="wins-grid">
+      <div class="win-card">
+        <div class="win-avatar">S.M.</div>
+        <div class="win-name">Sarah M.</div>
+        <div class="win-result">↓ 18 lbs in 12 weeks · Macro Coaching</div>
+        <p class="win-quote">"I never thought tracking macros could feel this freeing. Paige made it click for me in a way no diet ever had. I finally feel in control."</p>
+        <div class="win-stars">★★★★★</div>
       </div>
-      <br>
-      <div id="centerSummary" class="output">Load an image and align the red/blue guides.</div>
+      <div class="win-card">
+        <div class="win-avatar">J.T.</div>
+        <div class="win-name">Jamie T.</div>
+        <div class="win-result">First pull-up at 34 · 1:1 Fitness</div>
+        <p class="win-quote">"The programming was perfectly paced. I went from zero upper body strength to hitting my first pull-up in under 3 months. I actually cried."</p>
+        <div class="win-stars">★★★★★</div>
+      </div>
+      <div class="win-card">
+        <div class="win-avatar">M.L.</div>
+        <div class="win-name">Morgan L.</div>
+        <div class="win-result">Consistent for 6 months · Accountability</div>
+        <p class="win-quote">"I've tried every program out there. The difference with Paige is the support between sessions. She holds you accountable — in the nicest way."</p>
+        <div class="win-stars">★★★★★</div>
+      </div>
     </div>
-  </section>
+    <div class="wins-proof">
+      <div class="proof-stat">
+        <div class="proof-num">50+</div>
+        <div class="proof-label">Women coached</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num">4.9★</div>
+        <div class="proof-label">Average client rating</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-num">92%</div>
+        <div class="proof-label">Client retention rate</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <section id="deepSec" class="hidden">
-    <div class="card">
-      <h3>Deep Review Mode</h3>
-      <p class="small">Upload flat and angled photos. This gives a pre-screen summary for glare, blur, edge whitening risk, and reflective surface activity. It is not a guaranteed grade.</p>
-      <div class="grid2">
-        <div><label>Flat front photo/scan</label><input id="flatFront" type="file" accept="image/*"></div>
-        <div><label>Flat back photo/scan</label><input id="flatBack" type="file" accept="image/*"></div>
-        <div><label>Angled front photos</label><input id="angledFront" type="file" accept="image/*" multiple></div>
-        <div><label>Angled back photos</label><input id="angledBack" type="file" accept="image/*" multiple></div>
+<!-- COOKBOOK -->
+<section id="cookbook" class="cookbook">
+  <div class="container">
+    <div class="cookbook-layout">
+      <div class="cookbook-feature">
+        <p class="section-eyebrow">Recipe Vault</p>
+        <h2>Food that <em>actually</em> tastes good.</h2>
+        <p>High-protein, macro-friendly recipes that don't taste like cardboard. Real food that fuels performance, satisfies cravings, and fits your numbers. Full cookbook access included with coaching packages.</p>
+        <div class="cookbook-tags">
+          <span class="cookbook-tag">High Protein</span>
+          <span class="cookbook-tag">Macro Friendly</span>
+          <span class="cookbook-tag">Quick Prep</span>
+          <span class="cookbook-tag">Gluten-Free Options</span>
+        </div>
+        <div class="cookbook-lock">🔒 Full access included with coaching</div>
       </div>
-      <br>
-      <div class="grid3">
-        <button id="runDeep">Run Deep Review</button>
-        <button id="exportDeep">Export Summary</button>
-        <button id="clearDeep">Clear</button>
+      <div class="cookbook-categories">
+        <div class="cookbook-cat">
+          <div class="cookbook-cat-emoji">🍳</div>
+          <div class="cookbook-cat-name">High-Protein Breakfasts</div>
+          <div class="cookbook-cat-desc">Start your day fueled and ready.</div>
+          <div class="cookbook-cat-count">12 recipes</div>
+        </div>
+        <div class="cookbook-cat">
+          <div class="cookbook-cat-emoji">🥗</div>
+          <div class="cookbook-cat-name">Macro-Friendly Lunches</div>
+          <div class="cookbook-cat-desc">Quick, balanced midday meals.</div>
+          <div class="cookbook-cat-count">15 recipes</div>
+        </div>
+        <div class="cookbook-cat">
+          <div class="cookbook-cat-emoji">🍽️</div>
+          <div class="cookbook-cat-name">Easy Dinners</div>
+          <div class="cookbook-cat-desc">Family-friendly and hits your macros.</div>
+          <div class="cookbook-cat-count">18 recipes</div>
+        </div>
+        <div class="cookbook-cat">
+          <div class="cookbook-cat-emoji">🍫</div>
+          <div class="cookbook-cat-name">Snacks & Treats</div>
+          <div class="cookbook-cat-desc">High-protein snacks that satisfy.</div>
+          <div class="cookbook-cat-count">10 recipes</div>
+        </div>
       </div>
     </div>
-    <div class="card">
-      <h3>Deep Review Output</h3>
-      <div id="deepOut" class="output">Upload photos, then tap Run Deep Review.</div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="plans" class="plans">
+  <div class="container">
+    <p class="section-eyebrow">Coaching Plans</p>
+    <h2 class="section-title">Choose your plan.</h2>
+    <p class="section-desc">All plans include a free 15-minute intro call. No commitment until you're ready.</p>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <h3 class="plan-name">Starter</h3>
+        <div class="plan-price">$___</div>
+        <div class="plan-period">/month</div>
+        <p class="plan-desc">Perfect for women who want personalized macro targets and a solid foundation to build from.</p>
+        <ul class="plan-features">
+          <li>Custom macro targets</li>
+          <li>Initial nutrition consult</li>
+          <li>Starter workout template</li>
+          <li>Email support</li>
+          <li>2 check-ins/month</li>
+        </ul>
+        <a href="#contact" class="plan-btn">Apply for Starter</a>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge">Most Popular</div>
+        <h3 class="plan-name">Signature</h3>
+        <div class="plan-price">$___</div>
+        <div class="plan-period">/month</div>
+        <p class="plan-desc">Paige's full 1:1 experience — programming, nutrition, and ongoing accountability in one package.</p>
+        <ul class="plan-features">
+          <li>Custom training program</li>
+          <li>Weekly macro adjustments</li>
+          <li>Unlimited check-ins</li>
+          <li>Direct messaging access</li>
+          <li>Monthly progress reviews</li>
+          <li>Full recipe vault access</li>
+        </ul>
+        <a href="#contact" class="plan-btn">Apply for Signature</a>
+      </div>
+      <div class="plan-card">
+        <h3 class="plan-name">VIP</h3>
+        <div class="plan-price">$___</div>
+        <div class="plan-period">/month</div>
+        <p class="plan-desc">Maximum support, maximum results. For women who want the full high-touch coaching experience.</p>
+        <ul class="plan-features">
+          <li>Everything in Signature</li>
+          <li>Priority response time</li>
+          <li>Video form reviews</li>
+          <li>Meal planning add-on</li>
+          <li>Quarterly strategy calls</li>
+        </ul>
+        <a href="#contact" class="plan-btn">Apply for VIP</a>
+      </div>
     </div>
-  </section>
-</main>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="faq">
+  <div class="container">
+    <p class="section-eyebrow">FAQ</p>
+    <h2 class="section-title" style="margin-bottom:40px;">Common questions answered.</h2>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Who is this coaching for?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-a">Hot Girl Macros is built for women who are tired of extreme diets, confusing programs, and going it alone. Whether you're a total beginner or you've been training for years, Paige meets you where you are and builds from there.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What does macro coaching actually include?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-a">You'll get personalized macro targets based on your body, goals, and lifestyle — not a generic calculator result. Paige teaches you how to hit your numbers flexibly, so you can eat out, enjoy life, and still make progress.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I need gym access or special equipment?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-a">Nope! Programs can be written for home, gym, or both. During your intake, Paige will ask about what equipment you have access to and build your plan around it.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How long before I see results?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-a">Most clients notice changes in energy, consistency, and confidence within the first 2–3 weeks. Physical results vary by person, but clients who follow the plan and stay consistent typically see meaningful progress within 4–8 weeks.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How do I get started?
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-a">Fill out the application form below or email Paige directly. She personally reviews every application and responds within 48 hours to schedule a free intro call — no commitment required.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <p class="section-eyebrow">Contact</p>
+        <h2 class="section-title">Ready to work with Paige?</h2>
+        <p>Fill out the form or reach out directly. Paige personally reviews every application and responds within 48 hours.</p>
+        <a href="mailto:paigemackenzzie@hotmail.com" class="contact-email">
+          ✉️ paigemackenzzie@hotmail.com
+        </a>
+        <div class="contact-social">
+          <div class="contact-social-label">Follow on Instagram</div>
+          <h4>@squirrel_girl_curls</h4>
+          <p>Behind-the-scenes workouts, macro tips, transformation reels, and daily coaching content.</p>
+          <a href="https://instagram.com/squirrel_girl_curls" target="_blank" rel="noopener">→ Visit Instagram</a>
+        </div>
+        <div class="contact-steps">
+          <h4>What happens after you apply?</h4>
+          <div class="contact-step"><div class="step-num">1</div><div>Paige reviews your application within 48 hours</div></div>
+          <div class="contact-step"><div class="step-num">2</div><div>You'll get an email to book a free intro call</div></div>
+          <div class="contact-step"><div class="step-num">3</div><div>On the call, you'll talk goals, questions, and fit</div></div>
+          <div class="contact-step"><div class="step-num">4</div><div>If it's a match, you'll receive your onboarding kit</div></div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <div id="formContent">
+          <h3>Apply for coaching</h3>
+          <p class="form-sub">Takes 2 minutes. Free intro call included.</p>
+          <form id="contactForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+              <input type="text" name="name" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <input type="email" name="email" placeholder="Your email" required />
+            </div>
+            <div class="form-group">
+              <input type="text" name="goal" placeholder="Your main goal (e.g. lose fat, build strength)" />
+            </div>
+            <div class="form-group">
+              <textarea name="message" placeholder="Tell Paige about yourself — your current routine, struggles, and what kind of support you're looking for"></textarea>
+            </div>
+            <button type="submit" class="form-submit" id="submitBtn">Send Application →</button>
+            <p class="form-note">Free intro call included with every application</p>
+          </form>
+        </div>
+        <div class="form-success" id="formSuccess">
+          <div class="form-success-icon">🎉</div>
+          <h4>Application received!</h4>
+          <p>Paige will reach out within 48 hours to schedule your free intro call.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-logo">Squirrel Girl Curls</div>
+          <div class="footer-tagline">Paige Rosenberg · Fitness & Macro Coaching</div>
+        </div>
+        <div class="footer-links">
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <a href="#results">Results</a>
+          <a href="#cookbook">Cookbook</a>
+          <a href="#plans">Plans</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Squirrel Girl Curls · Paige Rosenberg</span>
+        <span>Fitness Coaching · Macro Coaching · Confidence</span>
+      </div>
+    </div>
+  </div>
+</footer>
 
 <script>
-const $=s=>document.querySelector(s);
-let active='center';
-let side='front';
-let selected='outer';
-let settings={gridColor:'#bfc7d4',gridOpacity:18,gridMajor:40,gridMinor:4,anchorSize:6,contrast:false};
-let states={
- front:{img:null,name:'',w:0,h:0,zoom:1,ox:0,oy:0,outer:null,inner:null},
- back:{img:null,name:'',w:0,h:0,zoom:1,ox:0,oy:0,outer:null,inner:null}
-};
-let drag=null,last=null;
-const canvas=$('#canvas'), ctx=canvas.getContext('2d');
+  document.getElementById('year').textContent = new Date().getFullYear();
 
-function tab(t){
- active=t;
- $('#btnCenter').classList.toggle('active',t==='center');
- $('#btnDeep').classList.toggle('active',t==='deep');
- $('#centerSec').classList.toggle('hidden',t!=='center');
- $('#deepSec').classList.toggle('hidden',t!=='deep');
-}
-$('#btnCenter').onclick=()=>tab('center'); $('#btnDeep').onclick=()=>tab('deep');
-$('#side').onchange=e=>{side=e.target.value; draw()}; $('#guide').onchange=e=>selected=e.target.value;
+  function toggleMenu() {
+    document.getElementById('navMobile').classList.toggle('open');
+  }
 
-function load(file,s){
- if(!file)return;
- let img=new Image(); img.onload=()=>{let st=states[s]; st.img=img; st.name=file.name; st.w=img.width; st.h=img.height; resetGuides(s); fit(s); draw(); update();};
- img.src=URL.createObjectURL(file);
-}
-$('#frontFile').onchange=e=>load(e.target.files[0],'front');
-$('#backFile').onchange=e=>load(e.target.files[0],'back');
+  function closeMenu() {
+    document.getElementById('navMobile').classList.remove('open');
+  }
 
-function resetGuides(s){
- let st=states[s]; if(!st.img)return;
- st.outer={x:st.w*.08,y:st.h*.06,w:st.w*.84,h:st.h*.88};
- st.inner={x:st.w*.15,y:st.h*.12,w:st.w*.70,h:st.h*.76};
- clamp(st,'outer'); clamp(st,'inner');
-}
-function fit(s){let st=states[s]; if(!st.img)return; st.zoom=Math.min((canvas.width-40)/st.w,(canvas.height-40)/st.h); st.ox=(canvas.width-st.w*st.zoom)/2; st.oy=(canvas.height-st.h*st.zoom)/2;}
-function st(){return states[side]}
-function clamp(s,which){
- let r=s[which];
- if(which==='outer'){r.w=Math.max(20,Math.min(r.w,s.w));r.h=Math.max(20,Math.min(r.h,s.h));r.x=Math.max(0,Math.min(r.x,s.w-r.w));r.y=Math.max(0,Math.min(r.y,s.h-r.h));}
- else{let o=s.outer;r.w=Math.max(20,Math.min(r.w,o.w));r.h=Math.max(20,Math.min(r.h,o.h));r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w));r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h));}
-}
-function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
-function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
-function handles(r){return{tl:{x:r.x,y:r.y},tr:{x:r.x+r.w,y:r.y},bl:{x:r.x,y:r.y+r.h},br:{x:r.x+r.w,y:r.y+r.h}}}
-function hit(s,x,y){
- let p=s2i(s,x,y);
- for(let name of ['inner','outer']){
-  let r=s[name], hs=handles(r);
-  for(let k in hs){if(Math.hypot(p.x-hs[k].x,p.y-hs[k].y)<(settings.anchorSize+9)/s.zoom)return{shape:name,kind:k}}
-  if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:name,kind:'move'}
- }
- return null;
-}
-function moveRect(s,shape,kind,dx,dy){
- let r=s[shape];
- if(kind==='move'){r.x+=dx;r.y+=dy}
- if(kind==='tl'){r.x+=dx;r.y+=dy;r.w-=dx;r.h-=dy}
- if(kind==='tr'){r.y+=dy;r.w+=dx;r.h-=dy}
- if(kind==='bl'){r.x+=dx;r.w-=dx;r.h+=dy}
- if(kind==='br'){r.w+=dx;r.h+=dy}
- clamp(s,shape); if(shape==='outer')clamp(s,'inner');
-}
-function drawGrid(s){
- let major=settings.gridMajor, minor=major/settings.gridMinor;
- let a=Math.round(settings.gridOpacity*2.55).toString(16).padStart(2,'0');
- let amin=Math.round(settings.gridOpacity*.35*2.55).toString(16).padStart(2,'0');
- ctx.save(); ctx.beginPath(); ctx.rect(s.ox,s.oy,s.w*s.zoom,s.h*s.zoom); ctx.clip(); ctx.lineWidth=1;
- for(let x=0;x<=s.w;x+=minor){ctx.strokeStyle=settings.gridColor+(Math.abs(x%major)<.01?a:amin); let sx=s.ox+x*s.zoom; ctx.beginPath();ctx.moveTo(sx,s.oy);ctx.lineTo(sx,s.oy+s.h*s.zoom);ctx.stroke()}
- for(let y=0;y<=s.h;y+=minor){ctx.strokeStyle=settings.gridColor+(Math.abs(y%major)<.01?a:amin); let sy=s.oy+y*s.zoom; ctx.beginPath();ctx.moveTo(s.ox,sy);ctx.lineTo(s.ox+s.w*s.zoom,sy);ctx.stroke()}
- ctx.restore();
-}
-function drawRect(s,r,color,sel){
- let p=i2s(s,r.x,r.y); ctx.strokeStyle=color; ctx.lineWidth=2; ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom);
- for(let h of Object.values(handles(r))){let q=i2s(s,h.x,h.y); ctx.beginPath(); ctx.moveTo(q.x-settings.anchorSize,q.y); ctx.lineTo(q.x+settings.anchorSize,q.y); ctx.moveTo(q.x,q.y-settings.anchorSize); ctx.lineTo(q.x,q.y+settings.anchorSize); ctx.stroke(); if(sel){ctx.strokeStyle='#fff';ctx.strokeRect(q.x-2,q.y-2,4,4);ctx.strokeStyle=color}}
-}
-function draw(){
- ctx.clearRect(0,0,canvas.width,canvas.height); let s=st();
- if(!s.img){ctx.fillStyle='#a9b5c8';ctx.font='22px system-ui';ctx.fillText('Load a front or back image.',40,60);return}
- ctx.fillStyle='#05070b';ctx.fillRect(0,0,canvas.width,canvas.height);
- ctx.filter=settings.contrast?'contrast(1.25) saturate(.9)':'none';
- ctx.drawImage(s.img,s.ox,s.oy,s.w*s.zoom,s.h*s.zoom); ctx.filter='none';
- drawGrid(s); ctx.strokeStyle='#8aa2ff';ctx.lineWidth=2;ctx.strokeRect(s.ox,s.oy,s.w*s.zoom,s.h*s.zoom);
- drawRect(s,s.outer,'#ff7070',selected==='outer'); drawRect(s,s.inner,'#67adff',selected==='inner');
-}
-canvas.onpointerdown=e=>{let s=st(); if(!s.img)return; canvas.setPointerCapture(e.pointerId); let x=e.offsetX*devicePixelRatio,y=e.offsetY*devicePixelRatio; last={x,y}; drag=hit(s,x,y)||{shape:'pan',kind:'pan'}; if(drag.shape!=='pan'){selected=drag.shape;$('#guide').value=selected}};
-canvas.onpointermove=e=>{let s=st(); if(!s.img||!drag)return; let x=e.offsetX*devicePixelRatio,y=e.offsetY*devicePixelRatio,dx=x-last.x,dy=y-last.y; if(drag.shape==='pan'){s.ox+=dx;s.oy+=dy}else{moveRect(s,drag.shape,drag.kind,dx/s.zoom,dy/s.zoom);update()} last={x,y}; draw()};
-canvas.onpointerup=canvas.onpointercancel=()=>drag=null;
-canvas.onwheel=e=>{e.preventDefault();let s=st();if(!s.img)return;let f=e.deltaY<0?1.1:.9;s.zoom=Math.max(.1,Math.min(20,s.zoom*f));draw()};
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
 
-function metrics(s){if(!s.img)return null;let o=s.outer,i=s.inner;let L=i.x-o.x,R=o.x+o.w-i.x-i.w,T=i.y-o.y,B=o.y+o.h-i.y-i.h;let ratio=(a,b)=>`${Math.round(100*a/(a+b))}/${Math.round(100*b/(a+b))}`;return{L,R,T,B,lr:ratio(Math.min(L,R),Math.max(L,R)),tb:ratio(Math.min(T,B),Math.max(T,B))}}
-function update(){let f=metrics(states.front),b=metrics(states.back);$('#frontLR').textContent=f?`${f.lr} | L ${f.L.toFixed(1)} / R ${f.R.toFixed(1)}`:'—';$('#frontTB').textContent=f?`${f.tb} | T ${f.T.toFixed(1)} / B ${f.B.toFixed(1)}`:'—';$('#backLR').textContent=b?`${b.lr} | L ${b.L.toFixed(1)} / R ${b.R.toFixed(1)}`:'—';$('#backTB').textContent=b?`${b.tb} | T ${b.T.toFixed(1)} / B ${b.B.toFixed(1)}`:'—';$('#centerSummary').textContent=`Front: ${f?f.lr+' L/R, '+f.tb+' T/B':'not loaded'}\nBack: ${b?b.lr+' L/R, '+b.tb+' T/B':'not loaded'}\n\nManual pre-screen only. Compare against the grading company’s current standards.`}
-$('#fit').onclick=()=>{fit(side);draw()};$('#zin').onclick=()=>{st().zoom*=1.15;draw()};$('#zout').onclick=()=>{st().zoom*=.85;draw()};$('#reset').onclick=()=>{resetGuides(side);draw();update()};$('#contrast').onclick=()=>{settings.contrast=!settings.contrast;draw()};$('#clear').onclick=()=>location.reload();
-$('#rot').onclick=()=>{let s=st();if(!s.img)return;let c=document.createElement('canvas'),x=c.getContext('2d');c.width=s.h;c.height=s.w;x.translate(c.width/2,c.height/2);x.rotate(Math.PI/2);x.drawImage(s.img,-s.w/2,-s.h/2);let n=new Image();n.onload=()=>{s.img=n;s.w=n.width;s.h=n.height;resetGuides(side);fit(side);draw();update()};n.src=c.toDataURL()};
-['gridColor','gridOpacity','gridMajor','gridMinor','anchorSize'].forEach(id=>$('#'+id).oninput=e=>{settings[id]=id==='gridColor'?e.target.value:+e.target.value;draw()});
-window.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;let s=st();if(!s.img)return;e.preventDefault();let step=e.shiftKey?10:1;moveRect(s,selected,'move',e.key==='ArrowLeft'?-step:e.key==='ArrowRight'?step:0,e.key==='ArrowUp'?-step:e.key==='ArrowDown'?step:0);draw();update()};
-$('#exportCsv').onclick=()=>{let rows=[['side','LR','TB','L','R','T','B']];for(let k of ['front','back']){let m=metrics(states[k]);if(m)rows.push([k,m.lr,m.tb,m.L,m.R,m.T,m.B])}download('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv')};
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const ENDPOINT = '';
 
-let deep={flatFront:null,flatBack:null,angledFront:[],angledBack:[]};
-function imgs(files,cb){let arr=[...files],out=[],done=0;if(!arr.length)return cb([]);arr.forEach((f,i)=>{let im=new Image();im.onload=()=>{out[i]={file:f,img:im};if(++done===arr.length)cb(out)};im.src=URL.createObjectURL(f)})}
-$('#flatFront').onchange=e=>imgs(e.target.files,a=>deep.flatFront=a[0]);$('#flatBack').onchange=e=>imgs(e.target.files,a=>deep.flatBack=a[0]);$('#angledFront').onchange=e=>imgs(e.target.files,a=>deep.angledFront=a);$('#angledBack').onchange=e=>imgs(e.target.files,a=>deep.angledBack=a);
-function stat(im){let c=document.createElement('canvas'),x=c.getContext('2d');c.width=Math.min(900,im.width);c.height=Math.round(im.height*c.width/im.width);x.drawImage(im,0,0,c.width,c.height);let d=x.getImageData(0,0,c.width,c.height).data,n=d.length/4,gl=0,br=0;for(let i=0;i<d.length;i+=4){let y=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];br+=y;if(y>245)gl++}return{brightness:br/n,glare:gl/n*100,w:c.width,h:c.height}}
-function summarize(name,arr){if(!arr.length)return `${name}: no images uploaded`;let ss=arr.map(o=>stat(o.img));let avg=k=>ss.reduce((a,b)=>a+b[k],0)/ss.length;return `${name}: ${arr.length} image(s)\n- Glare/hotspot estimate: ${avg('glare').toFixed(2)}% ${avg('glare')>3?'⚠ review lighting/glare':'✓ low'}\n- Brightness: ${avg('brightness').toFixed(1)} ${avg('brightness')<55?'⚠ possibly dark':avg('brightness')>210?'⚠ possibly overexposed':'✓ usable'}`}
-$('#runDeep').onclick=()=>{let parts=[];parts.push(summarize('Flat front',deep.flatFront?[deep.flatFront]:[]));parts.push(summarize('Flat back',deep.flatBack?[deep.flatBack]:[]));parts.push(summarize('Angled front',deep.angledFront));parts.push(summarize('Angled back',deep.angledBack));parts.push('\nSurface/defect pre-screen notes:\n- Review bright edge activity as possible whitening.\n- Review angled-photo hot spots for scratches, print lines, dents, or gloss interruptions.\n- This tool flags risk; it does not guarantee PSA/CGC/BGS outcome.');$('#deepOut').textContent=parts.join('\n\n')};
-$('#exportDeep').onclick=()=>download('deep_review_summary.txt',$('#deepOut').textContent,'text/plain');$('#clearDeep').onclick=()=>location.reload();
-function download(name,text,type){let b=new Blob([text],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
-function resize(){let w=Math.min(innerWidth-24,1100);canvas.width=w*devicePixelRatio;canvas.height=Math.max(520,innerHeight*.56)*devicePixelRatio;canvas.style.width=w+'px';canvas.style.height=(canvas.height/devicePixelRatio)+'px';draw()}
-addEventListener('resize',resize);resize();
+    if (!ENDPOINT) {
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('formSuccess').classList.add('show');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const data = Object.fromEntries(new FormData(e.target));
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        document.getElementById('formContent').style.display = 'none';
+        document.getElementById('formSuccess').classList.add('show');
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Something went wrong — try emailing directly';
+      }
+    } catch {
+      btn.disabled = false;
+      btn.textContent = 'Something went wrong — try emailing directly';
+    }
+  }
 </script>
 </body>
 </html>
