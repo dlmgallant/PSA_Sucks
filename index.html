@@ -379,19 +379,28 @@ function parseAndRender(text){
 
   // Helper to detect sentiment
   function getBadge(key,content){
-    const low=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
-    const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe/i;
-    const warn=/minor|slight|faint|small|mild|possible|possible|review/i;
-    if(key==='submit'){
-      if(/yes|definitely|recommend|worth/i.test(content))return{cls:'badge-good',label:'✓ Submit'};
-      if(/no|don't|skip|not worth/i.test(content))return{cls:'badge-bad',label:'✗ Skip'};
-      return{cls:'badge-warn',label:'⚠ Maybe'};
-    }
-    if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
-    if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
-    if(low.test(content))return{cls:'badge-good',label:'Looks good'};
+  if(key==='submit'){
+    if(/yes|definitely|recommend|worth/i.test(content))return{cls:'badge-good',label:'✓ Submit'};
+    if(/no|don't|skip|not worth/i.test(content))return{cls:'badge-bad',label:'✗ Skip'};
+    return{cls:'badge-warn',label:'⚠ Maybe'};
+  }
+  if(key==='grade'){
+    const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
+    if(psa)return{cls:'badge-warn',label:'PSA '+psa[1]};
     return{cls:'badge-neutral',label:'See notes'};
   }
+  if(key==='centering'){
+    const ratio=content.match(/([0-9]+)\s*\/\s*([0-9]+)/);
+    if(ratio)return{cls:'badge-neutral',label:ratio[0]};
+  }
+  const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe/i;
+  const warn=/minor|slight|faint|small|mild/i;
+  const good=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
+  if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
+  if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
+  if(good.test(content))return{cls:'badge-good',label:'Clean'};
+  return{cls:'badge-neutral',label:'See notes'};
+}
 
   // Extract grade estimates
   function extractGrades(content){
