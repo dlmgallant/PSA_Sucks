@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -50,54 +49,44 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
 .good{color:var(--success)}.warn{color:var(--warning)}.bad{color:var(--danger)}
 .summary{background:var(--panel2);border-radius:var(--rad);padding:12px;font-size:12px;line-height:1.7;color:var(--muted);border:1px solid var(--border)}
 .summary b{color:var(--text);font-weight:600}
-
-/* AI output styled */
-.ai-wrap{background:#07090f;border:1px solid var(–border);border-radius:var(–rad-lg);overflow:hidden}
-.ai-header{padding:10px 14px;border-bottom:1px solid var(–border);display:flex;align-items:center;gap:8px;background:#0a0c14}
-.ai-dot{width:7px;height:7px;border-radius:50%;background:var(–muted)}
-.ai-dot.live{background:var(–success);animation:pulse 2s infinite}
-.ai-dot.thinking{background:var(–warning);animation:pulse .7s infinite}
+.ai-wrap{background:#07090f;border:1px solid var(--border);border-radius:var(--rad-lg);overflow:hidden}
+.ai-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:#0a0c14}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.ai-dot.live{background:var(--success);animation:pulse 2s infinite}
+.ai-dot.thinking{background:var(--warning);animation:pulse .7s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.ai-label{font-size:11px;font-weight:700;color:var(–muted);letter-spacing:.06em;text-transform:uppercase}
-.ai-status{font-size:11px;color:var(–muted);margin-left:auto}
+.ai-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.ai-status{font-size:11px;color:var(--muted);margin-left:auto}
 .ai-body{padding:14px;min-height:80px}
-.ai-body.placeholder{color:var(–muted);font-style:italic;padding:16px}
-.ai-body.raw{font-size:13px;line-height:1.8;color:#c8d4e8;white-space:pre-wrap;max-height:520px;overflow-y:auto}
-
-/* Styled sections */
+.ai-body.placeholder{color:var(--muted);font-style:italic;padding:16px}
+.ai-body.raw{font-size:13px;line-height:1.8;color:#c8d4e8;white-space:pre-wrap;max-height:520px;overflow-y:auto;padding:16px}
 .ai-sections{display:flex;flex-direction:column;gap:10px}
-.ai-section{background:var(–panel2);border-radius:var(–rad);border:1px solid var(–border);overflow:hidden}
-.ai-section-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(–border)}
+.ai-section{background:var(--panel2);border-radius:var(--rad);border:1px solid var(--border);overflow:hidden}
+.ai-section-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border)}
 .ai-section-icon{font-size:18px;line-height:1;flex-shrink:0}
 .ai-section-title{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;flex:1}
 .ai-section-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;white-space:nowrap}
-.badge-good{background:#0d2a18;color:var(–success);border:1px solid #1a4a2a}
-.badge-warn{background:#2a1e08;color:var(–warning);border:1px solid #4a3510}
-.badge-bad{background:#2a0d0d;color:var(–danger);border:1px solid #4a1a1a}
-.badge-neutral{background:#151a25;color:var(–muted);border:1px solid var(–border2)}
+.badge-good{background:#0d2a18;color:var(--success);border:1px solid #1a4a2a}
+.badge-warn{background:#2a1e08;color:var(--warning);border:1px solid #4a3510}
+.badge-bad{background:#2a0d0d;color:var(--danger);border:1px solid #4a1a1a}
+.badge-neutral{background:#151a25;color:var(--muted);border:1px solid var(--border2)}
 .ai-section-body{padding:12px 14px;font-size:13px;line-height:1.75;color:#b8c8e0}
 .ai-section-body p{margin-bottom:8px}
 .ai-section-body p:last-child{margin-bottom:0}
-.ai-section-body strong{color:var(–text);font-weight:600}
-
-/* Grade estimate grid */
-.grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
-.grade-item{background:#0d1018;border-radius:var(–rad);padding:10px;text-align:center;border:1px solid var(–border)}
-.grade-item .gi-label{font-size:10px;color:var(–muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
-.grade-item .gi-val{font-size:16px;font-weight:700;color:var(–warning)}
-
-/* Submit box */
-.submit-box{margin-top:4px;padding:12px;border-radius:var(–rad);font-size:13px;line-height:1.65}
+.ai-section-body strong{color:var(--text);font-weight:600}
+.grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.grade-item{background:#0d1018;border-radius:var(--rad);padding:10px;text-align:center;border:1px solid var(--border)}
+.grade-item .gi-label{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.grade-item .gi-val{font-size:16px;font-weight:700;color:var(--warning)}
+.submit-box{margin-top:4px;padding:12px;border-radius:var(--rad);font-size:13px;line-height:1.65}
 .submit-yes{background:#0a1f10;border:1px solid #1a4a25;color:#6de8a0}
 .submit-no{background:#1f0a0a;border:1px solid #4a1a1a;color:#ff8080}
 .submit-maybe{background:#1f1a0a;border:1px solid #4a3a10;color:#f0c060}
-
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff18;border-top-color:var(–info);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff18;border-top-color:var(--info);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.free-badge{display:inline-block;background:#0d2a0d;color:var(–success);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid #1a4a1a;letter-spacing:.04em;vertical-align:middle;margin-left:6px}
+.free-badge{display:inline-block;background:#0d2a0d;color:var(--success);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid #1a4a1a;letter-spacing:.04em;vertical-align:middle;margin-left:6px}
 @media(max-width:600px){.results{grid-template-columns:1fr}.grade-grid{grid-template-columns:1fr}}
 </style>
-
 </head>
 <body>
 <header>
@@ -334,127 +323,108 @@ function exportCsv(){
   dl('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv');
 }
 
-// ── Parse and render AI response ──
+// ── Parse and render AI response into styled sections ──
 function parseAndRender(text){
   const out=$('#deepOut');
   out.className='ai-body';
 
-  // Try to extract sections
   const sectionDefs=[
-    {key:'centering', icon:'📐', title:'Centering', patterns:[/1\.\s*CENTERING/i,/CENTERING/i]},
-    {key:'surface',   icon:'🔍', title:'Surface Condition', patterns:[/2\.\s*SURFACE/i,/SURFACE/i]},
-    {key:'edges',     icon:'📏', title:'Edges', patterns:[/3\.\s*EDGES/i,/EDGES/i]},
-    {key:'corners',   icon:'🔲', title:'Corners', patterns:[/4\.\s*CORNERS/i,/CORNERS/i]},
-    {key:'grade',     icon:'🏆', title:'Grade Estimate', patterns:[/5\.\s*OVERALL/i,/OVERALL GRADE/i,/GRADE ESTIMATE/i]},
-    {key:'submit',    icon:'📬', title:'Submit Recommendation', patterns:[/6\.\s*SUBMIT/i,/SUBMIT/i]},
+    {key:'centering',icon:'📐',title:'Centering',patterns:[/1\.\s*CENTERING/i]},
+    {key:'surface',icon:'🔍',title:'Surface Condition',patterns:[/2\.\s*SURFACE/i]},
+    {key:'edges',icon:'📏',title:'Edges',patterns:[/3\.\s*EDGES/i]},
+    {key:'corners',icon:'🔲',title:'Corners',patterns:[/4\.\s*CORNERS/i]},
+    {key:'grade',icon:'🏆',title:'Grade Estimate',patterns:[/5\.\s*OVERALL/i]},
+    {key:'submit',icon:'📬',title:'Submit Recommendation',patterns:[/6\.\s*SUBMIT/i]},
   ];
 
-  // Split text into sections
   const lines=text.split('\n');
-  let sections={};
-  let currentKey=null;
-  let currentLines=[];
+  const sections={};
+  let currentKey=null,currentLines=[];
 
   for(const line of lines){
     let matched=false;
     for(const def of sectionDefs){
       if(def.patterns.some(p=>p.test(line))){
         if(currentKey)sections[currentKey]=currentLines.join('\n').trim();
-        currentKey=def.key;
-        currentLines=[line];
-        matched=true;
-        break;
+        currentKey=def.key;currentLines=[line];matched=true;break;
       }
     }
     if(!matched&&currentKey)currentLines.push(line);
   }
   if(currentKey)sections[currentKey]=currentLines.join('\n').trim();
 
-  // If we couldn't parse sections, just show raw
   if(Object.keys(sections).length<2){
-    out.className='ai-body raw';
-    out.textContent=text;
-    return;
+    out.className='ai-body raw';out.textContent=text;return;
   }
 
-  // Helper to detect sentiment
   function getBadge(key,content){
-  if(key==='submit'){
-    if(/yes|definitely|recommend|worth/i.test(content))return{cls:'badge-good',label:'✓ Submit'};
-    if(/no|don't|skip|not worth/i.test(content))return{cls:'badge-bad',label:'✗ Skip'};
-    return{cls:'badge-warn',label:'⚠ Maybe'};
-  }
-  if(key==='grade'){
-    const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
-    if(psa)return{cls:'badge-warn',label:'PSA '+psa[1]};
+    if(key==='submit'){
+      if(/yes|definitely|recommend|worth/i.test(content))return{cls:'badge-good',label:'✓ Submit'};
+      if(/\bno\b|don't|skip|not worth/i.test(content))return{cls:'badge-bad',label:'✗ Skip'};
+      return{cls:'badge-warn',label:'⚠ Maybe'};
+    }
+    if(key==='grade'){
+      const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
+      if(psa)return{cls:'badge-warn',label:'PSA '+psa[1].trim()};
+      return{cls:'badge-neutral',label:'See notes'};
+    }
+    if(key==='centering'){
+      const ratio=content.match(/([4-6][0-9])\s*\/\s*([4-6][0-9])/);
+      if(ratio)return{cls:'badge-neutral',label:ratio[0]};
+      if(/60\/40|55\/45|50\/50/i.test(content))return{cls:'badge-good',label:'Well centered'};
+    }
+    const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe/i;
+    const warn=/minor|slight|faint|small|mild/i;
+    const good=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
+    if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
+    if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
+    if(good.test(content))return{cls:'badge-good',label:'Clean'};
     return{cls:'badge-neutral',label:'See notes'};
   }
-  if(key==='centering'){
-    const ratio=content.match(/([0-9]+)\s*\/\s*([0-9]+)/);
-    if(ratio)return{cls:'badge-neutral',label:ratio[0]};
-  }
-  const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe/i;
-  const warn=/minor|slight|faint|small|mild/i;
-  const good=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
-  if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
-  if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
-  if(good.test(content))return{cls:'badge-good',label:'Clean'};
-  return{cls:'badge-neutral',label:'See notes'};
-}
 
-  // Extract grade estimates
   function extractGrades(content){
     const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
     const bgs=content.match(/BGS[:\s]*([0-9]+(?:\.[0-9]+)?(?:\s*[-–]\s*[0-9]+(?:\.[0-9]+)?)?)/i);
     const cgc=content.match(/CGC[:\s]*([0-9]+(?:\.[0-9]+)?(?:\s*[-–]\s*[0-9]+(?:\.[0-9]+)?)?)/i);
-    return{psa:psa?psa[1]:null,bgs:bgs?bgs[1]:null,cgc:cgc?cgc[1]:null};
+    return{psa:psa?psa[1].trim():null,bgs:bgs?bgs[1].trim():null,cgc:cgc?cgc[1].trim():null};
   }
 
-  // Clean up content — remove the section header line and markdown
   function cleanContent(content){
-    return content
-      .split('\n')
-      .slice(1) // remove header line
-      .join('\n')
+    return content.split('\n').slice(1).join('\n')
       .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
       .replace(/\*(.+?)\*/g,'<em>$1</em>')
-      .replace(/^\s*[-•]\s*/gm,'• ')
+      .replace(/^\s*[-•*]\s*/gm,'• ')
       .trim();
   }
 
   const html=['<div class="ai-sections">'];
-
   for(const def of sectionDefs){
     const content=sections[def.key];
     if(!content)continue;
     const badge=getBadge(def.key,content);
     const cleaned=cleanContent(content);
-    const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
-
-    html.push(`<div class="ai-section">`);
-    html.push(`<div class="ai-section-head"><span class="ai-section-icon">${def.icon}</span><span class="ai-section-title">${def.title}</span><span class="ai-section-badge ${badge.cls}">${badge.label}</span></div>`);
-    html.push(`<div class="ai-section-body">`);
-
+    const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
+    html.push('<div class="ai-section">');
+    html.push('<div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div>');
+    html.push('<div class="ai-section-body">');
     if(def.key==='grade'){
-      const grades=extractGrades(content);
-      if(grades.psa||grades.bgs||grades.cgc){
+      const g=extractGrades(content);
+      if(g.psa||g.bgs||g.cgc){
         html.push('<div class="grade-grid">');
-        if(grades.psa)html.push(`<div class="grade-item"><div class="gi-label">PSA</div><div class="gi-val">${grades.psa}</div></div>`);
-        if(grades.bgs)html.push(`<div class="grade-item"><div class="gi-label">BGS</div><div class="gi-val">${grades.bgs}</div></div>`);
-        if(grades.cgc)html.push(`<div class="grade-item"><div class="gi-label">CGC</div><div class="gi-val">${grades.cgc}</div></div>`);
+        if(g.psa)html.push('<div class="grade-item"><div class="gi-label">PSA</div><div class="gi-val">'+g.psa+'</div></div>');
+        if(g.bgs)html.push('<div class="grade-item"><div class="gi-label">BGS</div><div class="gi-val">'+g.bgs+'</div></div>');
+        if(g.cgc)html.push('<div class="grade-item"><div class="gi-label">CGC</div><div class="gi-val">'+g.cgc+'</div></div>');
         html.push('</div>');
       }
       html.push(paras);
     } else if(def.key==='submit'){
-      const submitCls=badge.cls==='badge-good'?'submit-yes':badge.cls==='badge-bad'?'submit-no':'submit-maybe';
-      html.push(`<div class="submit-box ${submitCls}">${paras}</div>`);
+      const sc=badge.cls==='badge-good'?'submit-yes':badge.cls==='badge-bad'?'submit-no':'submit-maybe';
+      html.push('<div class="submit-box '+sc+'">'+paras+'</div>');
     } else {
       html.push(paras);
     }
-
     html.push('</div></div>');
   }
-
   html.push('</div>');
   out.innerHTML=html.join('');
 }
@@ -473,18 +443,18 @@ wireUpload('#inDF','ff','#dnFF','#uzAF',false);
 wireUpload('#inDB','fb','#dnFB','#uzAB',false);
 wireUpload('#inDA','angled','#dnA','#uzAA',true);
 
-function compressFile(file){
+function compressFile(file,quality,maxPx){
   return new Promise(function(res,rej){
     const img=new Image();
     img.onload=function(){
-      const MAX=2000;
+      const MAX=maxPx||1600;
       let w=img.width,h=img.height;
       if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
       else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
       const c=document.createElement('canvas');
       c.width=w;c.height=h;
       c.getContext('2d').drawImage(img,0,0,w,h);
-      res(c.toDataURL('image/jpeg',0.92).split(',')[1]);
+      res(c.toDataURL('image/jpeg',quality||0.85).split(',')[1]);
     };
     img.onerror=rej;
     img.src=URL.createObjectURL(file);
@@ -494,10 +464,15 @@ function compressFile(file){
 async function runAI(){
   const out=$('#deepOut'),dot=$('#aiDot'),status=$('#aiStatus'),btn=$('#runBtn');
   const hasAny=deepFiles.ff||deepFiles.fb||(deepFiles.angled&&deepFiles.angled.length);
-  if(!hasAny){out.className='ai-body placeholder';out.textContent='⚠ Upload at least one card photo first.';return}
+  if(!hasAny){out.className='ai-body placeholder';out.textContent='Upload at least one card photo first.';return}
 
   btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Preparing…';
   out.className='ai-body';out.innerHTML='<span class="spinner"></span>Preparing images…';
+
+  // Adaptive quality based on number of images
+  const totalImgs=(deepFiles.ff?1:0)+(deepFiles.fb?1:0)+(deepFiles.angled?deepFiles.angled.length:0);
+  const quality=totalImgs>=4?0.65:totalImgs===3?0.72:totalImgs===2?0.82:0.92;
+  const maxPx=totalImgs>=4?1200:totalImgs===3?1400:1600;
 
   try{
     const parts=[];
@@ -505,20 +480,20 @@ async function runAI(){
 
     if(deepFiles.ff){
       status.textContent='Processing front…';
-      const b64=await compressFile(deepFiles.ff);
+      const b64=await compressFile(deepFiles.ff,quality,maxPx);
       parts.push({text:'FLAT FRONT:'});
       parts.push({inlineData:{mimeType:'image/jpeg',data:b64}});
     }
     if(deepFiles.fb){
       status.textContent='Processing back…';
-      const b64=await compressFile(deepFiles.fb);
+      const b64=await compressFile(deepFiles.fb,quality,maxPx);
       parts.push({text:'FLAT BACK:'});
       parts.push({inlineData:{mimeType:'image/jpeg',data:b64}});
     }
     if(deepFiles.angled&&deepFiles.angled.length){
       for(let i=0;i<deepFiles.angled.length;i++){
         status.textContent='Processing angled '+(i+1)+'…';
-        const b64=await compressFile(deepFiles.angled[i]);
+        const b64=await compressFile(deepFiles.angled[i],quality,maxPx);
         parts.push({text:'ANGLED PHOTO '+(i+1)+':'});
         parts.push({inlineData:{mimeType:'image/jpeg',data:b64}});
       }
@@ -539,7 +514,9 @@ async function runAI(){
     }
 
     const data=await resp.json();
-    const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim():'No response received.';
+    const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts
+      ?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim()
+      :'No response received.';
 
     lastRawText=text;
     dot.className='ai-dot live';status.textContent='Done';
@@ -571,6 +548,5 @@ function dl(name,text,type){const b=new Blob([text],{type:type});const a=documen
 
 setTimeout(resizeCanvas,60);
 </script>
-
 </body>
 </html>
