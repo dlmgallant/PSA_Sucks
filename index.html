@@ -1,1651 +1,448 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Squirrel Girl Curls · Paige Rosenberg · Fitness Coach</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
 <style>
-  :root {
-    --pink: #f472b6;
-    --pink-light: #fce7f3;
-    --pink-mid: #fbcfe8;
-    --pink-dark: #be185d;
-    --black: #0a0a0a;
-    --off-white: #fdf8f9;
-    --gray: #71717a;
-    --card-radius: 24px;
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--off-white);
-    color: var(--black);
-    font-size: 16px;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-
-  h1, h2, h3, h4 {
-    font-family: 'Playfair Display', serif;
-    line-height: 1.15;
-  }
-
-  a { text-decoration: none; color: inherit; }
-
-  img { max-width: 100%; display: block; }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  /* ── ANIMATIONS ── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-8px); }
-  }
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-
-  .fade-up { animation: fadeUp 0.7s ease both; }
-  .fade-up-2 { animation: fadeUp 0.7s 0.15s ease both; }
-  .fade-up-3 { animation: fadeUp 0.7s 0.3s ease both; }
-  .fade-up-4 { animation: fadeUp 0.7s 0.45s ease both; }
-
-  /* ── NAV ── */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(253, 248, 249, 0.92);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--pink-mid);
-    padding: 16px 0;
-  }
-
-  .nav-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .nav-logo-icon {
-    width: 42px;
-    height: 42px;
-    background: var(--black);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 13px;
-    color: var(--pink);
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    animation: float 4s ease-in-out infinite;
-  }
-
-  .nav-logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    font-weight: 700;
-  }
-
-  .nav-logo-sub {
-    font-size: 11px;
-    color: var(--gray);
-    font-weight: 300;
-    letter-spacing: 0.03em;
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--gray);
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--black); }
-
-  .nav-cta {
-    background: var(--black);
-    color: #fff !important;
-    padding: 10px 22px;
-    border-radius: 99px;
-    font-size: 13px !important;
-    font-weight: 500 !important;
-    transition: opacity 0.2s !important;
-  }
-
-  .nav-cta:hover { opacity: 0.85 !important; }
-
-  .nav-hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 4px;
-  }
-
-  .nav-hamburger span {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--black);
-    border-radius: 2px;
-    transition: all 0.3s;
-  }
-
-  .nav-mobile {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px 0;
-    border-top: 1px solid var(--pink-mid);
-    margin-top: 12px;
-  }
-
-  .nav-mobile.open { display: flex; }
-  .nav-mobile a { font-size: 15px; font-weight: 500; padding: 4px 0; }
-
-  @media (max-width: 768px) {
-    .nav-links { display: none; }
-    .nav-hamburger { display: flex; }
-  }
-
-  /* ── HERO ── */
-  .hero {
-    padding: 80px 0 60px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -120px;
-    right: -180px;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, #fce7f3 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--pink-light);
-    border: 1px solid var(--pink-mid);
-    color: var(--pink-dark);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 6px 16px;
-    border-radius: 99px;
-    margin-bottom: 20px;
-  }
-
-  .hero-eyebrow-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--pink);
-    border-radius: 50%;
-  }
-
-  .hero h1 {
-    font-size: clamp(42px, 6vw, 68px);
-    color: var(--black);
-    margin-bottom: 20px;
-  }
-
-  .hero h1 em {
-    font-style: italic;
-    color: var(--pink-dark);
-  }
-
-  .hero-desc {
-    font-size: 17px;
-    color: var(--gray);
-    line-height: 1.75;
-    max-width: 480px;
-    font-weight: 300;
-    margin-bottom: 36px;
-  }
-
-  .hero-btns {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 48px;
-  }
-
-  .btn-primary {
-    background: var(--black);
-    color: #fff;
-    padding: 14px 28px;
-    border-radius: 99px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: opacity 0.2s, transform 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
-
-  .btn-secondary {
-    background: #fff;
-    color: var(--black);
-    padding: 14px 28px;
-    border-radius: 99px;
-    font-size: 14px;
-    font-weight: 500;
-    border: 1.5px solid var(--pink-mid);
-    transition: background 0.2s, transform 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-secondary:hover { background: var(--pink-light); transform: translateY(-1px); }
-
-  .hero-stats {
-    display: flex;
-    gap: 36px;
-    flex-wrap: wrap;
-  }
-
-  .hero-stat-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--black);
-  }
-
-  .hero-stat-label {
-    font-size: 12px;
-    color: var(--gray);
-    font-weight: 300;
-    margin-top: 2px;
-  }
-
-  .hero-right {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-
-  .hero-card {
-    border-radius: var(--card-radius);
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-card-dark {
-    background: var(--black);
-    color: #fff;
-    grid-column: span 2;
-    padding: 32px;
-  }
-
-  .hero-card-dark .card-label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--pink);
-    margin-bottom: 10px;
-  }
-
-  .hero-card-dark h3 {
-    font-size: 22px;
-    color: #fff;
-    margin-bottom: 10px;
-  }
-
-  .hero-card-dark p {
-    font-size: 13px;
-    color: #d4d4d8;
-    font-weight: 300;
-    line-height: 1.7;
-  }
-
-  .hero-card-photo {
-    background: var(--pink-light);
-    border: 2px dashed var(--pink-mid);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 160px;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .photo-icon {
-    width: 44px;
-    height: 44px;
-    background: var(--pink-mid);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-
-  .hero-card-photo p {
-    font-size: 12px;
-    color: var(--gray);
-    font-weight: 300;
-  }
-
-  .hero-card-pink {
-    background: var(--pink);
-    color: #fff;
-  }
-
-  .hero-card-pink .card-label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.7);
-    margin-bottom: 8px;
-  }
-
-  .hero-card-pink h4 {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    color: #fff;
-    margin-bottom: 8px;
-  }
-
-  .hero-card-pink p {
-    font-size: 12px;
-    color: rgba(255,255,255,0.85);
-    font-weight: 300;
-    line-height: 1.6;
-  }
-
-  @media (max-width: 768px) {
-    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-    .hero::before { display: none; }
-  }
-
-  /* ── SECTION BASE ── */
-  section { padding: 80px 0; }
-
-  .section-eyebrow {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--pink-dark);
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-size: clamp(28px, 4vw, 42px);
-    margin-bottom: 16px;
-  }
-
-  .section-desc {
-    font-size: 16px;
-    color: var(--gray);
-    font-weight: 300;
-    max-width: 520px;
-    line-height: 1.75;
-    margin-bottom: 48px;
-  }
-
-  /* ── ABOUT ── */
-  .about { background: #fff; }
-
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: start;
-  }
-
-  .about-text p {
-    font-size: 16px;
-    color: var(--gray);
-    font-weight: 300;
-    line-height: 1.8;
-    margin-bottom: 20px;
-  }
-
-  .about-accs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-top: 32px;
-  }
-
-  .acc-card {
-    background: var(--off-white);
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid var(--pink-mid);
-    transition: transform 0.2s, border-color 0.2s;
-  }
-
-  .acc-card:hover { transform: translateY(-3px); border-color: var(--pink); }
-
-  .acc-icon {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-
-  .acc-title {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-
-  .acc-sub {
-    font-size: 12px;
-    color: var(--gray);
-    font-weight: 300;
-  }
-
-  .about-photo-placeholder {
-    background: var(--pink-light);
-    border-radius: var(--card-radius);
-    border: 2px dashed var(--pink-mid);
-    min-height: 420px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    text-align: center;
-    padding: 32px;
-  }
-
-  .about-photo-placeholder .photo-icon { width: 60px; height: 60px; font-size: 28px; }
-
-  .about-photo-placeholder p {
-    font-size: 13px;
-    color: var(--gray);
-    font-weight: 300;
-  }
-
-  @media (max-width: 768px) {
-    .about-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ── SERVICES ── */
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .service-card {
-    background: #fff;
-    border-radius: var(--card-radius);
-    padding: 32px 28px;
-    border: 1px solid var(--pink-mid);
-    transition: transform 0.25s, box-shadow 0.25s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .service-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--pink);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s;
-  }
-
-  .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(244,114,182,0.15); }
-  .service-card:hover::after { transform: scaleX(1); }
-
-  .service-icon-wrap {
-    width: 52px;
-    height: 52px;
-    background: var(--pink-light);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  .service-card h3 {
-    font-size: 20px;
-    margin-bottom: 12px;
-  }
-
-  .service-card p {
-    font-size: 14px;
-    color: var(--gray);
-    font-weight: 300;
-    line-height: 1.75;
-    margin-bottom: 16px;
-  }
-
-  .service-tag {
-    display: inline-block;
-    background: var(--pink-light);
-    color: var(--pink-dark);
-    font-size: 11px;
-    font-weight: 500;
-    padding: 4px 12px;
-    border-radius: 99px;
-  }
-
-  @media (max-width: 768px) {
-    .services-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ── CLIENT WINS ── */
-  .wins { background: var(--black); color: #fff; }
-
-  .wins .section-eyebrow { color: var(--pink); }
-  .wins .section-title { color: #fff; }
-  .wins .section-desc { color: #a1a1aa; }
-
-  .wins-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .win-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--card-radius);
-    padding: 28px;
-    transition: background 0.2s, border-color 0.2s;
-  }
-
-  .win-card:hover {
-    background: rgba(244,114,182,0.08);
-    border-color: rgba(244,114,182,0.3);
-  }
-
-  .win-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--pink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
-    margin-bottom: 16px;
-    font-family: 'Playfair Display', serif;
-  }
-
-  .win-name { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px; }
-  .win-result { font-size: 12px; color: var(--pink); margin-bottom: 16px; font-weight: 500; }
-
-  .win-quote {
-    font-size: 14px;
-    color: #a1a1aa;
-    font-weight: 300;
-    line-height: 1.75;
-    font-style: italic;
-    margin-bottom: 16px;
-  }
-
-  .win-stars { color: var(--pink); font-size: 13px; letter-spacing: 2px; }
-
-  .wins-proof {
-    margin-top: 48px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 20px;
-    overflow: hidden;
-  }
-
-  .proof-stat {
-    background: rgba(255,255,255,0.04);
-    padding: 36px;
-    text-align: center;
-  }
-
-  .proof-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 42px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--pink) 0%, #fff 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 3s linear infinite;
-  }
-
-  .proof-label { font-size: 13px; color: #a1a1aa; font-weight: 300; margin-top: 6px; }
-
-  @media (max-width: 768px) {
-    .wins-grid { grid-template-columns: 1fr; }
-    .wins-proof { grid-template-columns: 1fr; }
-  }
-
-  /* ── COOKBOOK ── */
-  .cookbook { background: #fff; }
-
-  .cookbook-layout {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 48px;
-    align-items: start;
-  }
-
-  .cookbook-feature {
-    background: var(--black);
-    border-radius: var(--card-radius);
-    padding: 48px 40px;
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .cookbook-feature::before {
-    content: '';
-    position: absolute;
-    top: -60px; right: -60px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(244,114,182,0.2) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .cookbook-feature .section-eyebrow { color: var(--pink); }
-  .cookbook-feature h2 { color: #fff; font-size: 32px; margin-bottom: 16px; }
-  .cookbook-feature p { font-size: 14px; color: #a1a1aa; font-weight: 300; line-height: 1.8; margin-bottom: 24px; }
-
-  .cookbook-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 28px;
-  }
-
-  .cookbook-tag {
-    background: rgba(244,114,182,0.15);
-    color: var(--pink);
-    border: 1px solid rgba(244,114,182,0.3);
-    font-size: 11px;
-    font-weight: 500;
-    padding: 6px 14px;
-    border-radius: 99px;
-  }
-
-  .cookbook-lock {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 12px;
-    padding: 12px 18px;
-    font-size: 13px;
-    color: #d4d4d8;
-    font-weight: 300;
-  }
-
-  .cookbook-categories {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .cookbook-cat {
-    background: var(--off-white);
-    border-radius: 18px;
-    padding: 22px 20px;
-    border: 1px solid var(--pink-mid);
-    transition: transform 0.2s, border-color 0.2s;
-    cursor: default;
-  }
-
-  .cookbook-cat:hover { transform: translateY(-3px); border-color: var(--pink); }
-
-  .cookbook-cat-emoji { font-size: 24px; margin-bottom: 10px; }
-  .cookbook-cat-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-  .cookbook-cat-desc { font-size: 12px; color: var(--gray); font-weight: 300; line-height: 1.5; margin-bottom: 8px; }
-  .cookbook-cat-count { font-size: 11px; color: var(--pink-dark); font-weight: 500; }
-
-  @media (max-width: 768px) {
-    .cookbook-layout { grid-template-columns: 1fr; }
-  }
-
-  /* ── PLANS ── */
-  .plans { background: var(--off-white); }
-
-  .plans-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .plan-card {
-    background: #fff;
-    border-radius: var(--card-radius);
-    padding: 32px 28px;
-    border: 1.5px solid var(--pink-mid);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s;
-  }
-
-  .plan-card:hover { transform: translateY(-4px); }
-
-  .plan-card.featured {
-    background: var(--black);
-    border-color: var(--black);
-    color: #fff;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .plan-card.featured::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 160px; height: 160px;
-    background: radial-gradient(circle, rgba(244,114,182,0.2) 0%, transparent 70%);
-  }
-
-  .plan-badge {
-    display: inline-block;
-    background: var(--pink);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 4px 12px;
-    border-radius: 99px;
-    margin-bottom: 16px;
-    width: fit-content;
-  }
-
-  .plan-name { font-size: 20px; margin-bottom: 8px; }
-  .plan-card.featured .plan-name { color: #fff; }
-
-  .plan-price {
-    font-family: 'Playfair Display', serif;
-    font-size: 40px;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 4px;
-  }
-
-  .plan-card.featured .plan-price { color: var(--pink); }
-
-  .plan-period { font-size: 13px; color: var(--gray); font-weight: 300; margin-bottom: 16px; }
-  .plan-card.featured .plan-period { color: #a1a1aa; }
-
-  .plan-desc { font-size: 13px; color: var(--gray); font-weight: 300; line-height: 1.7; margin-bottom: 20px; }
-  .plan-card.featured .plan-desc { color: #a1a1aa; }
-
-  .plan-features {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 28px;
-    flex: 1;
-  }
-
-  .plan-features li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: var(--gray);
-    font-weight: 300;
-  }
-
-  .plan-card.featured .plan-features li { color: #d4d4d8; }
-
-  .plan-features li::before {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--pink-light);
-    border: 1.5px solid var(--pink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23be185d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  }
-
-  .plan-card.featured .plan-features li::before {
-    background-color: rgba(244,114,182,0.2);
-    border-color: var(--pink);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23f472b6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  }
-
-  .plan-btn {
-    display: block;
-    text-align: center;
-    padding: 14px;
-    border-radius: 99px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: opacity 0.2s, transform 0.2s;
-  }
-
-  .plan-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-
-  .plan-card:not(.featured) .plan-btn {
-    background: var(--black);
-    color: #fff;
-  }
-
-  .plan-card.featured .plan-btn {
-    background: var(--pink);
-    color: #fff;
-  }
-
-  @media (max-width: 768px) {
-    .plans-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ── FAQ ── */
-  .faq { background: #fff; }
-
-  .faq-list { display: flex; flex-direction: column; gap: 12px; max-width: 720px; }
-
-  .faq-item {
-    background: var(--off-white);
-    border: 1px solid var(--pink-mid);
-    border-radius: 18px;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-
-  .faq-item.open { border-color: var(--pink); }
-
-  .faq-q {
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 20px 24px;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--black);
-  }
-
-  .faq-chevron {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--pink-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.3s, background 0.2s;
-    font-size: 12px;
-    color: var(--pink-dark);
-  }
-
-  .faq-item.open .faq-chevron { transform: rotate(180deg); background: var(--pink); color: #fff; }
-
-  .faq-a {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease, padding 0.2s;
-    padding: 0 24px;
-    font-size: 14px;
-    color: var(--gray);
-    font-weight: 300;
-    line-height: 1.8;
-  }
-
-  .faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
-
-  /* ── CONTACT ── */
-  .contact { background: var(--off-white); }
-
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 0.9fr 1.1fr;
-    gap: 48px;
-    align-items: start;
-  }
-
-  .contact-info h2 { margin-bottom: 16px; }
-  .contact-info p { font-size: 15px; color: var(--gray); font-weight: 300; line-height: 1.8; margin-bottom: 28px; }
-
-  .contact-email {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    border: 1px solid var(--pink-mid);
-    border-radius: 14px;
-    padding: 14px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    transition: border-color 0.2s;
-    margin-bottom: 20px;
-  }
-
-  .contact-email:hover { border-color: var(--pink); }
-
-  .contact-social {
-    background: var(--black);
-    border-radius: 20px;
-    padding: 24px;
-    color: #fff;
-    margin-bottom: 20px;
-  }
-
-  .contact-social-label { font-size: 11px; color: var(--pink); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
-  .contact-social h4 { font-size: 16px; color: #fff; margin-bottom: 8px; }
-  .contact-social p { font-size: 13px; color: #a1a1aa; font-weight: 300; line-height: 1.6; margin-bottom: 12px; }
-  .contact-social a { color: var(--pink); font-size: 13px; font-weight: 500; }
-  .contact-social a:hover { text-decoration: underline; }
-
-  .contact-steps {
-    background: var(--pink-light);
-    border: 1px solid var(--pink-mid);
-    border-radius: 20px;
-    padding: 24px;
-  }
-
-  .contact-steps h4 { font-size: 15px; margin-bottom: 16px; }
-
-  .contact-step {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: var(--gray);
-    font-weight: 300;
-    line-height: 1.6;
-  }
-
-  .step-num {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--pink);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .contact-form {
-    background: #fff;
-    border-radius: var(--card-radius);
-    padding: 36px;
-    border: 1px solid var(--pink-mid);
-  }
-
-  .contact-form h3 { font-size: 22px; margin-bottom: 8px; }
-  .contact-form .form-sub { font-size: 13px; color: var(--gray); font-weight: 300; margin-bottom: 24px; }
-
-  .form-group { margin-bottom: 16px; }
-
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    background: var(--off-white);
-    border: 1.5px solid var(--pink-mid);
-    border-radius: 14px;
-    padding: 14px 16px;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 300;
-    color: var(--black);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .form-group input:focus,
-  .form-group textarea:focus { border-color: var(--pink); }
-
-  .form-group textarea { resize: none; height: 110px; }
-
-  .form-submit {
-    width: 100%;
-    background: var(--black);
-    color: #fff;
-    border: none;
-    border-radius: 99px;
-    padding: 15px;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
-    margin-top: 4px;
-  }
-
-  .form-submit:hover { opacity: 0.85; transform: translateY(-1px); }
-  .form-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  .form-note { font-size: 12px; color: var(--gray); font-weight: 300; text-align: center; margin-top: 10px; }
-
-  .form-success {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 12px;
-    min-height: 280px;
-  }
-
-  .form-success.show { display: flex; }
-  .form-success-icon { font-size: 48px; }
-  .form-success h4 { font-size: 22px; }
-  .form-success p { font-size: 14px; color: var(--gray); font-weight: 300; max-width: 280px; }
-
-  @media (max-width: 768px) {
-    .contact-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    background: var(--black);
-    color: #fff;
-    padding: 40px 0 24px;
-  }
-
-  .footer-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .footer-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; }
-  .footer-tagline { font-size: 12px; color: #71717a; font-weight: 300; margin-top: 4px; }
-
-  .footer-links {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-
-  .footer-links a { font-size: 13px; color: #71717a; font-weight: 300; transition: color 0.2s; }
-  .footer-links a:hover { color: var(--pink); }
-
-  .footer-bottom {
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding-top: 20px;
-    font-size: 12px;
-    color: #52525b;
-    font-weight: 300;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.app{display:flex;flex-direction:column;gap:0;min-height:600px}
+.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);padding:0 1rem}
+.tab{padding:10px 16px;font-size:13px;font-weight:500;border:none;background:none;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.body{padding:1rem;display:flex;flex-direction:column;gap:1rem}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.upload-zone{flex:1;min-width:120px;border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center;cursor:pointer;position:relative;transition:background 0.15s}
+.upload-zone:hover{background:var(--color-background-secondary)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-zone .lbl{font-size:11px;color:var(--color-text-secondary);display:block;margin-top:4px}
+.upload-zone .name{font-size:11px;color:var(--color-text-info);display:block;margin-top:2px;font-weight:500}
+.upload-zone .icon{font-size:18px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn{padding:6px 12px;font-size:12px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);cursor:pointer}
+.btn:hover{background:var(--color-background-secondary)}
+.btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.btn.run{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+.btn.run:hover{opacity:.85}
+canvas-wrap{display:block;border-radius:var(--border-radius-lg);overflow:hidden;border:0.5px solid var(--color-border-tertiary);background:#111;position:relative}
+#cv{display:block;width:100%;cursor:crosshair;touch-action:none}
+.results{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.metric .k{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric .v{font-size:15px;font-weight:500}
+.metric .grade{font-size:11px;margin-top:2px}
+.good{color:var(--color-text-success)}
+.warn{color:var(--color-text-warning)}
+.bad{color:var(--color-text-danger)}
+.summary{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
+.summary b{color:var(--color-text-primary);font-weight:500}
+.sep{height:0.5px;background:var(--color-border-tertiary)}
+.hint{font-size:11px;color:var(--color-text-secondary);line-height:1.5}
+select{font-size:12px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary)}
+.ai-out{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:13px;line-height:1.65;white-space:pre-wrap;min-height:60px}
+.loading{opacity:.5;font-style:italic}
 </style>
-</head>
-<body>
 
-<!-- NAV -->
-<nav>
-  <div class="container">
-    <div class="nav-inner">
-      <a href="#top" class="nav-logo">
-        <div class="nav-logo-icon">SGC</div>
-        <div>
-          <div class="nav-logo-text">Squirrel Girl Curls</div>
-          <div class="nav-logo-sub">Paige Rosenberg · Fitness Coach</div>
-        </div>
-      </a>
-      <ul class="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#results">Results</a></li>
-        <li><a href="#cookbook">Cookbook</a></li>
-        <li><a href="#plans">Plans</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#contact" class="nav-cta">Apply Now</a></li>
-      </ul>
-      <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
+<div class="app">
+<div class="tabs">
+  <button class="tab on" id="tCenter" onclick="switchTab('center')">Centering</button>
+  <button class="tab" id="tDeep" onclick="switchTab('deep')">Pre-grade review</button>
+</div>
+
+<div id="secCenter" class="body">
+  <div class="row">
+    <div class="upload-zone">
+      <div class="icon">📄</div>
+      <div class="lbl">Front scan/photo</div>
+      <div class="name" id="fnFront">tap to load</div>
+      <input type="file" accept="image/*" id="inFront">
     </div>
-    <div class="nav-mobile" id="navMobile">
-      <a href="#about" onclick="closeMenu()">About</a>
-      <a href="#services" onclick="closeMenu()">Services</a>
-      <a href="#results" onclick="closeMenu()">Results</a>
-      <a href="#cookbook" onclick="closeMenu()">Cookbook</a>
-      <a href="#plans" onclick="closeMenu()">Plans</a>
-      <a href="#faq" onclick="closeMenu()">FAQ</a>
-      <a href="#contact" onclick="closeMenu()" class="btn-primary" style="text-align:center;justify-content:center;">Apply Now</a>
+    <div class="upload-zone">
+      <div class="icon">📄</div>
+      <div class="lbl">Back scan/photo</div>
+      <div class="name" id="fnBack">tap to load</div>
+      <input type="file" accept="image/*" id="inBack">
     </div>
   </div>
-</nav>
 
-<!-- HERO -->
-<section id="top" class="hero">
-  <div class="container">
-    <div class="hero-grid">
-      <div>
-        <div class="hero-eyebrow fade-up">
-          <div class="hero-eyebrow-dot"></div>
-          Fitness · Macros · Confidence
-        </div>
-        <h1 class="fade-up-2">
-          Strong Body.<br><em>Real Life</em><br>Habits.
-        </h1>
-        <p class="hero-desc fade-up-3">
-          Coaching by Paige Rosenberg — helping women build real confidence, improve fitness, and master nutrition without extremes, burnout, or confusion.
-        </p>
-        <div class="hero-btns fade-up-4">
-          <a href="#contact" class="btn-primary">Start Coaching →</a>
-          <a href="#plans" class="btn-secondary">View Plans</a>
-        </div>
-        <div class="hero-stats fade-up-4">
-          <div>
-            <div class="hero-stat-num">50+</div>
-            <div class="hero-stat-label">Women coached</div>
-          </div>
-          <div>
-            <div class="hero-stat-num">4.9★</div>
-            <div class="hero-stat-label">Client rating</div>
-          </div>
-          <div>
-            <div class="hero-stat-num">CrossFit</div>
-            <div class="hero-stat-label">Athlete & coach</div>
-          </div>
-        </div>
-      </div>
+  <div class="toolbar">
+    <select id="selSide">
+      <option value="front">Front</option>
+      <option value="back">Back</option>
+    </select>
+    <select id="selGuide">
+      <option value="outer">Red — card edge</option>
+      <option value="inner">Blue — printed border</option>
+    </select>
+    <button class="btn" onclick="fitView()">Fit</button>
+    <button class="btn" onclick="rotateImg()">Rotate</button>
+    <button class="btn" id="btnContrast" onclick="toggleContrast()">Contrast</button>
+    <button class="btn" onclick="resetG()">Reset guides</button>
+    <button class="btn" onclick="exportCsv()">CSV</button>
+  </div>
 
-      <div class="hero-right">
-        <div class="hero-card hero-card-dark">
-          <div class="card-label">Coach Spotlight</div>
-          <h3>Competitive CrossFit Athlete</h3>
-          <p>Paige brings real competition experience, discipline, and a high-performance mindset into practical coaching for everyday women — wherever they're starting from.</p>
-        </div>
-        <div class="hero-card hero-card-photo">
-          <div class="photo-icon">📸</div>
-          <p>Replace with<br>Paige's photo</p>
-        </div>
-        <div class="hero-card hero-card-pink">
-          <div class="card-label">Signature Promise</div>
-          <h4>Macros made simple</h4>
-          <p>Clean structure, clear support, and coaching built for real life.</p>
-        </div>
-      </div>
+  <canvas-wrap><canvas id="cv"></canvas></canvas-wrap>
+
+  <div class="hint">Drag the red handles to the card edge. Drag blue handles to the printed border. Arrow keys nudge the active guide (shift = 10px steps).</div>
+
+  <div class="results" id="results">
+    <div class="metric"><div class="k">Front left/right</div><div class="v" id="rFL">—</div><div class="grade" id="rFLg"></div></div>
+    <div class="metric"><div class="k">Front top/bottom</div><div class="v" id="rFT">—</div><div class="grade" id="rFTg"></div></div>
+    <div class="metric"><div class="k">Back left/right</div><div class="v" id="rBL">—</div><div class="grade" id="rBLg"></div></div>
+    <div class="metric"><div class="k">Back top/bottom</div><div class="v" id="rBT">—</div><div class="grade" id="rBTg"></div></div>
+  </div>
+
+  <div class="summary" id="summary">Load a front and back image, then align the guides to measure centering.</div>
+</div>
+
+<div id="secDeep" class="body" style="display:none">
+  <div class="row">
+    <div class="upload-zone">
+      <div class="icon">🔦</div>
+      <div class="lbl">Flat front</div>
+      <div class="name" id="dnFF">tap to load</div>
+      <input type="file" accept="image/*" id="inDF">
+    </div>
+    <div class="upload-zone">
+      <div class="icon">🔦</div>
+      <div class="lbl">Flat back</div>
+      <div class="name" id="dnFB">tap to load</div>
+      <input type="file" accept="image/*" id="inDB">
+    </div>
+    <div class="upload-zone">
+      <div class="icon">📐</div>
+      <div class="lbl">Angled photos</div>
+      <div class="name" id="dnA">tap to load</div>
+      <input type="file" accept="image/*" multiple id="inDA">
     </div>
   </div>
-</section>
 
-<!-- ABOUT -->
-<section id="about" class="about">
-  <div class="container">
-    <div class="about-grid">
-      <div class="about-text">
-        <p class="section-eyebrow">About Paige</p>
-        <h2 class="section-title">Strong coaching with a <em>feminine, confident edge.</em></h2>
-        <p>Squirrel Girl Curls is built around helping women feel stronger, more confident, and more in control of their routines. Paige combines years of CrossFit competition experience with an approachable, encouraging coaching style that makes fitness and nutrition actually feel achievable.</p>
-        <p>She's competed at a regional level, coached dozens of women across all experience levels, and built her methods around one core belief: <strong>sustainable always beats extreme.</strong></p>
-        <p>You can add her competition accomplishments, certifications, and media features here when ready.</p>
-        <div class="about-accs">
-          <div class="acc-card">
-            <div class="acc-icon">🏆</div>
-            <div class="acc-title">CrossFit Competitor</div>
-            <div class="acc-sub">Regional & local competitions</div>
-          </div>
-          <div class="acc-card">
-            <div class="acc-icon">⚡</div>
-            <div class="acc-title">Certified Coach</div>
-            <div class="acc-sub">Nutrition & strength training</div>
-          </div>
-          <div class="acc-card">
-            <div class="acc-icon">👥</div>
-            <div class="acc-title">50+ Clients</div>
-            <div class="acc-sub">Women of all fitness levels</div>
-          </div>
-          <div class="acc-card">
-            <div class="acc-icon">🥇</div>
-            <div class="acc-title">Podium Finishes</div>
-            <div class="acc-sub">Multiple competition placings</div>
-          </div>
-        </div>
-      </div>
-      <div class="about-photo-placeholder">
-        <div class="photo-icon">📸</div>
-        <p>Replace with a brand photo of Paige</p>
-      </div>
-    </div>
+  <div class="toolbar">
+    <button class="btn run" onclick="runDeep()">Run pre-grade analysis ↗</button>
+    <button class="btn" onclick="exportDeep()">Export</button>
+    <button class="btn" onclick="clearDeep()">Clear</button>
   </div>
-</section>
 
-<!-- SERVICES -->
-<section id="services">
-  <div class="container">
-    <p class="section-eyebrow">Services</p>
-    <h2 class="section-title">How clients work with Paige.</h2>
-    <p class="section-desc">Every coaching package is built around your goals, your schedule, and your real life — not a one-size-fits-all template.</p>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon-wrap">🏋️</div>
-        <h3>1:1 Fitness Coaching</h3>
-        <p>Custom programming built around your goals, training history, and lifestyle. Weekly check-ins, form feedback, and programming that adapts as you progress.</p>
-        <span class="service-tag">Weekly check-ins · Custom workouts</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon-wrap">✨</div>
-        <h3>Macro Coaching</h3>
-        <p>Learn to fuel your body with confidence. Simple, flexible nutrition guidance that fits into your real life — no food rules, no restriction, just clarity.</p>
-        <span class="service-tag">Macro targets · Flexible eating</span>
-      </div>
-      <div class="service-card">
-        <div class="service-icon-wrap">💬</div>
-        <h3>Accountability & Support</h3>
-        <p>Consistent check-ins, honest feedback, and real encouragement to keep you moving forward every single week. Direct messaging access included.</p>
-        <span class="service-tag">Direct messaging · Habit tracking</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CLIENT WINS -->
-<section id="results" class="wins">
-  <div class="container">
-    <p class="section-eyebrow">Client Wins</p>
-    <h2 class="section-title">Real women, real results.</h2>
-    <p class="section-desc">Placeholder stories — swap these out with Paige's real client transformations when ready.</p>
-    <div class="wins-grid">
-      <div class="win-card">
-        <div class="win-avatar">S.M.</div>
-        <div class="win-name">Sarah M.</div>
-        <div class="win-result">↓ 18 lbs in 12 weeks · Macro Coaching</div>
-        <p class="win-quote">"I never thought tracking macros could feel this freeing. Paige made it click for me in a way no diet ever had. I finally feel in control."</p>
-        <div class="win-stars">★★★★★</div>
-      </div>
-      <div class="win-card">
-        <div class="win-avatar">J.T.</div>
-        <div class="win-name">Jamie T.</div>
-        <div class="win-result">First pull-up at 34 · 1:1 Fitness</div>
-        <p class="win-quote">"The programming was perfectly paced. I went from zero upper body strength to hitting my first pull-up in under 3 months. I actually cried."</p>
-        <div class="win-stars">★★★★★</div>
-      </div>
-      <div class="win-card">
-        <div class="win-avatar">M.L.</div>
-        <div class="win-name">Morgan L.</div>
-        <div class="win-result">Consistent for 6 months · Accountability</div>
-        <p class="win-quote">"I've tried every program out there. The difference with Paige is the support between sessions. She holds you accountable — in the nicest way."</p>
-        <div class="win-stars">★★★★★</div>
-      </div>
-    </div>
-    <div class="wins-proof">
-      <div class="proof-stat">
-        <div class="proof-num">50+</div>
-        <div class="proof-label">Women coached</div>
-      </div>
-      <div class="proof-stat">
-        <div class="proof-num">4.9★</div>
-        <div class="proof-label">Average client rating</div>
-      </div>
-      <div class="proof-stat">
-        <div class="proof-num">92%</div>
-        <div class="proof-label">Client retention rate</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- COOKBOOK -->
-<section id="cookbook" class="cookbook">
-  <div class="container">
-    <div class="cookbook-layout">
-      <div class="cookbook-feature">
-        <p class="section-eyebrow">Recipe Vault</p>
-        <h2>Food that <em>actually</em> tastes good.</h2>
-        <p>High-protein, macro-friendly recipes that don't taste like cardboard. Real food that fuels performance, satisfies cravings, and fits your numbers. Full cookbook access included with coaching packages.</p>
-        <div class="cookbook-tags">
-          <span class="cookbook-tag">High Protein</span>
-          <span class="cookbook-tag">Macro Friendly</span>
-          <span class="cookbook-tag">Quick Prep</span>
-          <span class="cookbook-tag">Gluten-Free Options</span>
-        </div>
-        <div class="cookbook-lock">🔒 Full access included with coaching</div>
-      </div>
-      <div class="cookbook-categories">
-        <div class="cookbook-cat">
-          <div class="cookbook-cat-emoji">🍳</div>
-          <div class="cookbook-cat-name">High-Protein Breakfasts</div>
-          <div class="cookbook-cat-desc">Start your day fueled and ready.</div>
-          <div class="cookbook-cat-count">12 recipes</div>
-        </div>
-        <div class="cookbook-cat">
-          <div class="cookbook-cat-emoji">🥗</div>
-          <div class="cookbook-cat-name">Macro-Friendly Lunches</div>
-          <div class="cookbook-cat-desc">Quick, balanced midday meals.</div>
-          <div class="cookbook-cat-count">15 recipes</div>
-        </div>
-        <div class="cookbook-cat">
-          <div class="cookbook-cat-emoji">🍽️</div>
-          <div class="cookbook-cat-name">Easy Dinners</div>
-          <div class="cookbook-cat-desc">Family-friendly and hits your macros.</div>
-          <div class="cookbook-cat-count">18 recipes</div>
-        </div>
-        <div class="cookbook-cat">
-          <div class="cookbook-cat-emoji">🍫</div>
-          <div class="cookbook-cat-name">Snacks & Treats</div>
-          <div class="cookbook-cat-desc">High-protein snacks that satisfy.</div>
-          <div class="cookbook-cat-count">10 recipes</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PLANS -->
-<section id="plans" class="plans">
-  <div class="container">
-    <p class="section-eyebrow">Coaching Plans</p>
-    <h2 class="section-title">Choose your plan.</h2>
-    <p class="section-desc">All plans include a free 15-minute intro call. No commitment until you're ready.</p>
-    <div class="plans-grid">
-      <div class="plan-card">
-        <h3 class="plan-name">Starter</h3>
-        <div class="plan-price">$___</div>
-        <div class="plan-period">/month</div>
-        <p class="plan-desc">Perfect for women who want personalized macro targets and a solid foundation to build from.</p>
-        <ul class="plan-features">
-          <li>Custom macro targets</li>
-          <li>Initial nutrition consult</li>
-          <li>Starter workout template</li>
-          <li>Email support</li>
-          <li>2 check-ins/month</li>
-        </ul>
-        <a href="#contact" class="plan-btn">Apply for Starter</a>
-      </div>
-      <div class="plan-card featured">
-        <div class="plan-badge">Most Popular</div>
-        <h3 class="plan-name">Signature</h3>
-        <div class="plan-price">$___</div>
-        <div class="plan-period">/month</div>
-        <p class="plan-desc">Paige's full 1:1 experience — programming, nutrition, and ongoing accountability in one package.</p>
-        <ul class="plan-features">
-          <li>Custom training program</li>
-          <li>Weekly macro adjustments</li>
-          <li>Unlimited check-ins</li>
-          <li>Direct messaging access</li>
-          <li>Monthly progress reviews</li>
-          <li>Full recipe vault access</li>
-        </ul>
-        <a href="#contact" class="plan-btn">Apply for Signature</a>
-      </div>
-      <div class="plan-card">
-        <h3 class="plan-name">VIP</h3>
-        <div class="plan-price">$___</div>
-        <div class="plan-period">/month</div>
-        <p class="plan-desc">Maximum support, maximum results. For women who want the full high-touch coaching experience.</p>
-        <ul class="plan-features">
-          <li>Everything in Signature</li>
-          <li>Priority response time</li>
-          <li>Video form reviews</li>
-          <li>Meal planning add-on</li>
-          <li>Quarterly strategy calls</li>
-        </ul>
-        <a href="#contact" class="plan-btn">Apply for VIP</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section id="faq" class="faq">
-  <div class="container">
-    <p class="section-eyebrow">FAQ</p>
-    <h2 class="section-title" style="margin-bottom:40px;">Common questions answered.</h2>
-    <div class="faq-list">
-      <div class="faq-item open">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Who is this coaching for?
-          <span class="faq-chevron">▾</span>
-        </button>
-        <div class="faq-a">Hot Girl Macros is built for women who are tired of extreme diets, confusing programs, and going it alone. Whether you're a total beginner or you've been training for years, Paige meets you where you are and builds from there.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          What does macro coaching actually include?
-          <span class="faq-chevron">▾</span>
-        </button>
-        <div class="faq-a">You'll get personalized macro targets based on your body, goals, and lifestyle — not a generic calculator result. Paige teaches you how to hit your numbers flexibly, so you can eat out, enjoy life, and still make progress.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Do I need gym access or special equipment?
-          <span class="faq-chevron">▾</span>
-        </button>
-        <div class="faq-a">Nope! Programs can be written for home, gym, or both. During your intake, Paige will ask about what equipment you have access to and build your plan around it.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          How long before I see results?
-          <span class="faq-chevron">▾</span>
-        </button>
-        <div class="faq-a">Most clients notice changes in energy, consistency, and confidence within the first 2–3 weeks. Physical results vary by person, but clients who follow the plan and stay consistent typically see meaningful progress within 4–8 weeks.</div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          How do I get started?
-          <span class="faq-chevron">▾</span>
-        </button>
-        <div class="faq-a">Fill out the application form below or email Paige directly. She personally reviews every application and responds within 48 hours to schedule a free intro call — no commitment required.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact" class="contact">
-  <div class="container">
-    <div class="contact-grid">
-      <div class="contact-info">
-        <p class="section-eyebrow">Contact</p>
-        <h2 class="section-title">Ready to work with Paige?</h2>
-        <p>Fill out the form or reach out directly. Paige personally reviews every application and responds within 48 hours.</p>
-        <a href="mailto:paigemackenzzie@hotmail.com" class="contact-email">
-          ✉️ paigemackenzzie@hotmail.com
-        </a>
-        <div class="contact-social">
-          <div class="contact-social-label">Follow on Instagram</div>
-          <h4>@squirrel_girl_curls</h4>
-          <p>Behind-the-scenes workouts, macro tips, transformation reels, and daily coaching content.</p>
-          <a href="https://instagram.com/squirrel_girl_curls" target="_blank" rel="noopener">→ Visit Instagram</a>
-        </div>
-        <div class="contact-steps">
-          <h4>What happens after you apply?</h4>
-          <div class="contact-step"><div class="step-num">1</div><div>Paige reviews your application within 48 hours</div></div>
-          <div class="contact-step"><div class="step-num">2</div><div>You'll get an email to book a free intro call</div></div>
-          <div class="contact-step"><div class="step-num">3</div><div>On the call, you'll talk goals, questions, and fit</div></div>
-          <div class="contact-step"><div class="step-num">4</div><div>If it's a match, you'll receive your onboarding kit</div></div>
-        </div>
-      </div>
-
-      <div class="contact-form">
-        <div id="formContent">
-          <h3>Apply for coaching</h3>
-          <p class="form-sub">Takes 2 minutes. Free intro call included.</p>
-          <form id="contactForm" onsubmit="handleSubmit(event)">
-            <div class="form-group">
-              <input type="text" name="name" placeholder="Your name" required />
-            </div>
-            <div class="form-group">
-              <input type="email" name="email" placeholder="Your email" required />
-            </div>
-            <div class="form-group">
-              <input type="text" name="goal" placeholder="Your main goal (e.g. lose fat, build strength)" />
-            </div>
-            <div class="form-group">
-              <textarea name="message" placeholder="Tell Paige about yourself — your current routine, struggles, and what kind of support you're looking for"></textarea>
-            </div>
-            <button type="submit" class="form-submit" id="submitBtn">Send Application →</button>
-            <p class="form-note">Free intro call included with every application</p>
-          </form>
-        </div>
-        <div class="form-success" id="formSuccess">
-          <div class="form-success-icon">🎉</div>
-          <h4>Application received!</h4>
-          <p>Paige will reach out within 48 hours to schedule your free intro call.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-top">
-        <div>
-          <div class="footer-logo">Squirrel Girl Curls</div>
-          <div class="footer-tagline">Paige Rosenberg · Fitness & Macro Coaching</div>
-        </div>
-        <div class="footer-links">
-          <a href="#about">About</a>
-          <a href="#services">Services</a>
-          <a href="#results">Results</a>
-          <a href="#cookbook">Cookbook</a>
-          <a href="#plans">Plans</a>
-          <a href="#contact">Contact</a>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© <span id="year"></span> Squirrel Girl Curls · Paige Rosenberg</span>
-        <span>Fitness Coaching · Macro Coaching · Confidence</span>
-      </div>
-    </div>
-  </div>
-</footer>
+  <div class="ai-out" id="deepOut">Upload flat and angled photos, then run the analysis.</div>
+</div>
+</div>
 
 <script>
-  document.getElementById('year').textContent = new Date().getFullYear();
+const $=s=>document.querySelector(s);
+let curTab='center', curSide='front', curGuide='outer', contrast=false;
+const states={
+  front:{img:null,name:'',iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null,rot:0},
+  back:{img:null,name:'',iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null,rot:0}
+};
+let drag=null,last=null;
+const cv=$('#cv'), ctx=cv.getContext('2d');
 
-  function toggleMenu() {
-    document.getElementById('navMobile').classList.toggle('open');
-  }
+function switchTab(t){
+  curTab=t;
+  $('#tCenter').classList.toggle('on',t==='center');
+  $('#tDeep').classList.toggle('on',t==='deep');
+  $('#secCenter').style.display=t==='center'?'flex':'none';
+  $('#secDeep').style.display=t==='deep'?'flex':'none';
+}
 
-  function closeMenu() {
-    document.getElementById('navMobile').classList.remove('open');
-  }
+function resizeCanvas(){
+  const cw=cv.parentElement.offsetWidth||340;
+  cv.width=cw*devicePixelRatio; cv.height=Math.round(cw*.68)*devicePixelRatio;
+  cv.style.width=cw+'px'; cv.style.height=Math.round(cw*.68)+'px';
+  fitView(); draw();
+}
+window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(resizeCanvas,120)});
 
-  function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
+function st(){return states[curSide]}
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const ENDPOINT = '';
+function loadImg(file,side){
+  if(!file)return;
+  const img=new Image();
+  img.onload=()=>{
+    const s=states[side];
+    s.img=img; s.name=file.name; s.iw=img.width; s.ih=img.height;
+    resetGuides(side); fitFor(side); if(curSide===side)draw(); updateMetrics();
+  };
+  img.src=URL.createObjectURL(file);
+}
+$('#inFront').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'front');$('#fnFront').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
+$('#inBack').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'back');$('#fnBack').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
+$('#selSide').addEventListener('change',e=>{curSide=e.target.value;draw()});
+$('#selGuide').addEventListener('change',e=>{curGuide=e.target.value});
 
-    if (!ENDPOINT) {
-      document.getElementById('formContent').style.display = 'none';
-      document.getElementById('formSuccess').classList.add('show');
-      return;
+function resetGuides(side){
+  const s=states[side]; if(!s.img)return;
+  s.outer={x:s.iw*.07,y:s.ih*.06,w:s.iw*.86,h:s.ih*.88};
+  s.inner={x:s.iw*.16,y:s.ih*.13,w:s.iw*.68,h:s.ih*.74};
+}
+function fitFor(side){
+  const s=states[side]; if(!s.img)return;
+  const pad=20*devicePixelRatio;
+  s.zoom=Math.min((cv.width-pad*2)/s.iw,(cv.height-pad*2)/s.ih);
+  s.ox=(cv.width-s.iw*s.zoom)/2; s.oy=(cv.height-s.ih*s.zoom)/2;
+}
+function fitView(){fitFor(curSide);draw()}
+function resetG(){resetGuides(curSide);draw();updateMetrics()}
+function toggleContrast(){contrast=!contrast;$('#btnContrast').classList.toggle('active',contrast);draw()}
+
+function rotateImg(){
+  const s=st(); if(!s.img)return;
+  const tmp=document.createElement('canvas');
+  tmp.width=s.ih; tmp.height=s.iw;
+  const tx=tmp.getContext('2d');
+  tx.translate(tmp.width/2,tmp.height/2);
+  tx.rotate(Math.PI/2);
+  tx.drawImage(s.img,-s.iw/2,-s.ih/2);
+  const ni=new Image();
+  ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};
+  ni.src=tmp.toDataURL();
+}
+
+function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
+function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
+function corners(r){return{tl:{x:r.x,y:r.y},tr:{x:r.x+r.w,y:r.y},bl:{x:r.x,y:r.y+r.h},br:{x:r.x+r.w,y:r.y+r.h}}}
+const HANDLE=9;
+
+function hitTest(s,x,y){
+  const p=s2i(s,x,y);
+  for(const gname of['inner','outer']){
+    const r=s[gname]; if(!r)continue;
+    const cs=corners(r);
+    for(const k in cs){
+      if(Math.hypot(p.x-cs[k].x,p.y-cs[k].y)<HANDLE/s.zoom)return{shape:gname,kind:k};
     }
-
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-
-    const data = Object.fromEntries(new FormData(e.target));
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        document.getElementById('formContent').style.display = 'none';
-        document.getElementById('formSuccess').classList.add('show');
-      } else {
-        btn.disabled = false;
-        btn.textContent = 'Something went wrong — try emailing directly';
-      }
-    } catch {
-      btn.disabled = false;
-      btn.textContent = 'Something went wrong — try emailing directly';
-    }
+    if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:gname,kind:'move'};
   }
+  return null;
+}
+
+function clamp(s,which){
+  const r=s[which];
+  if(which==='outer'){
+    r.w=Math.max(10,Math.min(r.w,s.iw)); r.h=Math.max(10,Math.min(r.h,s.ih));
+    r.x=Math.max(0,Math.min(r.x,s.iw-r.w)); r.y=Math.max(0,Math.min(r.y,s.ih-r.h));
+  } else {
+    const o=s.outer||{x:0,y:0,w:s.iw,h:s.ih};
+    r.w=Math.max(10,Math.min(r.w,o.w)); r.h=Math.max(10,Math.min(r.h,o.h));
+    r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w)); r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h));
+  }
+}
+
+function moveRect(s,shape,kind,dx,dy){
+  const r=s[shape];
+  if(kind==='move'){r.x+=dx;r.y+=dy}
+  else{
+    if(kind.includes('l')){r.x+=dx;r.w-=dx}
+    if(kind.includes('r')){r.w+=dx}
+    if(kind.includes('t')){r.y+=dy;r.h-=dy}
+    if(kind.includes('b')){r.h+=dy}
+  }
+  clamp(s,shape);
+  if(shape==='outer'&&s.inner)clamp(s,'inner');
+}
+
+function drawHandle(px,py,color,sz){
+  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
+  ctx.strokeStyle='rgba(0,0,0,0.4)';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
+  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
+}
+
+function drawGuide(s,r,color,active){
+  const p=i2s(s,r.x,r.y);
+  ctx.strokeStyle=color; ctx.lineWidth=active?2:1.5;
+  ctx.setLineDash(active?[]:[6,4]); ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom); ctx.setLineDash([]);
+  const sz=7;
+  for(const h of Object.values(corners(r))){
+    const q=i2s(s,h.x,h.y); drawHandle(q.x,q.y,color,sz);
+  }
+  const mx=p.x+r.w*s.zoom/2, my=p.y+r.h*s.zoom/2;
+  ctx.font=`${Math.round(10*devicePixelRatio)}px system-ui`; ctx.fillStyle=color; ctx.textAlign='center';
+  ctx.fillText(active?'active':'',mx,my-4);
+}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const s=st();
+  if(!s.img){
+    ctx.fillStyle='rgba(128,128,128,0.4)';
+    ctx.font=`${14*devicePixelRatio}px system-ui`; ctx.textAlign='center';
+    ctx.fillText('Load a front or back image above',cv.width/2,cv.height/2);
+    return;
+  }
+  ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.filter=contrast?'contrast(1.3) saturate(0.85)':'none';
+  ctx.drawImage(s.img,s.ox,s.oy,s.iw*s.zoom,s.ih*s.zoom);
+  ctx.filter='none';
+  if(s.outer)drawGuide(s,s.outer,'#ff6060',curGuide==='outer');
+  if(s.inner)drawGuide(s,s.inner,'#5ba0ff',curGuide==='inner');
+}
+
+function evtXY(e){
+  const r=cv.getBoundingClientRect();
+  const src=e.touches?e.touches[0]:e;
+  return{x:(src.clientX-r.left)*devicePixelRatio,y:(src.clientY-r.top)*devicePixelRatio};
+}
+
+cv.addEventListener('pointerdown',e=>{
+  const s=st(); if(!s.img)return;
+  cv.setPointerCapture(e.pointerId);
+  const {x,y}=evtXY(e); last={x,y};
+  const h=hitTest(s,x,y);
+  if(h){drag=h; curGuide=h.shape; $('#selGuide').value=curGuide;}
+  else drag={shape:'pan',kind:'pan'};
+});
+cv.addEventListener('pointermove',e=>{
+  const s=st(); if(!s.img||!drag)return;
+  const {x,y}=evtXY(e); const dx=(x-last.x)/s.zoom, dy=(y-last.y)/s.zoom;
+  if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y;}
+  else{moveRect(s,drag.shape,drag.kind,dx,dy); updateMetrics();}
+  last={x,y}; draw();
+});
+cv.addEventListener('pointerup',()=>drag=null);
+cv.addEventListener('pointercancel',()=>drag=null);
+cv.addEventListener('wheel',e=>{
+  e.preventDefault(); const s=st(); if(!s.img)return;
+  const f=e.deltaY<0?1.1:.9; s.zoom=Math.max(.1,Math.min(30,s.zoom*f)); draw();
+},{passive:false});
+
+window.addEventListener('keydown',e=>{
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
+  const s=st(); if(!s.img)return; e.preventDefault();
+  const d=e.shiftKey?10:1;
+  moveRect(s,curGuide,'move',
+    e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0,
+    e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0);
+  draw(); updateMetrics();
+});
+
+function calcMetrics(side){
+  const s=states[side]; if(!s.img||!s.outer||!s.inner)return null;
+  const o=s.outer,i=s.inner;
+  const L=i.x-o.x, R=(o.x+o.w)-(i.x+i.w);
+  const T=i.y-o.y, B=(o.y+o.h)-(i.y+i.h);
+  const lr=gradeRatio(L,R), tb=gradeRatio(T,B);
+  return{L,R,T,B,lr,tb,lrStr:ratioStr(L,R),tbStr:ratioStr(T,B)};
+}
+
+function ratioStr(a,b){
+  const s=a+b; if(s<1)return'—';
+  const mn=Math.min(a,b),mx=Math.max(a,b);
+  return`${Math.round(100*mn/s)}/${Math.round(100*mx/s)}`;
+}
+
+function gradeRatio(a,b){
+  const s=a+b; if(s<1)return null;
+  const pct=Math.max(a,b)/s*100;
+  if(pct<=55)return{label:'PSA 10 / BGS 9.5+',cls:'good'};
+  if(pct<=60)return{label:'PSA 9 / BGS 9',cls:'good'};
+  if(pct<=65)return{label:'PSA 8 / BGS 8',cls:'warn'};
+  if(pct<=75)return{label:'PSA 6–7 range',cls:'warn'};
+  return{label:'PSA ≤5 range',cls:'bad'};
+}
+
+function setMetric(vEl,gEl,m,key){
+  if(!m){vEl.textContent='—';gEl.textContent='';return;}
+  const val=m[key+'Str']; const grade=m[key];
+  vEl.textContent=val;
+  if(grade){vEl.className='v '+grade.cls;gEl.textContent=grade.label;gEl.className='grade '+grade.cls;}
+}
+
+function updateMetrics(){
+  const f=calcMetrics('front'), b=calcMetrics('back');
+  setMetric($('#rFL'),$('#rFLg'),f,'lr');
+  setMetric($('#rFT'),$('#rFTg'),f,'tb');
+  setMetric($('#rBL'),$('#rBLg'),b,'lr');
+  setMetric($('#rBT'),$('#rBTg'),b,'tb');
+  const lines=[];
+  if(f)lines.push(`Front: ${f.lrStr} L/R, ${f.tbStr} T/B`);
+  if(b)lines.push(`Back: ${b.lrStr} L/R, ${b.tbStr} T/B`);
+  if(!lines.length){$('#summary').innerHTML='Load images and align the red and blue guides.';return;}
+  lines.push('');
+  lines.push('<b>Note:</b> These are estimated ratios from manual guide placement. Compare against current grading company standards. Pre-screen only.');
+  $('#summary').innerHTML=lines.join('<br>');
+}
+
+function exportCsv(){
+  const rows=[['side','LR ratio','TB ratio','L px','R px','T px','B px']];
+  for(const k of['front','back']){
+    const m=calcMetrics(k);
+    if(m)rows.push([k,m.lrStr,m.tbStr,m.L.toFixed(1),m.R.toFixed(1),m.T.toFixed(1),m.B.toFixed(1)]);
+  }
+  dl('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv');
+}
+
+function dl(name,text,type){const b=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
+
+let deepImgs={ff:null,fb:null,angled:[]};
+function loadDI(el,key,nameEl,multi){
+  el.addEventListener('change',e=>{
+    const files=[...e.target.files]; if(!files.length)return;
+    $(nameEl).textContent=multi?`${files.length} file(s)`:files[0].name.slice(0,18);
+    const load=(f,cb)=>{const i=new Image();i.onload=()=>cb(i);i.src=URL.createObjectURL(f)};
+    if(multi){deepImgs[key]=[];files.forEach((f,idx)=>load(f,img=>deepImgs[key][idx]=img));}
+    else load(files[0],img=>deepImgs[key]=img);
+  });
+}
+loadDI($('#inDF'),'ff','#dnFF',false);
+loadDI($('#inDB'),'fb','#dnFB',false);
+loadDI($('#inDA'),'angled','#dnA',true);
+
+function pixelStats(img){
+  const c=document.createElement('canvas');
+  c.width=Math.min(800,img.width); c.height=Math.round(img.height*c.width/img.width);
+  const x=c.getContext('2d'); x.drawImage(img,0,0,c.width,c.height);
+  const d=x.getImageData(0,0,c.width,c.height).data;
+  let br=0,gl=0,sat=0;
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2];
+    const lum=.2126*r+.7152*g+.0722*b; br+=lum; if(lum>248)gl++;
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b); sat+=(mx-mn)/(mx||1);
+  }
+  const n=d.length/4;
+  return{brightness:br/n,glarePct:gl/n*100,saturation:sat/n*255};
+}
+
+function runDeep(){
+  const out=$('#deepOut');
+  if(!deepImgs.ff&&!deepImgs.fb&&!deepImgs.angled.length){
+    out.textContent='Please upload at least one image first.';return;
+  }
+  out.textContent='Analyzing…';
+
+  const parts=[];
+  function analyze(label,img){
+    if(!img)return`${label}: not uploaded`;
+    const s=pixelStats(img);
+    const bStatus=s.brightness<50?'⚠ very dark — consider rescanning':s.brightness>215?'⚠ overexposed — highlights clipped':'✓ exposure looks usable';
+    const gStatus=s.glarePct>4?`⚠ ${s.glarePct.toFixed(1)}% hotspot pixels — check lighting`:s.glarePct>1.5?`△ ${s.glarePct.toFixed(1)}% hotspot pixels — mild glare`:s.glarePct.toFixed(2)+'% hotspot pixels — low glare';
+    const satStatus=s.saturation<20?'⚠ nearly grayscale — check white balance':'✓ color saturation normal';
+    return`${label}\n  Brightness ${s.brightness.toFixed(0)}/255  ${bStatus}\n  Glare  ${gStatus}\n  Color  ${satStatus}`;
+  }
+
+  parts.push('── Flat scans ──');
+  parts.push(analyze('Front (flat)',deepImgs.ff));
+  parts.push(analyze('Back (flat)',deepImgs.fb));
+
+  if(deepImgs.angled&&deepImgs.angled.length){
+    parts.push('\n── Angled photos ──');
+    deepImgs.angled.forEach((img,i)=>{
+      if(img)parts.push(analyze(`Angled ${i+1}`,img));
+    });
+  }
+
+  parts.push('\n── Surface / defect risk flags ──');
+  parts.push('• Check angled-photo hotspots for scratches, print lines, indentations, or gloss interruptions.');
+  parts.push('• Bright white edge pixels in flat scans may indicate edge whitening — review closely.');
+  parts.push('• Roller marks, foil shifting, and holo damage are not detectable from pixel stats alone — use your eye on the angled photos.');
+  parts.push('\nThis pre-screen flags photographic risks only. It does not predict PSA / BGS / CGC outcome.');
+
+  out.textContent=parts.join('\n');
+}
+
+function exportDeep(){dl('pregrader_summary.txt',$('#deepOut').textContent,'text/plain')}
+function clearDeep(){deepImgs={ff:null,fb:null,angled:[]};$('#deepOut').textContent='Cleared. Upload new photos and run again.';$('#dnFF').textContent='tap to load';$('#dnFB').textContent='tap to load';$('#dnA').textContent='tap to load'}
+
+setTimeout(resizeCanvas,50);
 </script>
-</body>
-</html>
