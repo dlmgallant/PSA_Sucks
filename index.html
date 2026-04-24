@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -62,11 +61,7 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
 .ai-body.placeholder{color:var(--muted);font-style:italic}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff18;border-top-color:var(--info);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.api-row{display:flex;gap:8px;align-items:center}
-.api-row input{flex:1;background:#08090f;border:1px solid var(--border2);border-radius:var(--rad);color:var(--text);padding:8px 12px;font-size:12px;font-family:monospace;outline:none}
-.api-row input:focus{border-color:var(--info)}
-.api-row input::placeholder{color:var(--muted)}
-.key-hint{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.6}
+.free-badge{display:inline-block;background:#0d2a0d;color:var(--success);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid #1a4a1a;letter-spacing:.04em;vertical-align:middle;margin-left:6px}
 @media(max-width:600px){.results{grid-template-columns:1fr}}
 </style>
 </head>
@@ -79,11 +74,10 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
 <main>
   <div class="tabs">
     <button class="tab on" id="tCenter" onclick="switchTab('center')">Centering</button>
-    <button class="tab" id="tDeep" onclick="switchTab('deep')">AI Pre-Grade</button>
+    <button class="tab" id="tDeep" onclick="switchTab('deep')">AI Pre-Grade <span class="free-badge">FREE</span></button>
   </div>
 
   <!-- CENTERING -->
-
   <div id="secCenter" class="sec">
     <div class="card">
       <div class="card-title">Load images</div>
@@ -127,17 +121,7 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
   </div>
 
   <!-- AI PRE-GRADE -->
-
   <div id="secDeep" class="sec" style="display:none">
-    <div class="card">
-      <div class="card-title">Anthropic API key</div>
-      <div class="api-row">
-        <input type="password" id="apiKey" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-        <button onclick="saveKey()">Save</button>
-        <button onclick="clearKey()">Clear</button>
-      </div>
-      <div class="key-hint">Stored in this browser session only — sent directly to api.anthropic.com, nowhere else. Get a key at console.anthropic.com → API Keys.</div>
-    </div>
     <div class="card">
       <div class="card-title">Card photos</div>
       <div class="row">
@@ -171,10 +155,10 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
     <div class="ai-wrap">
       <div class="ai-header">
         <div class="ai-dot" id="aiDot"></div>
-        <span class="ai-label">Claude AI Pre-Grade</span>
+        <span class="ai-label">Gemini AI Pre-Grade</span>
         <span class="ai-status" id="aiStatus">Ready</span>
       </div>
-      <div class="ai-body placeholder" id="deepOut">Upload card photos, save your API key, then tap Analyze.</div>
+      <div class="ai-body placeholder" id="deepOut">Upload card photos then tap Analyze — free for everyone.</div>
     </div>
   </div>
 </main>
@@ -247,8 +231,8 @@ function hitTest(s,x,y){
 
 function clamp(s,which){
   const r=s[which];
-  if(which==='outer'){r.w=Math.max(10,Math.min(r.w,s.iw));r.h=Math.max(10,Math.min(r.h,s.ih));r.x=Math.max(0,Math.min(r.x,s.iw-r.w));r.y=Math.max(0,Math.min(r.y,s.ih-r.h));}
-  else{const o=s.outer||{x:0,y:0,w:s.iw,h:s.ih};r.w=Math.max(10,Math.min(r.w,o.w));r.h=Math.max(10,Math.min(r.h,o.h));r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w));r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h));}
+  if(which==='outer'){r.w=Math.max(10,Math.min(r.w,s.iw));r.h=Math.max(10,Math.min(r.h,s.ih));r.x=Math.max(0,Math.min(r.x,s.iw-r.w));r.y=Math.max(0,Math.min(r.y,s.ih-r.h))}
+  else{const o=s.outer||{x:0,y:0,w:s.iw,h:s.ih};r.w=Math.max(10,Math.min(r.w,o.w));r.h=Math.max(10,Math.min(r.h,o.h));r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w));r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h))}
 }
 
 function moveRect(s,shape,kind,dx,dy){
@@ -318,15 +302,6 @@ function exportCsv(){
   dl('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv');
 }
 
-// ── API key ──
-let apiKey='';
-function saveKey(){
-  const v=$('#apiKey').value.trim();
-  if(!v.startsWith('sk-ant')){alert('That does not look like an Anthropic API key. It should start with sk-ant-');return}
-  apiKey=v;$('#apiKey').value='';$('#apiKey').placeholder='Key saved ✓';$('#apiKey').style.borderColor='var(--success)';
-}
-function clearKey(){apiKey='';$('#apiKey').value='';$('#apiKey').placeholder='sk-ant-api03-…';$('#apiKey').style.borderColor=''}
-
 // ── Deep images ──
 let deepFiles={ff:null,fb:null,angled:[]};
 function wireUpload(inputId,key,nameId,uzId,multi){
@@ -343,70 +318,60 @@ wireUpload('#inDA','angled','#dnA','#uzAA',true);
 
 function fileToB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file)})}
 
-// ── Run AI analysis ──
 async function runAI(){
   const out=$('#deepOut'),dot=$('#aiDot'),status=$('#aiStatus'),btn=$('#runBtn');
-  if(!apiKey){out.className='ai-body';out.textContent='⚠ Save your Anthropic API key above first.';return}
   const hasAny=deepFiles.ff||deepFiles.fb||(deepFiles.angled&&deepFiles.angled.length);
   if(!hasAny){out.className='ai-body';out.textContent='⚠ Upload at least one card photo first.';return}
 
-  btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Sending to Claude…';
-  out.className='ai-body';out.innerHTML='<span class="spinner"></span>Uploading images and waiting for analysis…';
+  btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Analyzing…';
+  out.className='ai-body';out.innerHTML='<span class="spinner"></span>Sending images for analysis…';
 
   try{
     const parts=[];
-    parts.push({type:'text',text:`You are an expert TCG card grader with years of experience grading for PSA, BGS (Beckett), and CGC. Analyze these card photos and provide a detailed honest pre-grade assessment.
+    parts.push({text:`You are an expert TCG card grader with years of experience grading for PSA, BGS (Beckett), and CGC. Analyze the provided card photo(s) and give a detailed, honest pre-grade assessment.
 
-Evaluate and report on each of these areas:
+Evaluate each area:
 
-1. CENTERING — Estimate left/right and top/bottom ratios. What centering grade does this suggest?
+1. CENTERING — Estimate left/right and top/bottom border ratios. What centering grade does this suggest?
 
-2. SURFACE — Scratches, scuffs, print lines, print defects, holo damage, foil wear, gloss interruptions. Location and severity of each issue.
+2. SURFACE — Scratches, scuffs, print lines, print defects, holo damage, foil wear, gloss interruptions. Note location and severity.
 
-3. EDGES — All four edges. Any whitening, chipping, nicks, roughness?
+3. EDGES — All four edges. Any whitening, chipping, nicks, or roughness?
 
 4. CORNERS — All four corners. Any blunting, fraying, or wear?
 
-5. OVERALL GRADE ESTIMATE — Give a realistic estimated grade range for PSA, BGS, and CGC based on everything you see. Be conservative — graders are strict in person.
+5. OVERALL GRADE ESTIMATE — Realistic estimated grade range for PSA, BGS, and CGC. Be conservative.
 
-6. SUBMIT OR NOT — Should this card be submitted? At what tier? Any red flags that would tank the grade?
+6. SUBMIT RECOMMENDATION — Should this card be submitted? At what tier? Any red flags?
 
-Be specific about what you see and where. Don't be generic. If the photo quality limits your assessment, say so.`});
+Be specific about what you see and where. If photo quality limits your assessment, say so.`});
 
     if(deepFiles.ff){
       const b64=await fileToB64(deepFiles.ff);
-      parts.push({type:'text',text:'FLAT FRONT:'});
-      parts.push({type:'image',source:{type:'base64',media_type:deepFiles.ff.type||'image/jpeg',data:b64}});
+      parts.push({text:'FLAT FRONT:'});
+      parts.push({inlineData:{mimeType:deepFiles.ff.type||'image/jpeg',data:b64}});
     }
     if(deepFiles.fb){
       const b64=await fileToB64(deepFiles.fb);
-      parts.push({type:'text',text:'FLAT BACK:'});
-      parts.push({type:'image',source:{type:'base64',media_type:deepFiles.fb.type||'image/jpeg',data:b64}});
+      parts.push({text:'FLAT BACK:'});
+      parts.push({inlineData:{mimeType:deepFiles.fb.type||'image/jpeg',data:b64}});
     }
     if(deepFiles.angled&&deepFiles.angled.length){
       for(let i=0;i<deepFiles.angled.length;i++){
         const f=deepFiles.angled[i];
         const b64=await fileToB64(f);
-        parts.push({type:'text',text:`ANGLED PHOTO ${i+1}:`});
-        parts.push({type:'image',source:{type:'base64',media_type:f.type||'image/jpeg',data:b64}});
+        parts.push({text:`ANGLED PHOTO ${i+1}:`});
+        parts.push({inlineData:{mimeType:f.type||'image/jpeg',data:b64}});
       }
     }
 
-    status.textContent='Analyzing with Claude…';
+    status.textContent='Waiting for response…';
 
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    // Calls your Vercel API function — no key exposed to users
+    const resp=await fetch('/api/analyze',{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-opus-4-5',
-        max_tokens:1500,
-        messages:[{role:'user',content:parts}]
-      })
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts}]})
     });
 
     if(!resp.ok){
@@ -415,14 +380,15 @@ Be specific about what you see and where. Don't be generic. If the photo quality
     }
 
     const data=await resp.json();
-    const text=data.content.filter(c=>c.type==='text').map(c=>c.text).join('\n').trim();
+    const text=data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim()||'No response received.';
+
     dot.className='ai-dot live';status.textContent='Done';
     out.className='ai-body';out.textContent=text;
 
   }catch(e){
     dot.className='ai-dot';status.textContent='Error';
     out.className='ai-body';
-    out.textContent=`Error: ${e.message}\n\nCheck your API key has credits. You can get one at console.anthropic.com.`;
+    out.textContent=`Error: ${e.message}`;
   }finally{
     btn.disabled=false;
   }
@@ -438,7 +404,7 @@ function clearDeep(){
   ['#uzAF','#uzAB','#uzAA'].forEach(id=>$(id).classList.remove('has-file'));
   ['#dnFF','#dnFB','#dnA'].forEach(id=>$(id).textContent='tap to load');
   $('#deepOut').className='ai-body placeholder';
-  $('#deepOut').textContent='Upload card photos, save your API key, then tap Analyze.';
+  $('#deepOut').textContent="Upload card photos then tap Analyze — free for everyone.";
   $('#aiDot').className='ai-dot';$('#aiStatus').textContent='Ready';
 }
 
@@ -446,6 +412,5 @@ function dl(name,text,type){const b=new Blob([text],{type});const a=document.cre
 
 setTimeout(resizeCanvas,60);
 </script>
-
 </body>
 </html>
