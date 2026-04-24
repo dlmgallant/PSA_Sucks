@@ -1,140 +1,174 @@
+<!DOCTYPE html>
 
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Centering & Pre-Grade Tool — psa-sucks.com</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);color:var(--color-text-primary)}
-.app{display:flex;flex-direction:column;gap:0;min-height:600px}
-.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);padding:0 1rem}
-.tab{padding:10px 16px;font-size:13px;font-weight:500;border:none;background:none;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
-.tab.on{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
-.body{padding:1rem;display:flex;flex-direction:column;gap:1rem}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.upload-zone{flex:1;min-width:120px;border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center;cursor:pointer;position:relative;transition:background 0.15s}
-.upload-zone:hover{background:var(--color-background-secondary)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-zone .lbl{font-size:11px;color:var(--color-text-secondary);display:block;margin-top:4px}
-.upload-zone .name{font-size:11px;color:var(--color-text-info);display:block;margin-top:2px;font-weight:500}
-.upload-zone .icon{font-size:18px}
-.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.btn{padding:6px 12px;font-size:12px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-primary);cursor:pointer}
-.btn:hover{background:var(--color-background-secondary)}
-.btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
-.btn.run{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
-.btn.run:hover{opacity:.85}
-canvas-wrap{display:block;border-radius:var(--border-radius-lg);overflow:hidden;border:0.5px solid var(--color-border-tertiary);background:#111;position:relative}
-#cv{display:block;width:100%;cursor:crosshair;touch-action:none}
-.results{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
-.metric .k{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
-.metric .v{font-size:15px;font-weight:500}
-.metric .grade{font-size:11px;margin-top:2px}
-.good{color:var(--color-text-success)}
-.warn{color:var(--color-text-warning)}
-.bad{color:var(--color-text-danger)}
-.summary{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
-.summary b{color:var(--color-text-primary);font-weight:500}
-.sep{height:0.5px;background:var(--color-border-tertiary)}
-.hint{font-size:11px;color:var(--color-text-secondary);line-height:1.5}
-select{font-size:12px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary)}
-.ai-out{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-size:13px;line-height:1.65;white-space:pre-wrap;min-height:60px}
-.loading{opacity:.5;font-style:italic}
+:root{
+  --color-bg:#0f1117;
+  --color-panel:#181c27;
+  --color-panel2:#1e2333;
+  --color-border:#ffffff18;
+  --color-text:#eef1f8;
+  --color-muted:#8a96ad;
+  --color-info:#4a9eff;
+  --color-success:#4ec98a;
+  --color-warning:#f5b942;
+  --color-danger:#ff6060;
+  --radius-md:8px;
+  --radius-lg:12px;
+}
+body{background:var(--color-bg);color:var(--color-text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:15px;min-height:100vh}
+header{padding:14px 20px;border-bottom:1px solid var(--color-border);background:#0b0e16;position:sticky;top:0;z-index:10;display:flex;align-items:baseline;gap:12px}
+header h1{font-size:1rem;font-weight:600;letter-spacing:.01em}
+header .v{font-size:.75rem;color:var(--color-success);font-weight:700}
+main{max-width:1100px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;border-bottom:1px solid var(--color-border)}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;border:none;background:none;color:var(--color-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
+.tab.on{color:var(--color-text);border-bottom-color:var(--color-info)}
+.tab:hover{color:var(--color-text)}
+.sec{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--color-panel);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.upload-zone{flex:1;min-width:130px;border:1px dashed #ffffff30;border-radius:var(--radius-md);padding:14px 10px;text-align:center;cursor:pointer;position:relative;transition:background .15s}
+.upload-zone:hover{background:var(--color-panel2)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone .lbl{font-size:11px;color:var(--color-muted);display:block;margin-top:4px}
+.upload-zone .name{font-size:11px;color:var(--color-info);display:block;margin-top:3px;font-weight:600;word-break:break-all}
+.upload-zone .ico{font-size:20px;line-height:1}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+select,button{font:inherit;border-radius:var(--radius-md);border:1px solid #ffffff22;background:var(--color-panel2);color:var(--color-text);padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;transition:background .12s}
+select{padding:6px 10px}
+button:hover{background:#2a3148}
+button.active{background:#1a3060;border-color:var(--color-info);color:var(--color-info)}
+button.run{background:var(--color-info);color:#fff;border-color:transparent}
+button.run:hover{background:#3a8de8}
+canvas{display:block;width:100%;background:#050709;border-radius:var(--radius-md);border:1px solid var(--color-border);touch-action:none;cursor:crosshair}
+.hint{font-size:11px;color:var(--color-muted);line-height:1.6}
+.results{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.metric{background:var(--color-panel2);border-radius:var(--radius-md);padding:11px 13px}
+.metric .k{font-size:11px;color:var(--color-muted);margin-bottom:5px}
+.metric .v{font-size:16px;font-weight:700}
+.metric .g{font-size:11px;margin-top:3px;font-weight:600}
+.good{color:var(--color-success)}.warn{color:var(--color-warning)}.bad{color:var(--color-danger)}
+.summary{background:var(--color-panel2);border-radius:var(--radius-md);padding:12px;font-size:13px;line-height:1.65;color:var(--color-muted)}
+.summary b{color:var(--color-text);font-weight:600}
+.ai-out{background:var(--color-panel2);border-radius:var(--radius-md);padding:13px;font-size:13px;line-height:1.7;white-space:pre-wrap;color:var(--color-muted);min-height:60px}
+@media(max-width:600px){.results{grid-template-columns:1fr}}
 </style>
-
-<div class="app">
-<div class="tabs">
-  <button class="tab on" id="tCenter" onclick="switchTab('center')">Centering</button>
-  <button class="tab" id="tDeep" onclick="switchTab('deep')">Pre-grade review</button>
-</div>
-
-<div id="secCenter" class="body">
-  <div class="row">
-    <div class="upload-zone">
-      <div class="icon">📄</div>
-      <div class="lbl">Front scan/photo</div>
-      <div class="name" id="fnFront">tap to load</div>
-      <input type="file" accept="image/*" id="inFront">
-    </div>
-    <div class="upload-zone">
-      <div class="icon">📄</div>
-      <div class="lbl">Back scan/photo</div>
-      <div class="name" id="fnBack">tap to load</div>
-      <input type="file" accept="image/*" id="inBack">
-    </div>
+</head>
+<body>
+<header>
+  <h1>Card Centering &amp; Pre-Grade Tool</h1>
+  <span class="v">psa-sucks.com</span>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab on" id="tCenter" onclick="switchTab('center')">Centering</button>
+    <button class="tab" id="tDeep" onclick="switchTab('deep')">Pre-grade review</button>
   </div>
 
+  <div id="secCenter" class="sec">
+    <div class="card">
+      <div class="row">
+        <div class="upload-zone">
+          <div class="ico">📄</div>
+          <div class="lbl">Front scan / photo</div>
+          <div class="name" id="fnFront">tap to load</div>
+          <input type="file" accept="image/*" id="inFront">
+        </div>
+        <div class="upload-zone">
+          <div class="ico">📄</div>
+          <div class="lbl">Back scan / photo</div>
+          <div class="name" id="fnBack">tap to load</div>
+          <input type="file" accept="image/*" id="inBack">
+        </div>
+      </div>
+    </div>
+
+```
+<div class="card">
   <div class="toolbar">
-    <select id="selSide">
-      <option value="front">Front</option>
-      <option value="back">Back</option>
-    </select>
-    <select id="selGuide">
-      <option value="outer">Red — card edge</option>
-      <option value="inner">Blue — printed border</option>
-    </select>
-    <button class="btn" onclick="fitView()">Fit</button>
-    <button class="btn" onclick="rotateImg()">Rotate</button>
-    <button class="btn" id="btnContrast" onclick="toggleContrast()">Contrast</button>
-    <button class="btn" onclick="resetG()">Reset guides</button>
-    <button class="btn" onclick="exportCsv()">CSV</button>
+    <select id="selSide"><option value="front">Front</option><option value="back">Back</option></select>
+    <select id="selGuide"><option value="outer">Red — card edge</option><option value="inner">Blue — printed border</option></select>
+    <button onclick="fitView()">Fit</button>
+    <button onclick="rotateImg()">Rotate</button>
+    <button id="btnContrast" onclick="toggleContrast()">Contrast</button>
+    <button onclick="resetG()">Reset guides</button>
+    <button onclick="exportCsv()">Export CSV</button>
   </div>
-
-  <canvas-wrap><canvas id="cv"></canvas></canvas-wrap>
-
-  <div class="hint">Drag the red handles to the card edge. Drag blue handles to the printed border. Arrow keys nudge the active guide (shift = 10px steps).</div>
-
-  <div class="results" id="results">
-    <div class="metric"><div class="k">Front left/right</div><div class="v" id="rFL">—</div><div class="grade" id="rFLg"></div></div>
-    <div class="metric"><div class="k">Front top/bottom</div><div class="v" id="rFT">—</div><div class="grade" id="rFTg"></div></div>
-    <div class="metric"><div class="k">Back left/right</div><div class="v" id="rBL">—</div><div class="grade" id="rBLg"></div></div>
-    <div class="metric"><div class="k">Back top/bottom</div><div class="v" id="rBT">—</div><div class="grade" id="rBTg"></div></div>
-  </div>
-
-  <div class="summary" id="summary">Load a front and back image, then align the guides to measure centering.</div>
 </div>
 
-<div id="secDeep" class="body" style="display:none">
-  <div class="row">
-    <div class="upload-zone">
-      <div class="icon">🔦</div>
-      <div class="lbl">Flat front</div>
-      <div class="name" id="dnFF">tap to load</div>
-      <input type="file" accept="image/*" id="inDF">
-    </div>
-    <div class="upload-zone">
-      <div class="icon">🔦</div>
-      <div class="lbl">Flat back</div>
-      <div class="name" id="dnFB">tap to load</div>
-      <input type="file" accept="image/*" id="inDB">
-    </div>
-    <div class="upload-zone">
-      <div class="icon">📐</div>
-      <div class="lbl">Angled photos</div>
-      <div class="name" id="dnA">tap to load</div>
-      <input type="file" accept="image/*" multiple id="inDA">
-    </div>
+<div class="card" style="padding:8px">
+  <canvas id="cv"></canvas>
+</div>
+
+<div class="card">
+  <div class="hint">Drag the <span style="color:var(--color-danger)">red</span> handles to the physical card edge. Drag the <span style="color:var(--color-info)">blue</span> handles to the inner printed border. Arrow keys nudge the active guide — hold Shift for 10px steps. Scroll to zoom.</div>
+</div>
+
+<div class="results">
+  <div class="metric"><div class="k">Front left / right</div><div class="v" id="rFL">—</div><div class="g" id="rFLg"></div></div>
+  <div class="metric"><div class="k">Front top / bottom</div><div class="v" id="rFT">—</div><div class="g" id="rFTg"></div></div>
+  <div class="metric"><div class="k">Back left / right</div><div class="v" id="rBL">—</div><div class="g" id="rBLg"></div></div>
+  <div class="metric"><div class="k">Back top / bottom</div><div class="v" id="rBT">—</div><div class="g" id="rBTg"></div></div>
+</div>
+
+<div class="summary" id="summary">Load a front and back image, then align the guides to measure centering.</div>
+```
+
   </div>
 
-  <div class="toolbar">
-    <button class="btn run" onclick="runDeep()">Run pre-grade analysis ↗</button>
-    <button class="btn" onclick="exportDeep()">Export</button>
-    <button class="btn" onclick="clearDeep()">Clear</button>
+  <div id="secDeep" class="sec" style="display:none">
+    <div class="card">
+      <div class="row">
+        <div class="upload-zone">
+          <div class="ico">🔦</div>
+          <div class="lbl">Flat front</div>
+          <div class="name" id="dnFF">tap to load</div>
+          <input type="file" accept="image/*" id="inDF">
+        </div>
+        <div class="upload-zone">
+          <div class="ico">🔦</div>
+          <div class="lbl">Flat back</div>
+          <div class="name" id="dnFB">tap to load</div>
+          <input type="file" accept="image/*" id="inDB">
+        </div>
+        <div class="upload-zone">
+          <div class="ico">📐</div>
+          <div class="lbl">Angled photos (multiple ok)</div>
+          <div class="name" id="dnA">tap to load</div>
+          <input type="file" accept="image/*" multiple id="inDA">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="run" onclick="runDeep()">Run pre-grade analysis</button>
+        <button onclick="exportDeep()">Export summary</button>
+        <button onclick="clearDeep()">Clear</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ai-out" id="deepOut">Upload flat and angled photos, then tap Run pre-grade analysis.</div>
+    </div>
   </div>
-
-  <div class="ai-out" id="deepOut">Upload flat and angled photos, then run the analysis.</div>
-</div>
-</div>
+</main>
 
 <script>
 const $=s=>document.querySelector(s);
-let curTab='center', curSide='front', curGuide='outer', contrast=false;
+let curSide='front',curGuide='outer',contrast=false;
 const states={
-  front:{img:null,name:'',iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null,rot:0},
-  back:{img:null,name:'',iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null,rot:0}
+  front:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null},
+  back:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null}
 };
 let drag=null,last=null;
-const cv=$('#cv'), ctx=cv.getContext('2d');
+const cv=$('#cv'),ctx=cv.getContext('2d');
 
 function switchTab(t){
-  curTab=t;
   $('#tCenter').classList.toggle('on',t==='center');
   $('#tDeep').classList.toggle('on',t==='deep');
   $('#secCenter').style.display=t==='center'?'flex':'none';
@@ -142,10 +176,12 @@ function switchTab(t){
 }
 
 function resizeCanvas(){
-  const cw=cv.parentElement.offsetWidth||340;
-  cv.width=cw*devicePixelRatio; cv.height=Math.round(cw*.68)*devicePixelRatio;
-  cv.style.width=cw+'px'; cv.style.height=Math.round(cw*.68)+'px';
-  fitView(); draw();
+  const cw=cv.parentElement.clientWidth-16||360;
+  cv.width=cw*devicePixelRatio;
+  cv.height=Math.round(cw*.68)*devicePixelRatio;
+  cv.style.width=cw+'px';
+  cv.style.height=Math.round(cw*.68)+'px';
+  fitView();draw();
 }
 window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(resizeCanvas,120)});
 
@@ -156,38 +192,39 @@ function loadImg(file,side){
   const img=new Image();
   img.onload=()=>{
     const s=states[side];
-    s.img=img; s.name=file.name; s.iw=img.width; s.ih=img.height;
-    resetGuides(side); fitFor(side); if(curSide===side)draw(); updateMetrics();
+    s.img=img;s.iw=img.width;s.ih=img.height;
+    resetGuides(side);fitFor(side);
+    if(curSide===side){draw();}
+    updateMetrics();
   };
   img.src=URL.createObjectURL(file);
 }
-$('#inFront').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'front');$('#fnFront').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
-$('#inBack').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'back');$('#fnBack').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
+$('#inFront').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'front');$('#fnFront').textContent=f.name.length>20?f.name.slice(0,18)+'…':f.name}});
+$('#inBack').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'back');$('#fnBack').textContent=f.name.length>20?f.name.slice(0,18)+'…':f.name}});
 $('#selSide').addEventListener('change',e=>{curSide=e.target.value;draw()});
 $('#selGuide').addEventListener('change',e=>{curGuide=e.target.value});
 
 function resetGuides(side){
-  const s=states[side]; if(!s.img)return;
+  const s=states[side];if(!s.img)return;
   s.outer={x:s.iw*.07,y:s.ih*.06,w:s.iw*.86,h:s.ih*.88};
   s.inner={x:s.iw*.16,y:s.ih*.13,w:s.iw*.68,h:s.ih*.74};
 }
 function fitFor(side){
-  const s=states[side]; if(!s.img)return;
-  const pad=20*devicePixelRatio;
+  const s=states[side];if(!s.img)return;
+  const pad=24*devicePixelRatio;
   s.zoom=Math.min((cv.width-pad*2)/s.iw,(cv.height-pad*2)/s.ih);
-  s.ox=(cv.width-s.iw*s.zoom)/2; s.oy=(cv.height-s.ih*s.zoom)/2;
+  s.ox=(cv.width-s.iw*s.zoom)/2;s.oy=(cv.height-s.ih*s.zoom)/2;
 }
 function fitView(){fitFor(curSide);draw()}
 function resetG(){resetGuides(curSide);draw();updateMetrics()}
 function toggleContrast(){contrast=!contrast;$('#btnContrast').classList.toggle('active',contrast);draw()}
 
 function rotateImg(){
-  const s=st(); if(!s.img)return;
+  const s=st();if(!s.img)return;
   const tmp=document.createElement('canvas');
-  tmp.width=s.ih; tmp.height=s.iw;
+  tmp.width=s.ih;tmp.height=s.iw;
   const tx=tmp.getContext('2d');
-  tx.translate(tmp.width/2,tmp.height/2);
-  tx.rotate(Math.PI/2);
+  tx.translate(tmp.width/2,tmp.height/2);tx.rotate(Math.PI/2);
   tx.drawImage(s.img,-s.iw/2,-s.ih/2);
   const ni=new Image();
   ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};
@@ -197,17 +234,16 @@ function rotateImg(){
 function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
 function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
 function corners(r){return{tl:{x:r.x,y:r.y},tr:{x:r.x+r.w,y:r.y},bl:{x:r.x,y:r.y+r.h},br:{x:r.x+r.w,y:r.y+r.h}}}
-const HANDLE=9;
+const HANDLE=10;
 
 function hitTest(s,x,y){
   const p=s2i(s,x,y);
-  for(const gname of['inner','outer']){
-    const r=s[gname]; if(!r)continue;
-    const cs=corners(r);
-    for(const k in cs){
-      if(Math.hypot(p.x-cs[k].x,p.y-cs[k].y)<HANDLE/s.zoom)return{shape:gname,kind:k};
+  for(const gn of['inner','outer']){
+    const r=s[gn];if(!r)continue;
+    for(const[k,h]of Object.entries(corners(r))){
+      if(Math.hypot(p.x-h.x,p.y-h.y)<HANDLE/s.zoom)return{shape:gn,kind:k};
     }
-    if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:gname,kind:'move'};
+    if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:gn,kind:'move'};
   }
   return null;
 }
@@ -215,12 +251,12 @@ function hitTest(s,x,y){
 function clamp(s,which){
   const r=s[which];
   if(which==='outer'){
-    r.w=Math.max(10,Math.min(r.w,s.iw)); r.h=Math.max(10,Math.min(r.h,s.ih));
-    r.x=Math.max(0,Math.min(r.x,s.iw-r.w)); r.y=Math.max(0,Math.min(r.y,s.ih-r.h));
-  } else {
+    r.w=Math.max(10,Math.min(r.w,s.iw));r.h=Math.max(10,Math.min(r.h,s.ih));
+    r.x=Math.max(0,Math.min(r.x,s.iw-r.w));r.y=Math.max(0,Math.min(r.y,s.ih-r.h));
+  }else{
     const o=s.outer||{x:0,y:0,w:s.iw,h:s.ih};
-    r.w=Math.max(10,Math.min(r.w,o.w)); r.h=Math.max(10,Math.min(r.h,o.h));
-    r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w)); r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h));
+    r.w=Math.max(10,Math.min(r.w,o.w));r.h=Math.max(10,Math.min(r.h,o.h));
+    r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w));r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h));
   }
 }
 
@@ -238,45 +274,40 @@ function moveRect(s,shape,kind,dx,dy){
 }
 
 function drawHandle(px,py,color,sz){
-  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.strokeStyle='rgba(0,0,0,0.5)';ctx.lineWidth=3*devicePixelRatio;
   ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
   ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
-  ctx.strokeStyle='rgba(0,0,0,0.4)';ctx.lineWidth=3;
-  ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
-  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  ctx.strokeStyle=color;ctx.lineWidth=1.5*devicePixelRatio;
   ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
   ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
 }
 
-function drawGuide(s,r,color,active){
+function drawGuide(s,r,color,isActive){
   const p=i2s(s,r.x,r.y);
-  ctx.strokeStyle=color; ctx.lineWidth=active?2:1.5;
-  ctx.setLineDash(active?[]:[6,4]); ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom); ctx.setLineDash([]);
-  const sz=7;
+  ctx.strokeStyle=color;ctx.lineWidth=(isActive?2:1.5)*devicePixelRatio;
+  ctx.setLineDash(isActive?[]:[6*devicePixelRatio,4*devicePixelRatio]);
+  ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom);
+  ctx.setLineDash([]);
   for(const h of Object.values(corners(r))){
-    const q=i2s(s,h.x,h.y); drawHandle(q.x,q.y,color,sz);
+    const q=i2s(s,h.x,h.y);drawHandle(q.x,q.y,color,8*devicePixelRatio);
   }
-  const mx=p.x+r.w*s.zoom/2, my=p.y+r.h*s.zoom/2;
-  ctx.font=`${Math.round(10*devicePixelRatio)}px system-ui`; ctx.fillStyle=color; ctx.textAlign='center';
-  ctx.fillText(active?'active':'',mx,my-4);
 }
 
 function draw(){
   ctx.clearRect(0,0,cv.width,cv.height);
   const s=st();
   if(!s.img){
-    ctx.fillStyle='rgba(128,128,128,0.4)';
-    ctx.font=`${14*devicePixelRatio}px system-ui`; ctx.textAlign='center';
+    ctx.fillStyle='rgba(138,150,173,0.35)';
+    ctx.font=`${13*devicePixelRatio}px system-ui`;ctx.textAlign='center';
     ctx.fillText('Load a front or back image above',cv.width/2,cv.height/2);
     return;
   }
-  ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.filter=contrast?'contrast(1.3) saturate(0.85)':'none';
+  ctx.fillStyle='#050709';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.filter=contrast?'contrast(1.3) saturate(0.8)':'none';
   ctx.drawImage(s.img,s.ox,s.oy,s.iw*s.zoom,s.ih*s.zoom);
   ctx.filter='none';
   if(s.outer)drawGuide(s,s.outer,'#ff6060',curGuide==='outer');
-  if(s.inner)drawGuide(s,s.inner,'#5ba0ff',curGuide==='inner');
+  if(s.inner)drawGuide(s,s.inner,'#4a9eff',curGuide==='inner');
 }
 
 function evtXY(e){
@@ -286,54 +317,53 @@ function evtXY(e){
 }
 
 cv.addEventListener('pointerdown',e=>{
-  const s=st(); if(!s.img)return;
+  const s=st();if(!s.img)return;
   cv.setPointerCapture(e.pointerId);
-  const {x,y}=evtXY(e); last={x,y};
+  const{x,y}=evtXY(e);last={x,y};
   const h=hitTest(s,x,y);
-  if(h){drag=h; curGuide=h.shape; $('#selGuide').value=curGuide;}
+  if(h){drag=h;curGuide=h.shape;$('#selGuide').value=curGuide;}
   else drag={shape:'pan',kind:'pan'};
 });
 cv.addEventListener('pointermove',e=>{
-  const s=st(); if(!s.img||!drag)return;
-  const {x,y}=evtXY(e); const dx=(x-last.x)/s.zoom, dy=(y-last.y)/s.zoom;
+  const s=st();if(!s.img||!drag)return;
+  const{x,y}=evtXY(e);
+  const dx=(x-last.x)/s.zoom,dy=(y-last.y)/s.zoom;
   if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y;}
-  else{moveRect(s,drag.shape,drag.kind,dx,dy); updateMetrics();}
-  last={x,y}; draw();
+  else{moveRect(s,drag.shape,drag.kind,dx,dy);updateMetrics();}
+  last={x,y};draw();
 });
 cv.addEventListener('pointerup',()=>drag=null);
 cv.addEventListener('pointercancel',()=>drag=null);
 cv.addEventListener('wheel',e=>{
-  e.preventDefault(); const s=st(); if(!s.img)return;
-  const f=e.deltaY<0?1.1:.9; s.zoom=Math.max(.1,Math.min(30,s.zoom*f)); draw();
+  e.preventDefault();const s=st();if(!s.img)return;
+  const f=e.deltaY<0?1.1:.9;s.zoom=Math.max(.08,Math.min(30,s.zoom*f));draw();
 },{passive:false});
 
 window.addEventListener('keydown',e=>{
   if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
-  const s=st(); if(!s.img)return; e.preventDefault();
+  const s=st();if(!s.img)return;e.preventDefault();
   const d=e.shiftKey?10:1;
   moveRect(s,curGuide,'move',
     e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0,
     e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0);
-  draw(); updateMetrics();
+  draw();updateMetrics();
 });
 
 function calcMetrics(side){
-  const s=states[side]; if(!s.img||!s.outer||!s.inner)return null;
+  const s=states[side];if(!s.img||!s.outer||!s.inner)return null;
   const o=s.outer,i=s.inner;
-  const L=i.x-o.x, R=(o.x+o.w)-(i.x+i.w);
-  const T=i.y-o.y, B=(o.y+o.h)-(i.y+i.h);
-  const lr=gradeRatio(L,R), tb=gradeRatio(T,B);
-  return{L,R,T,B,lr,tb,lrStr:ratioStr(L,R),tbStr:ratioStr(T,B)};
+  const L=i.x-o.x,R=(o.x+o.w)-(i.x+i.w);
+  const T=i.y-o.y,B=(o.y+o.h)-(i.y+i.h);
+  return{L,R,T,B,lr:gradeRatio(L,R),tb:gradeRatio(T,B),lrStr:ratioStr(L,R),tbStr:ratioStr(T,B)};
 }
 
 function ratioStr(a,b){
-  const s=a+b; if(s<1)return'—';
-  const mn=Math.min(a,b),mx=Math.max(a,b);
-  return`${Math.round(100*mn/s)}/${Math.round(100*mx/s)}`;
+  const s=a+b;if(s<1)return'—';
+  return`${Math.round(100*Math.min(a,b)/s)}/${Math.round(100*Math.max(a,b)/s)}`;
 }
 
 function gradeRatio(a,b){
-  const s=a+b; if(s<1)return null;
+  const s=a+b;if(s<1)return null;
   const pct=Math.max(a,b)/s*100;
   if(pct<=55)return{label:'PSA 10 / BGS 9.5+',cls:'good'};
   if(pct<=60)return{label:'PSA 9 / BGS 9',cls:'good'};
@@ -343,14 +373,16 @@ function gradeRatio(a,b){
 }
 
 function setMetric(vEl,gEl,m,key){
-  if(!m){vEl.textContent='—';gEl.textContent='';return;}
-  const val=m[key+'Str']; const grade=m[key];
-  vEl.textContent=val;
-  if(grade){vEl.className='v '+grade.cls;gEl.textContent=grade.label;gEl.className='grade '+grade.cls;}
+  if(!m){vEl.textContent='—';vEl.className='v';gEl.textContent='';return;}
+  const grade=m[key];
+  vEl.textContent=m[key+'Str'];
+  vEl.className='v'+(grade?' '+grade.cls:'');
+  if(grade){gEl.textContent=grade.label;gEl.className='g '+grade.cls;}
+  else gEl.textContent='';
 }
 
 function updateMetrics(){
-  const f=calcMetrics('front'), b=calcMetrics('back');
+  const f=calcMetrics('front'),b=calcMetrics('back');
   setMetric($('#rFL'),$('#rFLg'),f,'lr');
   setMetric($('#rFT'),$('#rFTg'),f,'tb');
   setMetric($('#rBL'),$('#rBLg'),b,'lr');
@@ -360,7 +392,7 @@ function updateMetrics(){
   if(b)lines.push(`Back: ${b.lrStr} L/R, ${b.tbStr} T/B`);
   if(!lines.length){$('#summary').innerHTML='Load images and align the red and blue guides.';return;}
   lines.push('');
-  lines.push('<b>Note:</b> These are estimated ratios from manual guide placement. Compare against current grading company standards. Pre-screen only.');
+  lines.push('<b>Note:</b> Pre-screen only. Compare against current PSA / BGS / CGC standards before submitting.');
   $('#summary').innerHTML=lines.join('<br>');
 }
 
@@ -373,13 +405,18 @@ function exportCsv(){
   dl('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv');
 }
 
-function dl(name,text,type){const b=new Blob([text],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
+function dl(name,text,type){
+  const b=new Blob([text],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();
+}
 
+// Deep review
 let deepImgs={ff:null,fb:null,angled:[]};
+
 function loadDI(el,key,nameEl,multi){
   el.addEventListener('change',e=>{
-    const files=[...e.target.files]; if(!files.length)return;
-    $(nameEl).textContent=multi?`${files.length} file(s)`:files[0].name.slice(0,18);
+    const files=[...e.target.files];if(!files.length)return;
+    $(nameEl).textContent=multi?`${files.length} file(s) loaded`:files[0].name.slice(0,20);
     const load=(f,cb)=>{const i=new Image();i.onload=()=>cb(i);i.src=URL.createObjectURL(f)};
     if(multi){deepImgs[key]=[];files.forEach((f,idx)=>load(f,img=>deepImgs[key][idx]=img));}
     else load(files[0],img=>deepImgs[key]=img);
@@ -391,17 +428,26 @@ loadDI($('#inDA'),'angled','#dnA',true);
 
 function pixelStats(img){
   const c=document.createElement('canvas');
-  c.width=Math.min(800,img.width); c.height=Math.round(img.height*c.width/img.width);
-  const x=c.getContext('2d'); x.drawImage(img,0,0,c.width,c.height);
+  c.width=Math.min(800,img.width);c.height=Math.round(img.height*c.width/img.width);
+  const x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
   const d=x.getImageData(0,0,c.width,c.height).data;
   let br=0,gl=0,sat=0;
   for(let i=0;i<d.length;i+=4){
     const r=d[i],g=d[i+1],b=d[i+2];
-    const lum=.2126*r+.7152*g+.0722*b; br+=lum; if(lum>248)gl++;
-    const mx=Math.max(r,g,b),mn=Math.min(r,g,b); sat+=(mx-mn)/(mx||1);
+    const lum=.2126*r+.7152*g+.0722*b;br+=lum;if(lum>248)gl++;
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b);sat+=(mx-mn)/(mx||1);
   }
   const n=d.length/4;
   return{brightness:br/n,glarePct:gl/n*100,saturation:sat/n*255};
+}
+
+function analyzeImg(label,img){
+  if(!img)return`${label}: not uploaded`;
+  const s=pixelStats(img);
+  const bStatus=s.brightness<50?'⚠ very dark — rescan recommended':s.brightness>215?'⚠ overexposed — highlights clipped':'✓ exposure usable';
+  const gStatus=s.glarePct>4?`⚠ ${s.glarePct.toFixed(1)}% hotspot pixels — review lighting`:s.glarePct>1.5?`△ ${s.glarePct.toFixed(1)}% hotspot pixels — mild glare present`:`${s.glarePct.toFixed(2)}% hotspot pixels — low glare`;
+  const satStatus=s.saturation<20?'⚠ nearly grayscale — check white balance':'✓ color saturation normal';
+  return`${label}\n  Brightness ${s.brightness.toFixed(0)}/255  ${bStatus}\n  Glare      ${gStatus}\n  Color      ${satStatus}`;
 }
 
 function runDeep(){
@@ -409,40 +455,31 @@ function runDeep(){
   if(!deepImgs.ff&&!deepImgs.fb&&!deepImgs.angled.length){
     out.textContent='Please upload at least one image first.';return;
   }
-  out.textContent='Analyzing…';
-
   const parts=[];
-  function analyze(label,img){
-    if(!img)return`${label}: not uploaded`;
-    const s=pixelStats(img);
-    const bStatus=s.brightness<50?'⚠ very dark — consider rescanning':s.brightness>215?'⚠ overexposed — highlights clipped':'✓ exposure looks usable';
-    const gStatus=s.glarePct>4?`⚠ ${s.glarePct.toFixed(1)}% hotspot pixels — check lighting`:s.glarePct>1.5?`△ ${s.glarePct.toFixed(1)}% hotspot pixels — mild glare`:s.glarePct.toFixed(2)+'% hotspot pixels — low glare';
-    const satStatus=s.saturation<20?'⚠ nearly grayscale — check white balance':'✓ color saturation normal';
-    return`${label}\n  Brightness ${s.brightness.toFixed(0)}/255  ${bStatus}\n  Glare  ${gStatus}\n  Color  ${satStatus}`;
-  }
-
   parts.push('── Flat scans ──');
-  parts.push(analyze('Front (flat)',deepImgs.ff));
-  parts.push(analyze('Back (flat)',deepImgs.fb));
-
+  parts.push(analyzeImg('Front (flat)',deepImgs.ff));
+  parts.push(analyzeImg('Back (flat)',deepImgs.fb));
   if(deepImgs.angled&&deepImgs.angled.length){
     parts.push('\n── Angled photos ──');
-    deepImgs.angled.forEach((img,i)=>{
-      if(img)parts.push(analyze(`Angled ${i+1}`,img));
-    });
+    deepImgs.angled.forEach((img,i)=>{if(img)parts.push(analyzeImg(`Angled ${i+1}`,img))});
   }
-
-  parts.push('\n── Surface / defect risk flags ──');
-  parts.push('• Check angled-photo hotspots for scratches, print lines, indentations, or gloss interruptions.');
-  parts.push('• Bright white edge pixels in flat scans may indicate edge whitening — review closely.');
-  parts.push('• Roller marks, foil shifting, and holo damage are not detectable from pixel stats alone — use your eye on the angled photos.');
-  parts.push('\nThis pre-screen flags photographic risks only. It does not predict PSA / BGS / CGC outcome.');
-
+  parts.push('\n── Surface / defect risk notes ──');
+  parts.push('• Review angled-photo hotspots for scratches, print lines, indentations, or gloss breaks.');
+  parts.push('• Bright white edge pixels in flat scans may indicate edge whitening — inspect closely.');
+  parts.push('• Roller marks, foil shifting, and holo damage cannot be detected from pixel stats alone.');
+  parts.push('\nThis tool flags photographic risk only. It does not predict PSA / BGS / CGC outcome.');
   out.textContent=parts.join('\n');
 }
 
 function exportDeep(){dl('pregrader_summary.txt',$('#deepOut').textContent,'text/plain')}
-function clearDeep(){deepImgs={ff:null,fb:null,angled:[]};$('#deepOut').textContent='Cleared. Upload new photos and run again.';$('#dnFF').textContent='tap to load';$('#dnFB').textContent='tap to load';$('#dnA').textContent='tap to load'}
+function clearDeep(){
+  deepImgs={ff:null,fb:null,angled:[]};
+  $('#deepOut').textContent='Cleared. Upload new photos and run again.';
+  ['#dnFF','#dnFB','#dnA'].forEach(id=>$(id).textContent='tap to load');
+}
 
-setTimeout(resizeCanvas,50);
+setTimeout(resizeCanvas,60);
 </script>
+
+</body>
+</html>
