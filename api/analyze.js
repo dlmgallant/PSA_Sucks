@@ -10,14 +10,19 @@ module.exports = async function handler(req, res) {
     var incoming = req.body;
     var contents = incoming.contents || [];
     var contentParts = [];
+    var textBuffer = "";
 
     for (var i = 0; i < contents.length; i++) {
       var parts = contents[i].parts || [];
       for (var j = 0; j < parts.length; j++) {
         var part = parts[j];
         if (part.text) {
-          contentParts.push({ type: "text", text: part.text });
+          textBuffer += part.text + "\n";
         } else if (part.inlineData) {
+          if (textBuffer.trim()) {
+            contentParts.push({ type: "text", text: textBuffer.trim() });
+            textBuffer = "";
+          }
           contentParts.push({
             type: "image_url",
             image_url: {
@@ -29,6 +34,10 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    if (textBuffer.trim()) {
+      contentParts.push({ type: "text", text: textBuffer.trim() });
+    }
+
     var openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -38,7 +47,16 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         model: "gpt-4o",
         max_tokens: 1500,
-        messages: [{ role: "user", content: contentParts }]
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert TCG card grader. You will be shown photos of trading cards. Always analyze the actual images provided — never say you cannot see the images."
+          },
+          {
+            role: "user",
+            content: contentParts
+          }
+        ]
       })
     });
 
