@@ -39,8 +39,14 @@ button.active{background:#0e2245;border-color:var(--info);color:var(--info)}
 button.run-btn{background:linear-gradient(135deg,#1a5cff,#0a3db5);color:#fff;border:none;padding:9px 18px;font-size:13px;box-shadow:0 2px 12px #1a5cff40}
 button.run-btn:hover{background:linear-gradient(135deg,#2a6cff,#1a4dc5);box-shadow:0 4px 16px #1a5cff50}
 button.run-btn:disabled{opacity:.45;cursor:not-allowed}
-canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);border:1px solid var(--border);touch-action:none;cursor:crosshair}
+button.crop-btn.cropping{background:#0e2245;border-color:var(--warning);color:var(--warning)}
+.canvas-wrap{position:relative;border-radius:var(--rad);overflow:hidden;border:1px solid var(--border);background:#03040a}
+canvas{display:block;width:100%;background:#03040a;touch-action:none}
+#cropOverlay{position:absolute;inset:0;pointer-events:none;display:none}
+#cropOverlay.active{display:block;pointer-events:all;cursor:crosshair}
 .hint{font-size:11px;color:var(--muted);line-height:1.6}
+.rot-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rot-label{font-size:11px;color:var(--muted);margin-right:2px}
 .results{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 .metric{background:var(--panel2);border-radius:var(--rad);padding:11px 13px;border:1px solid var(--border)}
 .metric .k{font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
@@ -118,21 +124,46 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
         </div>
       </div>
     </div>
+
     <div class="card">
       <div class="toolbar">
         <select id="selSide"><option value="front">Front</option><option value="back">Back</option></select>
         <select id="selGuide"><option value="outer">Red — card edge</option><option value="inner">Blue — printed border</option></select>
         <button onclick="fitView()">Fit</button>
-        <button onclick="rotateImg()">Rotate</button>
         <button id="btnContrast" onclick="toggleContrast()">Contrast</button>
         <button onclick="resetG()">Reset guides</button>
         <button onclick="exportCsv()">CSV</button>
       </div>
     </div>
-    <div class="card" style="padding:8px"><canvas id="cv"></canvas></div>
+
+    <!-- Rotation controls -->
     <div class="card">
-      <div class="hint">Drag <span style="color:var(--danger)">red</span> handles to the physical card edge. Drag <span style="color:var(--info)">blue</span> handles to the printed border. Arrow keys nudge — Shift for 10px. Scroll to zoom.</div>
+      <div class="rot-controls">
+        <span class="rot-label">Rotate:</span>
+        <button onclick="rotateImg(-90)">↺ 90°</button>
+        <button onclick="rotateImg(90)">↻ 90°</button>
+        <button onclick="rotateImg(-1)">← 1°</button>
+        <button onclick="rotateImg(1)">→ 1°</button>
+        <button onclick="rotateImg(-0.25)">← 0.25°</button>
+        <button onclick="rotateImg(0.25)">→ 0.25°</button>
+        <button id="cropBtn" class="crop-btn" onclick="toggleCrop()">✂ Crop</button>
+        <button onclick="applyCrop()" id="applyCropBtn" style="display:none">Apply crop</button>
+        <button onclick="cancelCrop()" id="cancelCropBtn" style="display:none">Cancel</button>
+      </div>
+      <div id="cropHint" style="display:none;margin-top:8px" class="hint">Draw a rectangle on the image to select the crop area, then tap Apply crop.</div>
     </div>
+
+    <div class="card" style="padding:8px">
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="cv"></canvas>
+        <canvas id="cropOverlay"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hint">Drag <span style="color:var(--danger)">red</span> handles to the physical card edge. Drag <span style="color:var(--info)">blue</span> handles to the printed border. Arrow keys nudge — Shift for 10px. Ctrl/Cmd + scroll to zoom.</div>
+    </div>
+
     <div class="results">
       <div class="metric"><div class="k">Front L / R</div><div class="v" id="rFL">—</div><div class="g" id="rFLg"></div></div>
       <div class="metric"><div class="k">Front T / B</div><div class="v" id="rFT">—</div><div class="g" id="rFTg"></div></div>
@@ -176,7 +207,7 @@ canvas{display:block;width:100%;background:#03040a;border-radius:var(--rad);bord
     <div class="ai-wrap">
       <div class="ai-header">
         <div class="ai-dot" id="aiDot"></div>
-        <span class="ai-label">Gemini AI Pre-Grade</span>
+        <span class="ai-label">GPT-4o AI Pre-Grade</span>
         <span class="ai-status" id="aiStatus">Ready</span>
       </div>
       <div class="ai-body placeholder" id="deepOut">Upload card photos then tap Analyze — free for everyone.</div>
@@ -192,7 +223,9 @@ const states={
   back:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null}
 };
 let drag=null,last=null,lastRawText='';
+let cropping=false,cropStart=null,cropRect=null;
 const cv=$('#cv'),ctx=cv.getContext('2d');
+const cropCv=$('#cropOverlay'),cropCtx=cropCv.getContext('2d');
 
 function switchTab(t){
   $('#tCenter').classList.toggle('on',t==='center');
@@ -202,9 +235,11 @@ function switchTab(t){
 }
 
 function resizeCanvas(){
-  const cw=cv.parentElement.clientWidth-16||360;
+  const cw=cv.parentElement.clientWidth||360;
   cv.width=cw*devicePixelRatio;cv.height=Math.round(cw*.68)*devicePixelRatio;
   cv.style.width=cw+'px';cv.style.height=Math.round(cw*.68)+'px';
+  cropCv.width=cv.width;cropCv.height=cv.height;
+  cropCv.style.width=cv.style.width;cropCv.style.height=cv.style.height;
   fitView();draw();
 }
 window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(resizeCanvas,120)});
@@ -228,12 +263,91 @@ function fitView(){fitFor(curSide);draw()}
 function resetG(){resetGuides(curSide);draw();updateMetrics()}
 function toggleContrast(){contrast=!contrast;$('#btnContrast').classList.toggle('active',contrast);draw()}
 
-function rotateImg(){
+// Rotation — supports arbitrary angles including small increments
+function rotateImg(deg){
   const s=st();if(!s.img)return;
-  const tmp=document.createElement('canvas');tmp.width=s.ih;tmp.height=s.iw;
-  const tx=tmp.getContext('2d');tx.translate(tmp.width/2,tmp.height/2);tx.rotate(Math.PI/2);tx.drawImage(s.img,-s.iw/2,-s.ih/2);
-  const ni=new Image();ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};ni.src=tmp.toDataURL();
+  const rad=deg*Math.PI/180;
+  const cos=Math.abs(Math.cos(rad)),sin=Math.abs(Math.sin(rad));
+  const nw=Math.round(s.iw*cos+s.ih*sin);
+  const nh=Math.round(s.iw*sin+s.ih*cos);
+  const tmp=document.createElement('canvas');
+  tmp.width=nw;tmp.height=nh;
+  const tx=tmp.getContext('2d');
+  tx.translate(nw/2,nh/2);tx.rotate(rad);
+  tx.drawImage(s.img,-s.iw/2,-s.ih/2);
+  const ni=new Image();
+  ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};
+  ni.src=tmp.toDataURL();
 }
+
+// Crop tool
+function toggleCrop(){
+  cropping=!cropping;
+  cropRect=null;
+  $('#cropBtn').classList.toggle('cropping',cropping);
+  $('#applyCropBtn').style.display=cropping?'inline-block':'none';
+  $('#cancelCropBtn').style.display=cropping?'inline-block':'none';
+  $('#cropHint').style.display=cropping?'block':'none';
+  cropCv.style.display=cropping?'block':'none';
+  cropCv.className=cropping?'active':'';
+  if(!cropping)cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
+}
+
+function cancelCrop(){
+  cropping=false;cropRect=null;
+  $('#cropBtn').classList.remove('cropping');
+  $('#applyCropBtn').style.display='none';
+  $('#cancelCropBtn').style.display='none';
+  $('#cropHint').style.display='none';
+  cropCv.style.display='none';
+  cropCv.className='';
+  cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
+}
+
+function applyCrop(){
+  if(!cropRect)return;
+  const s=st();if(!s.img)return;
+  const ix=Math.round((cropRect.x-s.ox)/s.zoom);
+  const iy=Math.round((cropRect.y-s.oy)/s.zoom);
+  const iw=Math.round(cropRect.w/s.zoom);
+  const ih=Math.round(cropRect.h/s.zoom);
+  if(iw<10||ih<10)return;
+  const tmp=document.createElement('canvas');
+  tmp.width=iw;tmp.height=ih;
+  tmp.getContext('2d').drawImage(s.img,ix,iy,iw,ih,0,0,iw,ih);
+  const ni=new Image();
+  ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};
+  ni.src=tmp.toDataURL();
+  cancelCrop();
+}
+
+function evtXY(e){
+  const r=cv.getBoundingClientRect();
+  const src=e.touches?e.touches[0]:e;
+  return{x:(src.clientX-r.left)*devicePixelRatio,y:(src.clientY-r.top)*devicePixelRatio};
+}
+
+// Crop canvas events
+cropCv.addEventListener('pointerdown',e=>{
+  if(!cropping)return;
+  const{x,y}=evtXY(e);
+  cropStart={x,y};cropRect=null;
+  cropCv.setPointerCapture(e.pointerId);
+});
+cropCv.addEventListener('pointermove',e=>{
+  if(!cropping||!cropStart)return;
+  const{x,y}=evtXY(e);
+  const rx=Math.min(x,cropStart.x),ry=Math.min(y,cropStart.y);
+  const rw=Math.abs(x-cropStart.x),rh=Math.abs(y-cropStart.y);
+  cropRect={x:rx,y:ry,w:rw,h:rh};
+  cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
+  cropCtx.fillStyle='rgba(0,0,0,0.45)';
+  cropCtx.fillRect(0,0,cropCv.width,cropCv.height);
+  cropCtx.clearRect(rx,ry,rw,rh);
+  cropCtx.strokeStyle='#fff';cropCtx.lineWidth=1.5;
+  cropCtx.strokeRect(rx,ry,rw,rh);
+});
+cropCv.addEventListener('pointerup',()=>cropStart=null);
 
 function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
 function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
@@ -290,12 +404,43 @@ function draw(){
   if(s.inner)drawGuide(s,s.inner,'#4a9eff',curGuide==='inner');
 }
 
-function evtXY(e){const r=cv.getBoundingClientRect();const src=e.touches?e.touches[0]:e;return{x:(src.clientX-r.left)*devicePixelRatio,y:(src.clientY-r.top)*devicePixelRatio}}
-cv.addEventListener('pointerdown',e=>{const s=st();if(!s.img)return;cv.setPointerCapture(e.pointerId);const{x,y}=evtXY(e);last={x,y};const h=hitTest(s,x,y);if(h){drag=h;curGuide=h.shape;$('#selGuide').value=curGuide}else drag={shape:'pan',kind:'pan'}});
-cv.addEventListener('pointermove',e=>{const s=st();if(!s.img||!drag)return;const{x,y}=evtXY(e);const dx=(x-last.x)/s.zoom,dy=(y-last.y)/s.zoom;if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y}else{moveRect(s,drag.shape,drag.kind,dx,dy);updateMetrics()}last={x,y};draw()});
-cv.addEventListener('pointerup',()=>drag=null);cv.addEventListener('pointercancel',()=>drag=null);
-cv.addEventListener('wheel',e=>{e.preventDefault();const s=st();if(!s.img)return;const f=e.deltaY<0?1.1:.9;s.zoom=Math.max(.08,Math.min(30,s.zoom*f));draw()},{passive:false});
-window.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;const s=st();if(!s.img)return;e.preventDefault();const d=e.shiftKey?10:1;moveRect(s,curGuide,'move',e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0,e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0);draw();updateMetrics()});
+cv.addEventListener('pointerdown',e=>{
+  if(cropping)return;
+  const s=st();if(!s.img)return;
+  cv.setPointerCapture(e.pointerId);
+  const{x,y}=evtXY(e);last={x,y};
+  const h=hitTest(s,x,y);
+  if(h){drag=h;curGuide=h.shape;$('#selGuide').value=curGuide}
+  else drag={shape:'pan',kind:'pan'};
+});
+cv.addEventListener('pointermove',e=>{
+  const s=st();if(!s.img||!drag)return;
+  const{x,y}=evtXY(e);
+  const dx=(x-last.x)/s.zoom,dy=(y-last.y)/s.zoom;
+  if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y}
+  else{moveRect(s,drag.shape,drag.kind,dx,dy);updateMetrics()}
+  last={x,y};draw();
+});
+cv.addEventListener('pointerup',()=>drag=null);
+cv.addEventListener('pointercancel',()=>drag=null);
+
+// Fixed scroll — only zoom when Ctrl/Cmd held, otherwise scroll page normally
+cv.addEventListener('wheel',e=>{
+  if(!e.ctrlKey&&!e.metaKey)return;
+  e.preventDefault();
+  const s=st();if(!s.img)return;
+  const f=e.deltaY<0?1.06:.94;
+  s.zoom=Math.max(.08,Math.min(30,s.zoom*f));
+  draw();
+},{passive:false});
+
+window.addEventListener('keydown',e=>{
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
+  const s=st();if(!s.img)return;e.preventDefault();
+  const d=e.shiftKey?10:1;
+  moveRect(s,curGuide,'move',e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0,e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0);
+  draw();updateMetrics();
+});
 
 function calcMetrics(side){
   const s=states[side];if(!s.img||!s.outer||!s.inner)return null;
@@ -323,11 +468,9 @@ function exportCsv(){
   dl('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv');
 }
 
-// ── Parse and render AI response into styled sections ──
 function parseAndRender(text){
   const out=$('#deepOut');
   out.className='ai-body';
-
   const sectionDefs=[
     {key:'centering',icon:'📐',title:'Centering',patterns:[/1\.\s*CENTERING/i]},
     {key:'surface',icon:'🔍',title:'Surface Condition',patterns:[/2\.\s*SURFACE/i]},
@@ -336,11 +479,9 @@ function parseAndRender(text){
     {key:'grade',icon:'🏆',title:'Grade Estimate',patterns:[/5\.\s*OVERALL/i]},
     {key:'submit',icon:'📬',title:'Submit Recommendation',patterns:[/6\.\s*SUBMIT/i]},
   ];
-
   const lines=text.split('\n');
   const sections={};
   let currentKey=null,currentLines=[];
-
   for(const line of lines){
     let matched=false;
     for(const def of sectionDefs){
@@ -352,10 +493,7 @@ function parseAndRender(text){
     if(!matched&&currentKey)currentLines.push(line);
   }
   if(currentKey)sections[currentKey]=currentLines.join('\n').trim();
-
-  if(Object.keys(sections).length<2){
-    out.className='ai-body raw';out.textContent=text;return;
-  }
+  if(Object.keys(sections).length<2){out.className='ai-body raw';out.textContent=text;return}
 
   function getBadge(key,content){
     if(key==='submit'){
@@ -371,9 +509,8 @@ function parseAndRender(text){
     if(key==='centering'){
       const ratio=content.match(/([4-6][0-9])\s*\/\s*([4-6][0-9])/);
       if(ratio)return{cls:'badge-neutral',label:ratio[0]};
-      if(/60\/40|55\/45|50\/50/i.test(content))return{cls:'badge-good',label:'Well centered'};
     }
-    const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe/i;
+    const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe|crease|bend/i;
     const warn=/minor|slight|faint|small|mild/i;
     const good=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
     if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
@@ -399,8 +536,7 @@ function parseAndRender(text){
 
   const html=['<div class="ai-sections">'];
   for(const def of sectionDefs){
-    const content=sections[def.key];
-    if(!content)continue;
+    const content=sections[def.key];if(!content)continue;
     const badge=getBadge(def.key,content);
     const cleaned=cleanContent(content);
     const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
@@ -429,7 +565,6 @@ function parseAndRender(text){
   out.innerHTML=html.join('');
 }
 
-// ── Deep images ──
 let deepFiles={ff:null,fb:null,angled:[]};
 function wireUpload(inputId,key,nameId,uzId,multi){
   $(inputId).addEventListener('change',e=>{
@@ -465,76 +600,32 @@ async function runAI(){
   const out=$('#deepOut'),dot=$('#aiDot'),status=$('#aiStatus'),btn=$('#runBtn');
   const hasAny=deepFiles.ff||deepFiles.fb||(deepFiles.angled&&deepFiles.angled.length);
   if(!hasAny){out.className='ai-body placeholder';out.textContent='Upload at least one card photo first.';return}
-
   btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Preparing…';
   out.className='ai-body';out.innerHTML='<span class="spinner"></span>Preparing images…';
-
-  // Adaptive quality based on number of images
   const totalImgs=(deepFiles.ff?1:0)+(deepFiles.fb?1:0)+(deepFiles.angled?deepFiles.angled.length:0);
   const quality=totalImgs>=4?0.65:totalImgs===3?0.72:totalImgs===2?0.82:0.92;
   const maxPx=totalImgs>=4?1200:totalImgs===3?1400:1600;
-
   try{
     const parts=[];
-    parts.push({text:'You are an expert TCG card grader with years of experience grading for PSA, BGS (Beckett), and CGC. Analyze the provided card photo(s) and give a detailed, honest pre-grade assessment.\n\nStructure your response with EXACTLY these 6 numbered sections:\n\n1. CENTERING\n2. SURFACE\n3. EDGES\n4. CORNERS\n5. OVERALL GRADE ESTIMATE\n6. SUBMIT RECOMMENDATION\n\nFor section 5, always include PSA, BGS, and CGC grade estimates as numbers (e.g. PSA: 8-9, BGS: 8.5, CGC: 8.5).\nFor section 6, start with a clear Yes or No recommendation.\n\nBe specific about what you see and where. If photo quality limits your assessment, say so.'});
-
-    if(deepFiles.ff){
-      status.textContent='Processing front…';
-      const b64=await compressFile(deepFiles.ff,quality,maxPx);
-      parts.push({text:'FLAT FRONT:'});
-      parts.push({inlineData:{mimeType:'image/jpeg',data:b64}});
-    }
-    if(deepFiles.fb){
-      status.textContent='Processing back…';
-      const b64=await compressFile(deepFiles.fb,quality,maxPx);
-      parts.push({text:'FLAT BACK:'});
-      parts.push({inlineData:{mimeType:'image/jpeg',data:b64}});
-    }
-    if(deepFiles.angled&&deepFiles.angled.length){
-      for(let i=0;i<deepFiles.angled.length;i++){
-        status.textContent='Processing angled '+(i+1)+'…';
-        const b64=await compressFile(deepFiles.angled[i],quality,maxPx);
-        parts.push({text:'ANGLED PHOTO '+(i+1)+':'});
-        parts.push({inlineData:{mimeType:'image/jpeg',data:b64}});
-      }
-    }
-
+    parts.push({text:'You are an expert TCG card grader with years of experience grading for PSA, BGS (Beckett), and CGC. Analyze the provided card photo(s) and give a detailed, honest pre-grade assessment.\n\nStructure your response with EXACTLY these 6 numbered sections:\n\n1. CENTERING\n2. SURFACE\n3. EDGES\n4. CORNERS\n5. OVERALL GRADE ESTIMATE\n6. SUBMIT RECOMMENDATION\n\nFor section 5, always include PSA, BGS, and CGC grade estimates as numbers (e.g. PSA: 8-9, BGS: 8.5, CGC: 8.5).\nFor section 6, start with a clear Yes or No recommendation.\n\nIMPORTANT: Look extremely carefully at the entire card surface for ANY scratches, gouges, linear marks, creases, or surface disruptions. Be suspicious and assume damage may exist — look hard for it. Do not give a clean surface assessment unless you have carefully examined every area of the card.'});
+    if(deepFiles.ff){status.textContent='Processing front…';const b64=await compressFile(deepFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(deepFiles.fb){status.textContent='Processing back…';const b64=await compressFile(deepFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(deepFiles.angled&&deepFiles.angled.length){for(let i=0;i<deepFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(deepFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
     status.textContent='Analyzing…';
     out.innerHTML='<span class="spinner"></span>Analyzing your card…';
-
-    const resp=await fetch('https://psa-sucks.com/api/analyze',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:parts}]})
-    });
-
-    if(!resp.ok){
-      const err=await resp.json().catch(function(){return{}});
-      throw new Error(err.error&&err.error.message?err.error.message:'HTTP '+resp.status);
-    }
-
+    const resp=await fetch('https://psa-sucks.com/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:parts}]})});
+    if(!resp.ok){const err=await resp.json().catch(function(){return{}});throw new Error(err.error&&err.error.message?err.error.message:'HTTP '+resp.status)}
     const data=await resp.json();
-    const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts
-      ?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim()
-      :'No response received.';
-
-    lastRawText=text;
-    dot.className='ai-dot live';status.textContent='Done';
+    const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim():'No response received.';
+    lastRawText=text;dot.className='ai-dot live';status.textContent='Done';
     parseAndRender(text);
-
   }catch(e){
     dot.className='ai-dot';status.textContent='Error';
-    out.className='ai-body raw';
-    out.textContent='Error: '+e.message;
-  }finally{
-    btn.disabled=false;
-  }
+    out.className='ai-body raw';out.textContent='Error: '+e.message;
+  }finally{btn.disabled=false}
 }
 
-function exportDeep(){
-  if(!lastRawText){alert('Run the AI analysis first.');return}
-  dl('ai_pregrade_report.txt',lastRawText,'text/plain');
-}
+function exportDeep(){if(!lastRawText){alert('Run the AI analysis first.');return}dl('ai_pregrade_report.txt',lastRawText,'text/plain')}
 function clearDeep(){
   deepFiles={ff:null,fb:null,angled:[]};lastRawText='';
   ['#uzAF','#uzAB','#uzAA'].forEach(function(id){$(id).classList.remove('has-file')});
