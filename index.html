@@ -40,13 +40,31 @@ button.run-btn{background:linear-gradient(135deg,#1a5cff,#0a3db5);color:#fff;bor
 button.run-btn:hover{background:linear-gradient(135deg,#2a6cff,#1a4dc5);box-shadow:0 4px 16px #1a5cff50}
 button.run-btn:disabled{opacity:.45;cursor:not-allowed}
 button.crop-btn.cropping{background:#0e2245;border-color:var(--warning);color:var(--warning)}
-.canvas-wrap{position:relative;border-radius:var(--rad);overflow:hidden;border:1px solid var(--border);background:#03040a}
-canvas{display:block;width:100%;background:#03040a;touch-action:none}
-#cropOverlay{position:absolute;inset:0;pointer-events:none;display:none}
+
+/* Mode switcher */
+.mode-bar{display:flex;gap:6px;padding:10px 14px;background:var(--panel2);border-radius:var(--rad);border:1px solid var(--border);align-items:center;flex-wrap:wrap}
+.mode-label{font-size:11px;color:var(--muted);font-weight:600;margin-right:4px}
+.mode-btn{padding:8px 14px;font-size:12px;font-weight:700;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;min-height:38px}
+.mode-btn.on{background:var(--panel);color:var(--text);border-color:#ffffff30;box-shadow:0 1px 3px #00000050}
+.mode-btn.red.on{border-color:var(--danger);color:var(--danger);background:#1a0808}
+.mode-btn.blue.on{border-color:var(--info);color:var(--info);background:#08131a}
+.mode-btn.pan.on{border-color:#ffffff30;color:var(--text)}
+
+.canvas-wrap{position:relative;border-radius:var(--rad);overflow:hidden;border:1px solid var(--border);background:#03040a;touch-action:none}
+canvas{display:block;width:100%;background:#03040a}
+#cropOverlay{position:absolute;inset:0;pointer-events:none;display:none;touch-action:none}
 #cropOverlay.active{display:block;pointer-events:all;cursor:crosshair}
-.hint{font-size:11px;color:var(--muted);line-height:1.6}
+
+/* Nudge controls for mobile */
+.nudge-grid{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px;margin-left:auto}
+.nudge-btn{width:44px;height:44px;font-size:18px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--border2);background:var(--panel2);color:var(--text);cursor:pointer}
+.nudge-btn:active{background:#202840}
+.nudge-center{background:transparent;border-color:transparent;pointer-events:none}
+
 .rot-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .rot-label{font-size:11px;color:var(--muted);margin-right:2px}
+
+.hint{font-size:11px;color:var(--muted);line-height:1.6}
 .results{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 .metric{background:var(--panel2);border-radius:var(--rad);padding:11px 13px;border:1px solid var(--border)}
 .metric .k{font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
@@ -125,10 +143,17 @@ canvas{display:block;width:100%;background:#03040a;touch-action:none}
       </div>
     </div>
 
+    <!-- Mode bar -->
+    <div class="mode-bar">
+      <span class="mode-label">Mode:</span>
+      <button class="mode-btn pan on" id="modePan" onclick="setMode('pan')">✋ Pan / Zoom</button>
+      <button class="mode-btn red" id="modeOuter" onclick="setMode('outer')">🟥 Card edge</button>
+      <button class="mode-btn blue" id="modeInner" onclick="setMode('inner')">🟦 Print border</button>
+    </div>
+
     <div class="card">
       <div class="toolbar">
         <select id="selSide"><option value="front">Front</option><option value="back">Back</option></select>
-        <select id="selGuide"><option value="outer">Red — card edge</option><option value="inner">Blue — printed border</option></select>
         <button onclick="fitView()">Fit</button>
         <button id="btnContrast" onclick="toggleContrast()">Contrast</button>
         <button onclick="resetG()">Reset guides</button>
@@ -136,7 +161,7 @@ canvas{display:block;width:100%;background:#03040a;touch-action:none}
       </div>
     </div>
 
-    <!-- Rotation controls -->
+    <!-- Rotation + crop -->
     <div class="card">
       <div class="rot-controls">
         <span class="rot-label">Rotate:</span>
@@ -144,13 +169,13 @@ canvas{display:block;width:100%;background:#03040a;touch-action:none}
         <button onclick="rotateImg(90)">↻ 90°</button>
         <button onclick="rotateImg(-1)">← 1°</button>
         <button onclick="rotateImg(1)">→ 1°</button>
-        <button onclick="rotateImg(-0.25)">← 0.25°</button>
-        <button onclick="rotateImg(0.25)">→ 0.25°</button>
+        <button onclick="rotateImg(-0.25)">← ¼°</button>
+        <button onclick="rotateImg(0.25)">→ ¼°</button>
         <button id="cropBtn" class="crop-btn" onclick="toggleCrop()">✂ Crop</button>
-        <button onclick="applyCrop()" id="applyCropBtn" style="display:none">Apply crop</button>
+        <button onclick="applyCrop()" id="applyCropBtn" style="display:none">Apply</button>
         <button onclick="cancelCrop()" id="cancelCropBtn" style="display:none">Cancel</button>
       </div>
-      <div id="cropHint" style="display:none;margin-top:8px" class="hint">Draw a rectangle on the image to select the crop area, then tap Apply crop.</div>
+      <div id="cropHint" style="display:none;margin-top:8px" class="hint">Draw a rectangle on the image, then tap Apply.</div>
     </div>
 
     <div class="card" style="padding:8px">
@@ -160,8 +185,25 @@ canvas{display:block;width:100%;background:#03040a;touch-action:none}
       </div>
     </div>
 
+    <!-- Mobile nudge pad -->
     <div class="card">
-      <div class="hint">Drag <span style="color:var(--danger)">red</span> handles to the physical card edge. Drag <span style="color:var(--info)">blue</span> handles to the printed border. Arrow keys nudge — Shift for 10px. Ctrl/Cmd + scroll to zoom.</div>
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <div class="hint" style="margin-bottom:8px">In <b style="color:var(--danger)">Card edge</b> or <b style="color:var(--info)">Print border</b> mode, drag anywhere on the canvas to move that guide. Use the nudge pad for precise positioning.</div>
+          <div class="hint">On desktop: hold Ctrl/Cmd + scroll to zoom. Arrow keys nudge active guide.</div>
+        </div>
+        <div class="nudge-grid">
+          <div></div>
+          <button class="nudge-btn" onclick="nudge(0,-1)">▲</button>
+          <div></div>
+          <button class="nudge-btn" onclick="nudge(-1,0)">◀</button>
+          <div class="nudge-center"></div>
+          <button class="nudge-btn" onclick="nudge(1,0)">▶</button>
+          <div></div>
+          <button class="nudge-btn" onclick="nudge(0,1)">▼</button>
+          <div></div>
+        </div>
+      </div>
     </div>
 
     <div class="results">
@@ -218,12 +260,14 @@ canvas{display:block;width:100%;background:#03040a;touch-action:none}
 <script>
 const $=s=>document.querySelector(s);
 let curSide='front',curGuide='outer',contrast=false;
+let touchMode='pan'; // 'pan', 'outer', 'inner'
 const states={
   front:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null},
   back:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null}
 };
 let drag=null,last=null,lastRawText='';
 let cropping=false,cropStart=null,cropRect=null;
+let pinchStart=null;
 const cv=$('#cv'),ctx=cv.getContext('2d');
 const cropCv=$('#cropOverlay'),cropCtx=cropCv.getContext('2d');
 
@@ -234,10 +278,21 @@ function switchTab(t){
   $('#secDeep').style.display=t==='deep'?'flex':'none';
 }
 
+function setMode(m){
+  touchMode=m;
+  ['pan','outer','inner'].forEach(id=>{
+    const btn=$('#mode'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(btn)btn.classList.toggle('on',id===m);
+  });
+  if(m==='outer')curGuide='outer';
+  if(m==='inner')curGuide='inner';
+  cv.style.cursor=m==='pan'?'grab':'crosshair';
+}
+
 function resizeCanvas(){
   const cw=cv.parentElement.clientWidth||360;
-  cv.width=cw*devicePixelRatio;cv.height=Math.round(cw*.68)*devicePixelRatio;
-  cv.style.width=cw+'px';cv.style.height=Math.round(cw*.68)+'px';
+  cv.width=cw*devicePixelRatio;cv.height=Math.round(cw*.72)*devicePixelRatio;
+  cv.style.width=cw+'px';cv.style.height=Math.round(cw*.72)+'px';
   cropCv.width=cv.width;cropCv.height=cv.height;
   cropCv.style.width=cv.style.width;cropCv.style.height=cv.style.height;
   fitView();draw();
@@ -255,15 +310,13 @@ function loadImg(file,side,uzId){
 $('#inFront').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'front','#uzFront');$('#fnFront').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
 $('#inBack').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'back','#uzBack');$('#fnBack').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
 $('#selSide').addEventListener('change',e=>{curSide=e.target.value;draw()});
-$('#selGuide').addEventListener('change',e=>{curGuide=e.target.value});
 
 function resetGuides(side){const s=states[side];if(!s.img)return;s.outer={x:s.iw*.07,y:s.ih*.06,w:s.iw*.86,h:s.ih*.88};s.inner={x:s.iw*.16,y:s.ih*.13,w:s.iw*.68,h:s.ih*.74}}
-function fitFor(side){const s=states[side];if(!s.img)return;const p=22*devicePixelRatio;s.zoom=Math.min((cv.width-p*2)/s.iw,(cv.height-p*2)/s.ih);s.ox=(cv.width-s.iw*s.zoom)/2;s.oy=(cv.height-s.ih*s.zoom)/2}
+function fitFor(side){const s=states[side];if(!s.img)return;const p=18*devicePixelRatio;s.zoom=Math.min((cv.width-p*2)/s.iw,(cv.height-p*2)/s.ih);s.ox=(cv.width-s.iw*s.zoom)/2;s.oy=(cv.height-s.ih*s.zoom)/2}
 function fitView(){fitFor(curSide);draw()}
 function resetG(){resetGuides(curSide);draw();updateMetrics()}
 function toggleContrast(){contrast=!contrast;$('#btnContrast').classList.toggle('active',contrast);draw()}
 
-// Rotation — supports arbitrary angles including small increments
 function rotateImg(deg){
   const s=st();if(!s.img)return;
   const rad=deg*Math.PI/180;
@@ -280,10 +333,15 @@ function rotateImg(deg){
   ni.src=tmp.toDataURL();
 }
 
-// Crop tool
+function nudge(dx,dy){
+  const s=st();if(!s.img)return;
+  moveRect(s,curGuide,'move',dx,dy);
+  draw();updateMetrics();
+}
+
+// Crop
 function toggleCrop(){
-  cropping=!cropping;
-  cropRect=null;
+  cropping=!cropping;cropRect=null;
   $('#cropBtn').classList.toggle('cropping',cropping);
   $('#applyCropBtn').style.display=cropping?'inline-block':'none';
   $('#cancelCropBtn').style.display=cropping?'inline-block':'none';
@@ -292,7 +350,6 @@ function toggleCrop(){
   cropCv.className=cropping?'active':'';
   if(!cropping)cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
 }
-
 function cancelCrop(){
   cropping=false;cropRect=null;
   $('#cropBtn').classList.remove('cropping');
@@ -303,7 +360,6 @@ function cancelCrop(){
   cropCv.className='';
   cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
 }
-
 function applyCrop(){
   if(!cropRect)return;
   const s=st();if(!s.img)return;
@@ -326,8 +382,12 @@ function evtXY(e){
   const src=e.touches?e.touches[0]:e;
   return{x:(src.clientX-r.left)*devicePixelRatio,y:(src.clientY-r.top)*devicePixelRatio};
 }
+function evtXYfromTouch(touch){
+  const r=cv.getBoundingClientRect();
+  return{x:(touch.clientX-r.left)*devicePixelRatio,y:(touch.clientY-r.top)*devicePixelRatio};
+}
 
-// Crop canvas events
+// Crop overlay events
 cropCv.addEventListener('pointerdown',e=>{
   if(!cropping)return;
   const{x,y}=evtXY(e);
@@ -352,13 +412,21 @@ cropCv.addEventListener('pointerup',()=>cropStart=null);
 function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
 function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
 function corners(r){return{tl:{x:r.x,y:r.y},tr:{x:r.x+r.w,y:r.y},bl:{x:r.x,y:r.y+r.h},br:{x:r.x+r.w,y:r.y+r.h}}}
-const HANDLE=11;
+
+// Bigger hit radius on mobile
+function getHandleRadius(s){
+  const isMobile=window.matchMedia('(max-width:700px)').matches;
+  return(isMobile?22:12)/s.zoom;
+}
 
 function hitTest(s,x,y){
   const p=s2i(s,x,y);
+  const hr=getHandleRadius(s);
   for(const gn of['inner','outer']){
     const r=s[gn];if(!r)continue;
-    for(const[k,h]of Object.entries(corners(r))){if(Math.hypot(p.x-h.x,p.y-h.y)<HANDLE/s.zoom)return{shape:gn,kind:k}}
+    for(const[k,h]of Object.entries(corners(r))){
+      if(Math.hypot(p.x-h.x,p.y-h.y)<hr)return{shape:gn,kind:k};
+    }
     if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:gn,kind:'move'};
   }
   return null;
@@ -378,20 +446,22 @@ function moveRect(s,shape,kind,dx,dy){
 }
 
 function drawHandle(px,py,color,sz){
-  ctx.strokeStyle='rgba(0,0,0,0.6)';ctx.lineWidth=3*devicePixelRatio;
-  ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
-  ctx.strokeStyle=color;ctx.lineWidth=1.5*devicePixelRatio;
-  ctx.beginPath();ctx.moveTo(px-sz,py);ctx.lineTo(px+sz,py);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(px,py-sz);ctx.lineTo(px,py+sz);ctx.stroke();
+  // Draw a bigger filled circle handle for mobile
+  ctx.beginPath();ctx.arc(px,py,sz,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fill();
+  ctx.strokeStyle=color;ctx.lineWidth=2*devicePixelRatio;ctx.stroke();
+  ctx.beginPath();ctx.arc(px,py,sz*.45,0,Math.PI*2);
+  ctx.fillStyle=color;ctx.fill();
 }
 
 function drawGuide(s,r,color,isActive){
   const p=i2s(s,r.x,r.y);
-  ctx.strokeStyle=color;ctx.lineWidth=(isActive?2:1.5)*devicePixelRatio;
+  ctx.strokeStyle=color;ctx.lineWidth=(isActive?2.5:1.5)*devicePixelRatio;
   ctx.setLineDash(isActive?[]:[6*devicePixelRatio,4*devicePixelRatio]);
   ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom);ctx.setLineDash([]);
-  for(const h of Object.values(corners(r))){const q=i2s(s,h.x,h.y);drawHandle(q.x,q.y,color,8*devicePixelRatio)}
+  const isMobile=window.matchMedia('(max-width:700px)').matches;
+  const sz=(isMobile?14:8)*devicePixelRatio;
+  for(const h of Object.values(corners(r))){const q=i2s(s,h.x,h.y);drawHandle(q.x,q.y,color,sz)}
 }
 
 function draw(){
@@ -404,27 +474,54 @@ function draw(){
   if(s.inner)drawGuide(s,s.inner,'#4a9eff',curGuide==='inner');
 }
 
+// Pointer events — mode-aware
 cv.addEventListener('pointerdown',e=>{
   if(cropping)return;
   const s=st();if(!s.img)return;
   cv.setPointerCapture(e.pointerId);
   const{x,y}=evtXY(e);last={x,y};
-  const h=hitTest(s,x,y);
-  if(h){drag=h;curGuide=h.shape;$('#selGuide').value=curGuide}
-  else drag={shape:'pan',kind:'pan'};
+  if(touchMode==='pan'){
+    drag={shape:'pan',kind:'pan'};
+  } else {
+    // In guide mode, any drag moves that guide
+    drag={shape:touchMode,kind:'move'};
+    curGuide=touchMode;
+  }
 });
 cv.addEventListener('pointermove',e=>{
   const s=st();if(!s.img||!drag)return;
   const{x,y}=evtXY(e);
   const dx=(x-last.x)/s.zoom,dy=(y-last.y)/s.zoom;
-  if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y}
-  else{moveRect(s,drag.shape,drag.kind,dx,dy);updateMetrics()}
+  if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y;}
+  else{moveRect(s,drag.shape,drag.kind,dx,dy);updateMetrics();}
   last={x,y};draw();
 });
 cv.addEventListener('pointerup',()=>drag=null);
 cv.addEventListener('pointercancel',()=>drag=null);
 
-// Fixed scroll — only zoom when Ctrl/Cmd held, otherwise scroll page normally
+// Pinch to zoom
+cv.addEventListener('touchstart',e=>{
+  if(e.touches.length===2){
+    e.preventDefault();
+    const t1=evtXYfromTouch(e.touches[0]);
+    const t2=evtXYfromTouch(e.touches[1]);
+    pinchStart={dist:Math.hypot(t2.x-t1.x,t2.y-t1.y),zoom:st().zoom};
+  }
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+  if(e.touches.length===2&&pinchStart){
+    e.preventDefault();
+    const t1=evtXYfromTouch(e.touches[0]);
+    const t2=evtXYfromTouch(e.touches[1]);
+    const dist=Math.hypot(t2.x-t1.x,t2.y-t1.y);
+    const s=st();
+    s.zoom=Math.max(.08,Math.min(30,pinchStart.zoom*(dist/pinchStart.dist)));
+    draw();
+  }
+},{passive:false});
+cv.addEventListener('touchend',()=>pinchStart=null);
+
+// Desktop scroll zoom (Ctrl/Cmd only)
 cv.addEventListener('wheel',e=>{
   if(!e.ctrlKey&&!e.metaKey)return;
   e.preventDefault();
@@ -434,6 +531,7 @@ cv.addEventListener('wheel',e=>{
   draw();
 },{passive:false});
 
+// Arrow keys
 window.addEventListener('keydown',e=>{
   if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
   const s=st();if(!s.img)return;e.preventDefault();
@@ -469,8 +567,7 @@ function exportCsv(){
 }
 
 function parseAndRender(text){
-  const out=$('#deepOut');
-  out.className='ai-body';
+  const out=$('#deepOut');out.className='ai-body';
   const sectionDefs=[
     {key:'centering',icon:'📐',title:'Centering',patterns:[/1\.\s*CENTERING/i]},
     {key:'surface',icon:'🔍',title:'Surface Condition',patterns:[/2\.\s*SURFACE/i]},
@@ -480,8 +577,7 @@ function parseAndRender(text){
     {key:'submit',icon:'📬',title:'Submit Recommendation',patterns:[/6\.\s*SUBMIT/i]},
   ];
   const lines=text.split('\n');
-  const sections={};
-  let currentKey=null,currentLines=[];
+  const sections={};let currentKey=null,currentLines=[];
   for(const line of lines){
     let matched=false;
     for(const def of sectionDefs){
@@ -501,15 +597,8 @@ function parseAndRender(text){
       if(/\bno\b|don't|skip|not worth/i.test(content))return{cls:'badge-bad',label:'✗ Skip'};
       return{cls:'badge-warn',label:'⚠ Maybe'};
     }
-    if(key==='grade'){
-      const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
-      if(psa)return{cls:'badge-warn',label:'PSA '+psa[1].trim()};
-      return{cls:'badge-neutral',label:'See notes'};
-    }
-    if(key==='centering'){
-      const ratio=content.match(/([4-6][0-9])\s*\/\s*([4-6][0-9])/);
-      if(ratio)return{cls:'badge-neutral',label:ratio[0]};
-    }
+    if(key==='grade'){const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);if(psa)return{cls:'badge-warn',label:'PSA '+psa[1].trim()};return{cls:'badge-neutral',label:'See notes'}}
+    if(key==='centering'){const ratio=content.match(/([4-6][0-9])\s*\/\s*([4-6][0-9])/);if(ratio)return{cls:'badge-neutral',label:ratio[0]}}
     const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe|crease|bend/i;
     const warn=/minor|slight|faint|small|mild/i;
     const good=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
@@ -518,31 +607,25 @@ function parseAndRender(text){
     if(good.test(content))return{cls:'badge-good',label:'Clean'};
     return{cls:'badge-neutral',label:'See notes'};
   }
-
   function extractGrades(content){
     const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
     const bgs=content.match(/BGS[:\s]*([0-9]+(?:\.[0-9]+)?(?:\s*[-–]\s*[0-9]+(?:\.[0-9]+)?)?)/i);
     const cgc=content.match(/CGC[:\s]*([0-9]+(?:\.[0-9]+)?(?:\s*[-–]\s*[0-9]+(?:\.[0-9]+)?)?)/i);
     return{psa:psa?psa[1].trim():null,bgs:bgs?bgs[1].trim():null,cgc:cgc?cgc[1].trim():null};
   }
-
   function cleanContent(content){
     return content.split('\n').slice(1).join('\n')
       .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
       .replace(/\*(.+?)\*/g,'<em>$1</em>')
-      .replace(/^\s*[-•*]\s*/gm,'• ')
-      .trim();
+      .replace(/^\s*[-•*]\s*/gm,'• ').trim();
   }
-
   const html=['<div class="ai-sections">'];
   for(const def of sectionDefs){
     const content=sections[def.key];if(!content)continue;
     const badge=getBadge(def.key,content);
     const cleaned=cleanContent(content);
     const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
-    html.push('<div class="ai-section">');
-    html.push('<div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div>');
-    html.push('<div class="ai-section-body">');
+    html.push('<div class="ai-section"><div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div><div class="ai-section-body">');
     if(def.key==='grade'){
       const g=extractGrades(content);
       if(g.psa||g.bgs||g.cgc){
@@ -556,9 +639,7 @@ function parseAndRender(text){
     } else if(def.key==='submit'){
       const sc=badge.cls==='badge-good'?'submit-yes':badge.cls==='badge-bad'?'submit-no':'submit-maybe';
       html.push('<div class="submit-box '+sc+'">'+paras+'</div>');
-    } else {
-      html.push(paras);
-    }
+    } else {html.push(paras)}
     html.push('</div></div>');
   }
   html.push('</div>');
@@ -582,17 +663,13 @@ function compressFile(file,quality,maxPx){
   return new Promise(function(res,rej){
     const img=new Image();
     img.onload=function(){
-      const MAX=maxPx||1600;
-      let w=img.width,h=img.height;
-      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
-      else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
-      const c=document.createElement('canvas');
-      c.width=w;c.height=h;
+      const MAX=maxPx||1600;let w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
       c.getContext('2d').drawImage(img,0,0,w,h);
       res(c.toDataURL('image/jpeg',quality||0.85).split(',')[1]);
     };
-    img.onerror=rej;
-    img.src=URL.createObjectURL(file);
+    img.onerror=rej;img.src=URL.createObjectURL(file);
   });
 }
 
@@ -611,18 +688,14 @@ async function runAI(){
     if(deepFiles.ff){status.textContent='Processing front…';const b64=await compressFile(deepFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
     if(deepFiles.fb){status.textContent='Processing back…';const b64=await compressFile(deepFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
     if(deepFiles.angled&&deepFiles.angled.length){for(let i=0;i<deepFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(deepFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
-    status.textContent='Analyzing…';
-    out.innerHTML='<span class="spinner"></span>Analyzing your card…';
+    status.textContent='Analyzing…';out.innerHTML='<span class="spinner"></span>Analyzing your card…';
     const resp=await fetch('https://psa-sucks.com/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:parts}]})});
     if(!resp.ok){const err=await resp.json().catch(function(){return{}});throw new Error(err.error&&err.error.message?err.error.message:'HTTP '+resp.status)}
     const data=await resp.json();
     const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim():'No response received.';
-    lastRawText=text;dot.className='ai-dot live';status.textContent='Done';
-    parseAndRender(text);
-  }catch(e){
-    dot.className='ai-dot';status.textContent='Error';
-    out.className='ai-body raw';out.textContent='Error: '+e.message;
-  }finally{btn.disabled=false}
+    lastRawText=text;dot.className='ai-dot live';status.textContent='Done';parseAndRender(text);
+  }catch(e){dot.className='ai-dot';status.textContent='Error';out.className='ai-body raw';out.textContent='Error: '+e.message;}
+  finally{btn.disabled=false}
 }
 
 function exportDeep(){if(!lastRawText){alert('Run the AI analysis first.');return}dl('ai_pregrade_report.txt',lastRawText,'text/plain')}
@@ -634,7 +707,6 @@ function clearDeep(){
   $('#deepOut').textContent='Upload card photos then tap Analyze — free for everyone.';
   $('#aiDot').className='ai-dot';$('#aiStatus').textContent='Ready';
 }
-
 function dl(name,text,type){const b=new Blob([text],{type:type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
 
 setTimeout(resizeCanvas,60);
