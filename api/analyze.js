@@ -1,80 +1,36 @@
-module.exports = async function handler(req, res) {
-res.setHeader(‘Access-Control-Allow-Origin’, ‘*’);
-res.setHeader(‘Access-Control-Allow-Methods’, ‘POST, OPTIONS’);
-res.setHeader(‘Access-Control-Allow-Headers’, ‘Content-Type’);
+export default async function handler(req, res) {
+  // Allow your site
+  const allowed = [
+    'https://psa-sucks.com',
+    'https://www.psa-sucks.com',
+    'http://localhost:3000',
+    'http://127.0.0.1'
+  ];
+  const origin = req.headers.origin || '';
+  const isAllowed = allowed.some(o => origin.startsWith(o));
 
-if (req.method === ‘OPTIONS’) return res.status(200).end();
-if (req.method !== ‘POST’) return res.status(405).json({ error: ‘Method not allowed’ });
+  res.setHeader('Access-Control-Allow-Origin', isAllowed ? origin : 'null');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-try {
-const incoming = req.body;
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!isAllowed) return res.status(403).json({ error: 'Forbidden' });
 
-```
-// Convert Gemini-format request to OpenAI format
-const contents = incoming.contents || [];
-const messages = [];
-const contentParts = [];
+  try {
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req.body)
+      }
+    );
 
-for (const content of contents) {
-  for (const part of (content.parts || [])) {
-    if (part.text) {
-      contentParts.push({ type: 'text', text: part.text });
-    } else if (part.inlineData) {
-      contentParts.push({
-        type: 'image_url',
-        image_url: {
-          url: 'data:' + part.inlineData.mimeType + ';base64,' + part.inlineData.data,
-          detail: 'high'
-        }
-      });
-    }
+    const data = await geminiRes.json();
+    return res.status(geminiRes.status).json(data);
+
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
-}
-
-messages.push({ role: 'user', content: contentParts });
-
-const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + process.env.OPENAI_KEY
-  },
-  body: JSON.stringify({
-    model: 'gpt-4o',
-    max_tokens: 1500,
-    messages: messages
-  })
-});
-
-if (!openaiRes.ok) {
-  const err = await openaiRes.json().catch(() => ({}));
-  return res.status(openaiRes.status).json({ error: err.error || 'OpenAI error' });
-}
-
-const data = await openaiRes.json();
-const text = data.choices && data.choices[0] && data.choices[0].message
-  ? data.choices[0].message.content
-  : 'No response received.';
-
-// Return in Gemini-compatible format so the frontend doesn't need changes
-return res.status(200).json({
-  candidates: [{
-    content: {
-      parts: [{ text: text }]
-    }
-  }]
-});
-```
-
-} catch (err) {
-return res.status(500).json({ error: err.message });
-}
-}
-
-module.exports.config = {
-api: {
-bodyParser: {
-sizeLimit: ‘20mb’
-}
-}
 }
