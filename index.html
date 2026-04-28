@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Card Centering & Pre-Grade Tool — psa-sucks.com</title>
+<title>AI Card Tools — psa-sucks.com</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -15,207 +16,130 @@ body{background:var(--bg);color:var(--text);font-family:'SF Pro Display',system-
 header{padding:13px 20px;border-bottom:1px solid var(--border);background:#08090f;position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px}
 header h1{font-size:.95rem;font-weight:600;letter-spacing:.02em}
 .badge{font-size:.65rem;background:#1a2a1a;color:var(--success);font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.05em;text-transform:uppercase}
-main{max-width:1060px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.tabs{display:flex;gap:2px;padding:3px;background:var(--panel);border-radius:var(--rad);border:1px solid var(--border);width:fit-content}
-.tab{padding:7px 16px;font-size:12px;font-weight:600;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:6px;transition:all .15s;letter-spacing:.02em}
-.tab.on{background:var(--panel2);color:var(--text);box-shadow:0 1px 3px #00000040}
-.tab:hover:not(.on){color:var(--text)}
+.badge-free{font-size:.65rem;background:#0d2a0d;color:var(--success);font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.05em;text-transform:uppercase;border:1px solid #1a4a1a}
+main{max-width:780px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+
+/* Hero */
+.hero{padding:20px 0 6px;display:flex;flex-direction:column;gap:6px}
+.hero h2{font-size:1.35rem;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.hero p{font-size:13px;color:var(–muted);line-height:1.6;max-width:540px}
+.hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.hbadge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:5px;border:1px solid var(–border2);color:var(–muted);background:var(–panel)}
+
 .sec{display:flex;flex-direction:column;gap:10px}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--rad-lg);padding:14px}
-.card-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
+.card{background:var(–panel);border:1px solid var(–border);border-radius:var(–rad-lg);padding:14px}
+.card-title{font-size:10px;font-weight:700;color:var(–muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
 .row{display:flex;gap:9px;flex-wrap:wrap}
-.upload-zone{flex:1;min-width:120px;border:1px dashed var(--border2);border-radius:var(--rad);padding:14px 10px;text-align:center;cursor:pointer;position:relative;transition:all .15s;background:#0d1018}
-.upload-zone:hover{background:var(--panel2);border-color:#ffffff35}
+.upload-zone{flex:1;min-width:120px;border:1px dashed var(–border2);border-radius:var(–rad);padding:14px 10px;text-align:center;cursor:pointer;position:relative;transition:all .15s;background:#0d1018}
+.upload-zone:hover{background:var(–panel2);border-color:#ffffff35}
 .upload-zone.has-file{border-color:#2a4a2a;background:#0d1610}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-zone .ico{font-size:18px;line-height:1;margin-bottom:5px}
-.upload-zone .lbl{font-size:10px;color:var(--muted);display:block}
-.upload-zone .name{font-size:10px;color:var(--success);display:block;margin-top:3px;font-weight:700;word-break:break-all;line-height:1.3}
+.upload-zone .lbl{font-size:10px;color:var(–muted);display:block}
+.upload-zone .name{font-size:10px;color:var(–success);display:block;margin-top:3px;font-weight:700;word-break:break-all;line-height:1.3}
 .toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-select,button{font:inherit;border-radius:var(--rad);border:1px solid var(--border2);background:var(--panel2);color:var(--text);padding:7px 11px;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s}
-select{padding:6px 9px;color:var(--muted)}
+select,button{font:inherit;border-radius:var(–rad);border:1px solid var(–border2);background:var(–panel2);color:var(–text);padding:7px 11px;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s}
 button:hover{background:#202840;border-color:#ffffff30}
-button.active{background:#0e2245;border-color:var(--info);color:var(--info)}
-button.run-btn{background:linear-gradient(135deg,#1a5cff,#0a3db5);color:#fff;border:none;padding:9px 18px;font-size:13px;box-shadow:0 2px 12px #1a5cff40}
+button.run-btn{background:linear-gradient(135deg,#1a5cff,#0a3db5);color:#fff;border:none;padding:10px 22px;font-size:13px;box-shadow:0 2px 12px #1a5cff40;letter-spacing:.02em}
 button.run-btn:hover{background:linear-gradient(135deg,#2a6cff,#1a4dc5);box-shadow:0 4px 16px #1a5cff50}
 button.run-btn:disabled{opacity:.45;cursor:not-allowed}
-button.crop-btn.cropping{background:#0e2245;border-color:var(--warning);color:var(--warning)}
 
-/* Mode switcher */
-.mode-bar{display:flex;gap:6px;padding:10px 14px;background:var(--panel2);border-radius:var(--rad);border:1px solid var(--border);align-items:center;flex-wrap:wrap}
-.mode-label{font-size:11px;color:var(--muted);font-weight:600;margin-right:4px}
-.mode-btn{padding:8px 14px;font-size:12px;font-weight:700;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;min-height:38px}
-.mode-btn.on{background:var(--panel);color:var(--text);border-color:#ffffff30;box-shadow:0 1px 3px #00000050}
-.mode-btn.red.on{border-color:var(--danger);color:var(--danger);background:#1a0808}
-.mode-btn.blue.on{border-color:var(--info);color:var(--info);background:#08131a}
-.mode-btn.pan.on{border-color:#ffffff30;color:var(--text)}
-
-.canvas-wrap{position:relative;border-radius:var(--rad);overflow:hidden;border:1px solid var(--border);background:#03040a;touch-action:none}
-canvas{display:block;width:100%;background:#03040a}
-#cropOverlay{position:absolute;inset:0;pointer-events:none;display:none;touch-action:none}
-#cropOverlay.active{display:block;pointer-events:all;cursor:crosshair}
-
-/* Nudge controls for mobile */
-.nudge-grid{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px;margin-left:auto}
-.nudge-btn{width:44px;height:44px;font-size:18px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--border2);background:var(--panel2);color:var(--text);cursor:pointer}
-.nudge-btn:active{background:#202840}
-.nudge-center{background:transparent;border-color:transparent;pointer-events:none}
-
-.rot-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.rot-label{font-size:11px;color:var(--muted);margin-right:2px}
-
-.hint{font-size:11px;color:var(--muted);line-height:1.6}
-.results{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.metric{background:var(--panel2);border-radius:var(--rad);padding:11px 13px;border:1px solid var(--border)}
-.metric .k{font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
-.metric .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
-.metric .g{font-size:11px;margin-top:3px;font-weight:600}
-.good{color:var(--success)}.warn{color:var(--warning)}.bad{color:var(--danger)}
-.summary{background:var(--panel2);border-radius:var(--rad);padding:12px;font-size:12px;line-height:1.7;color:var(--muted);border:1px solid var(--border)}
-.summary b{color:var(--text);font-weight:600}
-.ai-wrap{background:#07090f;border:1px solid var(--border);border-radius:var(--rad-lg);overflow:hidden}
-.ai-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:#0a0c14}
-.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
-.ai-dot.live{background:var(--success);animation:pulse 2s infinite}
-.ai-dot.thinking{background:var(--warning);animation:pulse .7s infinite}
+.ai-wrap{background:#07090f;border:1px solid var(–border);border-radius:var(–rad-lg);overflow:hidden}
+.ai-header{padding:10px 14px;border-bottom:1px solid var(–border);display:flex;align-items:center;gap:8px;background:#0a0c14}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(–muted)}
+.ai-dot.live{background:var(–success);animation:pulse 2s infinite}
+.ai-dot.thinking{background:var(–warning);animation:pulse .7s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.ai-label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
-.ai-status{font-size:11px;color:var(--muted);margin-left:auto}
+.ai-label{font-size:11px;font-weight:700;color:var(–muted);letter-spacing:.06em;text-transform:uppercase}
+.ai-status{font-size:11px;color:var(–muted);margin-left:auto}
 .ai-body{padding:14px;min-height:80px}
-.ai-body.placeholder{color:var(--muted);font-style:italic;padding:16px}
+.ai-body.placeholder{color:var(–muted);font-style:italic;padding:20px;text-align:center;line-height:1.7}
 .ai-body.raw{font-size:13px;line-height:1.8;color:#c8d4e8;white-space:pre-wrap;max-height:520px;overflow-y:auto;padding:16px}
 .ai-sections{display:flex;flex-direction:column;gap:10px}
-.ai-section{background:var(--panel2);border-radius:var(--rad);border:1px solid var(--border);overflow:hidden}
-.ai-section-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border)}
+.ai-section{background:var(–panel2);border-radius:var(–rad);border:1px solid var(–border);overflow:hidden}
+.ai-section-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(–border)}
 .ai-section-icon{font-size:18px;line-height:1;flex-shrink:0}
 .ai-section-title{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;flex:1}
 .ai-section-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:5px;white-space:nowrap}
-.badge-good{background:#0d2a18;color:var(--success);border:1px solid #1a4a2a}
-.badge-warn{background:#2a1e08;color:var(--warning);border:1px solid #4a3510}
-.badge-bad{background:#2a0d0d;color:var(--danger);border:1px solid #4a1a1a}
-.badge-neutral{background:#151a25;color:var(--muted);border:1px solid var(--border2)}
+.badge-good{background:#0d2a18;color:var(–success);border:1px solid #1a4a2a}
+.badge-warn{background:#2a1e08;color:var(–warning);border:1px solid #4a3510}
+.badge-bad{background:#2a0d0d;color:var(–danger);border:1px solid #4a1a1a}
+.badge-neutral{background:#151a25;color:var(–muted);border:1px solid var(–border2)}
 .ai-section-body{padding:12px 14px;font-size:13px;line-height:1.75;color:#b8c8e0}
 .ai-section-body p{margin-bottom:8px}
 .ai-section-body p:last-child{margin-bottom:0}
-.ai-section-body strong{color:var(--text);font-weight:600}
+.ai-section-body strong{color:var(–text);font-weight:600}
 .grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.grade-item{background:#0d1018;border-radius:var(--rad);padding:10px;text-align:center;border:1px solid var(--border)}
-.grade-item .gi-label{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
-.grade-item .gi-val{font-size:16px;font-weight:700;color:var(--warning)}
-.submit-box{margin-top:4px;padding:12px;border-radius:var(--rad);font-size:13px;line-height:1.65}
+.grade-item{background:#0d1018;border-radius:var(–rad);padding:10px;text-align:center;border:1px solid var(–border)}
+.grade-item .gi-label{font-size:10px;color:var(–muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.grade-item .gi-val{font-size:16px;font-weight:700;color:var(–warning)}
+.submit-box{margin-top:4px;padding:12px;border-radius:var(–rad);font-size:13px;line-height:1.65}
 .submit-yes{background:#0a1f10;border:1px solid #1a4a25;color:#6de8a0}
 .submit-no{background:#1f0a0a;border:1px solid #4a1a1a;color:#ff8080}
 .submit-maybe{background:#1f1a0a;border:1px solid #4a3a10;color:#f0c060}
-.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff18;border-top-color:var(--info);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+
+/* Authenticity verdict box */
+.auth-verdict{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:var(–rad);margin-bottom:10px;border:1px solid}
+.auth-verdict.genuine{background:#061510;border-color:#1a4a2a}
+.auth-verdict.suspicious{background:#1a160a;border-color:#4a3a10}
+.auth-verdict.fake{background:#150606;border-color:#4a1a1a}
+.auth-verdict-icon{font-size:26px;line-height:1;flex-shrink:0}
+.auth-verdict-info{flex:1}
+.auth-verdict-label{font-size:13px;font-weight:700;margin-bottom:2px}
+.auth-verdict.genuine .auth-verdict-label{color:var(–success)}
+.auth-verdict.suspicious .auth-verdict-label{color:var(–warning)}
+.auth-verdict.fake .auth-verdict-label{color:var(–danger)}
+.auth-verdict-sub{font-size:11px;color:var(–muted)}
+.auth-confidence{text-align:right;flex-shrink:0}
+.auth-confidence .conf-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.auth-verdict.genuine .conf-num{color:var(–success)}
+.auth-verdict.suspicious .conf-num{color:var(–warning)}
+.auth-verdict.fake .conf-num{color:var(–danger)}
+.auth-confidence .conf-label{font-size:10px;color:var(–muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.conf-bar-wrap{height:4px;background:#ffffff10;border-radius:2px;margin-top:8px;overflow:hidden}
+.conf-bar{height:100%;border-radius:2px;transition:width .4s ease}
+.genuine .conf-bar{background:var(–success)}
+.suspicious .conf-bar{background:var(–warning)}
+.fake .conf-bar{background:var(–danger)}
+
+.tabs{display:flex;gap:2px;padding:3px;background:var(–panel);border-radius:var(–rad);border:1px solid var(–border);width:fit-content}
+.tab{padding:7px 16px;font-size:12px;font-weight:600;border:none;background:none;color:var(–muted);cursor:pointer;border-radius:6px;transition:all .15s;letter-spacing:.02em}
+.tab.on{background:var(–panel2);color:var(–text);box-shadow:0 1px 3px #00000040}
+.tab:hover:not(.on){color:var(–text)}
+.free-badge{display:inline-block;background:#0d2a0d;color:var(–success);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid #1a4a1a;letter-spacing:.04em;vertical-align:middle;margin-left:5px}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff18;border-top-color:var(–info);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.free-badge{display:inline-block;background:#0d2a0d;color:var(--success);font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid #1a4a1a;letter-spacing:.04em;vertical-align:middle;margin-left:6px}
-@media(max-width:600px){.results{grid-template-columns:1fr}.grade-grid{grid-template-columns:1fr}}
+.placeholder-icon{font-size:32px;margin-bottom:10px;display:block;opacity:.4}
+@media(max-width:600px){.grade-grid{grid-template-columns:1fr}}
 </style>
+
 </head>
 <body>
 <header>
-  <h1>Card Centering &amp; Pre-Grade</h1>
+  <h1>psa-sucks.com</h1>
   <span class="badge">AI Vision</span>
-  <span style="font-size:11px;color:var(--muted);margin-left:auto">psa-sucks.com</span>
+  <span class="badge-free" style="margin-left:auto">FREE</span>
 </header>
 <main>
   <div class="tabs">
-    <button class="tab on" id="tCenter" onclick="switchTab('center')">Centering</button>
-    <button class="tab" id="tDeep" onclick="switchTab('deep')">AI Pre-Grade <span class="free-badge">FREE</span></button>
+    <button class="tab on" id="tGrade" onclick="switchTab('grade')">AI Pre-Grade <span class="free-badge">FREE</span></button>
+    <button class="tab" id="tAuth" onclick="switchTab('auth')">🛡️ Fake Detector <span class="free-badge">FREE</span></button>
   </div>
 
-  <div id="secCenter" class="sec">
-    <div class="card">
-      <div class="card-title">Load images</div>
-      <div class="row">
-        <div class="upload-zone" id="uzFront">
-          <div class="ico">📄</div>
-          <div class="lbl">Front scan / photo</div>
-          <div class="name" id="fnFront">tap to load</div>
-          <input type="file" accept="image/*" id="inFront">
-        </div>
-        <div class="upload-zone" id="uzBack">
-          <div class="ico">📄</div>
-          <div class="lbl">Back scan / photo</div>
-          <div class="name" id="fnBack">tap to load</div>
-          <input type="file" accept="image/*" id="inBack">
-        </div>
+  <!-- AI PRE-GRADE TAB -->
+
+  <div id="secGrade" class="sec">
+    <div class="hero">
+      <h2>AI Card Pre-Grade</h2>
+      <p>Upload front, back, and angled shots. GPT-4o analyzes centering, surface, edges, and corners — then gives you a grade estimate before you submit.</p>
+      <div class="hero-badges">
+        <span class="hbadge">📐 Centering</span>
+        <span class="hbadge">🔍 Surface</span>
+        <span class="hbadge">📏 Edges</span>
+        <span class="hbadge">🔲 Corners</span>
+        <span class="hbadge">🏆 Grade Estimate</span>
       </div>
     </div>
-
-    <!-- Mode bar -->
-    <div class="mode-bar">
-      <span class="mode-label">Mode:</span>
-      <button class="mode-btn pan on" id="modePan" onclick="setMode('pan')">✋ Pan / Zoom</button>
-      <button class="mode-btn red" id="modeOuter" onclick="setMode('outer')">🟥 Card edge</button>
-      <button class="mode-btn blue" id="modeInner" onclick="setMode('inner')">🟦 Print border</button>
-    </div>
-
-    <div class="card">
-      <div class="toolbar">
-        <select id="selSide"><option value="front">Front</option><option value="back">Back</option></select>
-        <button onclick="fitView()">Fit</button>
-        <button id="btnContrast" onclick="toggleContrast()">Contrast</button>
-        <button onclick="resetG()">Reset guides</button>
-        <button onclick="exportCsv()">CSV</button>
-      </div>
-    </div>
-
-    <!-- Rotation + crop -->
-    <div class="card">
-      <div class="rot-controls">
-        <span class="rot-label">Rotate:</span>
-        <button onclick="rotateImg(-90)">↺ 90°</button>
-        <button onclick="rotateImg(90)">↻ 90°</button>
-        <button onclick="rotateImg(-1)">← 1°</button>
-        <button onclick="rotateImg(1)">→ 1°</button>
-        <button onclick="rotateImg(-0.25)">← ¼°</button>
-        <button onclick="rotateImg(0.25)">→ ¼°</button>
-        <button id="cropBtn" class="crop-btn" onclick="toggleCrop()">✂ Crop</button>
-        <button onclick="applyCrop()" id="applyCropBtn" style="display:none">Apply</button>
-        <button onclick="cancelCrop()" id="cancelCropBtn" style="display:none">Cancel</button>
-      </div>
-      <div id="cropHint" style="display:none;margin-top:8px" class="hint">Draw a rectangle on the image, then tap Apply.</div>
-    </div>
-
-    <div class="card" style="padding:8px">
-      <div class="canvas-wrap" id="canvasWrap">
-        <canvas id="cv"></canvas>
-        <canvas id="cropOverlay"></canvas>
-      </div>
-    </div>
-
-    <!-- Mobile nudge pad -->
-    <div class="card">
-      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
-        <div style="flex:1;min-width:200px">
-          <div class="hint" style="margin-bottom:8px">In <b style="color:var(--danger)">Card edge</b> or <b style="color:var(--info)">Print border</b> mode, drag anywhere on the canvas to move that guide. Use the nudge pad for precise positioning.</div>
-          <div class="hint">On desktop: hold Ctrl/Cmd + scroll to zoom. Arrow keys nudge active guide.</div>
-        </div>
-        <div class="nudge-grid">
-          <div></div>
-          <button class="nudge-btn" onclick="nudge(0,-1)">▲</button>
-          <div></div>
-          <button class="nudge-btn" onclick="nudge(-1,0)">◀</button>
-          <div class="nudge-center"></div>
-          <button class="nudge-btn" onclick="nudge(1,0)">▶</button>
-          <div></div>
-          <button class="nudge-btn" onclick="nudge(0,1)">▼</button>
-          <div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="results">
-      <div class="metric"><div class="k">Front L / R</div><div class="v" id="rFL">—</div><div class="g" id="rFLg"></div></div>
-      <div class="metric"><div class="k">Front T / B</div><div class="v" id="rFT">—</div><div class="g" id="rFTg"></div></div>
-      <div class="metric"><div class="k">Back L / R</div><div class="v" id="rBL">—</div><div class="g" id="rBLg"></div></div>
-      <div class="metric"><div class="k">Back T / B</div><div class="v" id="rBT">—</div><div class="g" id="rBTg"></div></div>
-    </div>
-    <div class="summary" id="summary">Load a front and back image, then align the guides.</div>
-  </div>
-
-  <div id="secDeep" class="sec" style="display:none">
     <div class="card">
       <div class="card-title">Card photos</div>
       <div class="row">
@@ -241,7 +165,7 @@ canvas{display:block;width:100%;background:#03040a}
     </div>
     <div class="card">
       <div class="toolbar">
-        <button class="run-btn" id="runBtn" onclick="runAI()">Analyze card with AI</button>
+        <button class="run-btn" id="runBtn" onclick="runAI()">⚡ Analyze card with AI</button>
         <button onclick="exportDeep()">Export report</button>
         <button onclick="clearDeep()">Clear</button>
       </div>
@@ -252,318 +176,150 @@ canvas{display:block;width:100%;background:#03040a}
         <span class="ai-label">GPT-4o AI Pre-Grade</span>
         <span class="ai-status" id="aiStatus">Ready</span>
       </div>
-      <div class="ai-body placeholder" id="deepOut">Upload card photos then tap Analyze — free for everyone.</div>
+      <div class="ai-body placeholder" id="deepOut">
+        <span class="placeholder-icon">🃏</span>
+        Upload card photos above, then tap <strong style="color:var(--text)">Analyze card with AI</strong>.<br>
+        Free for everyone. No account needed.
+      </div>
+    </div>
+  </div>
+
+  <!-- FAKE DETECTOR TAB -->
+
+  <div id="secAuth" class="sec" style="display:none">
+    <div class="hero">
+      <h2>🛡️ Fake Detector</h2>
+      <p>Upload front and back scans. GPT-4o checks print quality, color fidelity, font accuracy, hologram/foil, card stock, and back design to detect counterfeits.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Card photos</div>
+      <div class="row">
+        <div class="upload-zone" id="uzFF2">
+          <div class="ico">🔆</div>
+          <div class="lbl">Front — flat scan</div>
+          <div class="name" id="dnFF2">tap to load</div>
+          <input type="file" accept="image/*" id="inFF2">
+        </div>
+        <div class="upload-zone" id="uzFB2">
+          <div class="ico">🔆</div>
+          <div class="lbl">Back — flat scan</div>
+          <div class="name" id="dnFB2">tap to load</div>
+          <input type="file" accept="image/*" id="inFB2">
+        </div>
+        <div class="upload-zone" id="uzFA2">
+          <div class="ico">📐</div>
+          <div class="lbl">Angled photos (multi)</div>
+          <div class="name" id="dnA2">tap to load</div>
+          <input type="file" accept="image/*" multiple id="inFA2">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="run-btn" id="runAuthBtn" onclick="runAuth()">🛡️ Check Authenticity</button>
+        <button onclick="clearAuth()">Clear</button>
+      </div>
+    </div>
+    <div class="ai-wrap">
+      <div class="ai-header">
+        <div class="ai-dot" id="authDot"></div>
+        <span class="ai-label">GPT-4o Fake Detector</span>
+        <span class="ai-status" id="authStatus">Ready</span>
+      </div>
+      <div class="ai-body placeholder" id="authOut">
+        <span class="placeholder-icon">🛡️</span>
+        Upload card photos above, then tap <strong style="color:var(--text)">Check Authenticity</strong>.<br>
+        Free for everyone. No account needed.
+      </div>
     </div>
   </div>
 </main>
 
 <script>
 const $=s=>document.querySelector(s);
-let curSide='front',curGuide='outer',contrast=false;
-let touchMode='pan'; // 'pan', 'outer', 'inner'
-const states={
-  front:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null},
-  back:{img:null,iw:0,ih:0,zoom:1,ox:0,oy:0,outer:null,inner:null}
-};
-let drag=null,last=null,lastRawText='';
-let cropping=false,cropStart=null,cropRect=null;
-let pinchStart=null;
-const cv=$('#cv'),ctx=cv.getContext('2d');
-const cropCv=$('#cropOverlay'),cropCtx=cropCv.getContext('2d');
+let lastRawText='';
 
 function switchTab(t){
-  $('#tCenter').classList.toggle('on',t==='center');
-  $('#tDeep').classList.toggle('on',t==='deep');
-  $('#secCenter').style.display=t==='center'?'flex':'none';
-  $('#secDeep').style.display=t==='deep'?'flex':'none';
+  $('#tGrade').classList.toggle('on',t==='grade');
+  $('#tAuth').classList.toggle('on',t==='auth');
+  $('#secGrade').style.display=t==='grade'?'flex':'none';
+  $('#secAuth').style.display=t==='auth'?'flex':'none';
 }
 
-function setMode(m){
-  touchMode=m;
-  ['pan','outer','inner'].forEach(id=>{
-    const btn=$('#mode'+id.charAt(0).toUpperCase()+id.slice(1));
-    if(btn)btn.classList.toggle('on',id===m);
+let deepFiles={ff:null,fb:null,angled:[]};
+let authFiles={ff:null,fb:null,angled:[]};
+
+function wireUpload(inputId,key,nameId,uzId,multi,target){
+  const t=target||deepFiles;
+  $(inputId).addEventListener('change',e=>{
+    const files=[...e.target.files];if(!files.length)return;
+    if(multi){t[key]=files;$(nameId).textContent=files.length+' photo(s)'}
+    else{t[key]=files[0];$(nameId).textContent=files[0].name.length>18?files[0].name.slice(0,16)+'…':files[0].name}
+    $(uzId).classList.add('has-file');
   });
-  if(m==='outer')curGuide='outer';
-  if(m==='inner')curGuide='inner';
-  cv.style.cursor=m==='pan'?'grab':'crosshair';
 }
-
-function resizeCanvas(){
-  const cw=cv.parentElement.clientWidth||360;
-  cv.width=cw*devicePixelRatio;cv.height=Math.round(cw*.72)*devicePixelRatio;
-  cv.style.width=cw+'px';cv.style.height=Math.round(cw*.72)+'px';
-  cropCv.width=cv.width;cropCv.height=cv.height;
-  cropCv.style.width=cv.style.width;cropCv.style.height=cv.style.height;
-  fitView();draw();
-}
-window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(resizeCanvas,120)});
-function st(){return states[curSide]}
-
-function loadImg(file,side,uzId){
-  if(!file)return;
-  const img=new Image();
-  img.onload=()=>{const s=states[side];s.img=img;s.iw=img.width;s.ih=img.height;resetGuides(side);fitFor(side);if(curSide===side)draw();updateMetrics()};
-  img.src=URL.createObjectURL(file);
-  if(uzId)$(uzId).classList.add('has-file');
-}
-$('#inFront').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'front','#uzFront');$('#fnFront').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
-$('#inBack').addEventListener('change',e=>{const f=e.target.files[0];if(f){loadImg(f,'back','#uzBack');$('#fnBack').textContent=f.name.length>18?f.name.slice(0,16)+'…':f.name}});
-$('#selSide').addEventListener('change',e=>{curSide=e.target.value;draw()});
-
-function resetGuides(side){const s=states[side];if(!s.img)return;s.outer={x:s.iw*.07,y:s.ih*.06,w:s.iw*.86,h:s.ih*.88};s.inner={x:s.iw*.16,y:s.ih*.13,w:s.iw*.68,h:s.ih*.74}}
-function fitFor(side){const s=states[side];if(!s.img)return;const p=18*devicePixelRatio;s.zoom=Math.min((cv.width-p*2)/s.iw,(cv.height-p*2)/s.ih);s.ox=(cv.width-s.iw*s.zoom)/2;s.oy=(cv.height-s.ih*s.zoom)/2}
-function fitView(){fitFor(curSide);draw()}
-function resetG(){resetGuides(curSide);draw();updateMetrics()}
-function toggleContrast(){contrast=!contrast;$('#btnContrast').classList.toggle('active',contrast);draw()}
-
-function rotateImg(deg){
-  const s=st();if(!s.img)return;
-  const rad=deg*Math.PI/180;
-  const cos=Math.abs(Math.cos(rad)),sin=Math.abs(Math.sin(rad));
-  const nw=Math.round(s.iw*cos+s.ih*sin);
-  const nh=Math.round(s.iw*sin+s.ih*cos);
-  const tmp=document.createElement('canvas');
-  tmp.width=nw;tmp.height=nh;
-  const tx=tmp.getContext('2d');
-  tx.translate(nw/2,nh/2);tx.rotate(rad);
-  tx.drawImage(s.img,-s.iw/2,-s.ih/2);
-  const ni=new Image();
-  ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};
-  ni.src=tmp.toDataURL();
-}
-
-function nudge(dx,dy){
-  const s=st();if(!s.img)return;
-  moveRect(s,curGuide,'move',dx,dy);
-  draw();updateMetrics();
-}
-
-// Crop
-function toggleCrop(){
-  cropping=!cropping;cropRect=null;
-  $('#cropBtn').classList.toggle('cropping',cropping);
-  $('#applyCropBtn').style.display=cropping?'inline-block':'none';
-  $('#cancelCropBtn').style.display=cropping?'inline-block':'none';
-  $('#cropHint').style.display=cropping?'block':'none';
-  cropCv.style.display=cropping?'block':'none';
-  cropCv.className=cropping?'active':'';
-  if(!cropping)cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
-}
-function cancelCrop(){
-  cropping=false;cropRect=null;
-  $('#cropBtn').classList.remove('cropping');
-  $('#applyCropBtn').style.display='none';
-  $('#cancelCropBtn').style.display='none';
-  $('#cropHint').style.display='none';
-  cropCv.style.display='none';
-  cropCv.className='';
-  cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
-}
-function applyCrop(){
-  if(!cropRect)return;
-  const s=st();if(!s.img)return;
-  const ix=Math.round((cropRect.x-s.ox)/s.zoom);
-  const iy=Math.round((cropRect.y-s.oy)/s.zoom);
-  const iw=Math.round(cropRect.w/s.zoom);
-  const ih=Math.round(cropRect.h/s.zoom);
-  if(iw<10||ih<10)return;
-  const tmp=document.createElement('canvas');
-  tmp.width=iw;tmp.height=ih;
-  tmp.getContext('2d').drawImage(s.img,ix,iy,iw,ih,0,0,iw,ih);
-  const ni=new Image();
-  ni.onload=()=>{s.img=ni;s.iw=ni.width;s.ih=ni.height;resetGuides(curSide);fitFor(curSide);draw();updateMetrics()};
-  ni.src=tmp.toDataURL();
-  cancelCrop();
-}
-
-function evtXY(e){
-  const r=cv.getBoundingClientRect();
-  const src=e.touches?e.touches[0]:e;
-  return{x:(src.clientX-r.left)*devicePixelRatio,y:(src.clientY-r.top)*devicePixelRatio};
-}
-function evtXYfromTouch(touch){
-  const r=cv.getBoundingClientRect();
-  return{x:(touch.clientX-r.left)*devicePixelRatio,y:(touch.clientY-r.top)*devicePixelRatio};
-}
-
-// Crop overlay events
-cropCv.addEventListener('pointerdown',e=>{
-  if(!cropping)return;
-  const{x,y}=evtXY(e);
-  cropStart={x,y};cropRect=null;
-  cropCv.setPointerCapture(e.pointerId);
-});
-cropCv.addEventListener('pointermove',e=>{
-  if(!cropping||!cropStart)return;
-  const{x,y}=evtXY(e);
-  const rx=Math.min(x,cropStart.x),ry=Math.min(y,cropStart.y);
-  const rw=Math.abs(x-cropStart.x),rh=Math.abs(y-cropStart.y);
-  cropRect={x:rx,y:ry,w:rw,h:rh};
-  cropCtx.clearRect(0,0,cropCv.width,cropCv.height);
-  cropCtx.fillStyle='rgba(0,0,0,0.45)';
-  cropCtx.fillRect(0,0,cropCv.width,cropCv.height);
-  cropCtx.clearRect(rx,ry,rw,rh);
-  cropCtx.strokeStyle='#fff';cropCtx.lineWidth=1.5;
-  cropCtx.strokeRect(rx,ry,rw,rh);
-});
-cropCv.addEventListener('pointerup',()=>cropStart=null);
-
-function s2i(s,x,y){return{x:(x-s.ox)/s.zoom,y:(y-s.oy)/s.zoom}}
-function i2s(s,x,y){return{x:s.ox+x*s.zoom,y:s.oy+y*s.zoom}}
-function corners(r){return{tl:{x:r.x,y:r.y},tr:{x:r.x+r.w,y:r.y},bl:{x:r.x,y:r.y+r.h},br:{x:r.x+r.w,y:r.y+r.h}}}
-
-// Bigger hit radius on mobile
-function getHandleRadius(s){
-  const isMobile=window.matchMedia('(max-width:700px)').matches;
-  return(isMobile?22:12)/s.zoom;
-}
-
-function hitTest(s,x,y){
-  const p=s2i(s,x,y);
-  const hr=getHandleRadius(s);
-  for(const gn of['inner','outer']){
-    const r=s[gn];if(!r)continue;
-    for(const[k,h]of Object.entries(corners(r))){
-      if(Math.hypot(p.x-h.x,p.y-h.y)<hr)return{shape:gn,kind:k};
-    }
-    if(p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)return{shape:gn,kind:'move'};
-  }
-  return null;
-}
-
-function clamp(s,which){
-  const r=s[which];
-  if(which==='outer'){r.w=Math.max(10,Math.min(r.w,s.iw));r.h=Math.max(10,Math.min(r.h,s.ih));r.x=Math.max(0,Math.min(r.x,s.iw-r.w));r.y=Math.max(0,Math.min(r.y,s.ih-r.h))}
-  else{const o=s.outer||{x:0,y:0,w:s.iw,h:s.ih};r.w=Math.max(10,Math.min(r.w,o.w));r.h=Math.max(10,Math.min(r.h,o.h));r.x=Math.max(o.x,Math.min(r.x,o.x+o.w-r.w));r.y=Math.max(o.y,Math.min(r.y,o.y+o.h-r.h))}
-}
-
-function moveRect(s,shape,kind,dx,dy){
-  const r=s[shape];
-  if(kind==='move'){r.x+=dx;r.y+=dy}
-  else{if(kind.includes('l')){r.x+=dx;r.w-=dx}if(kind.includes('r'))r.w+=dx;if(kind.includes('t')){r.y+=dy;r.h-=dy}if(kind.includes('b'))r.h+=dy}
-  clamp(s,shape);if(shape==='outer'&&s.inner)clamp(s,'inner');
-}
-
-function drawHandle(px,py,color,sz){
-  // Draw a bigger filled circle handle for mobile
-  ctx.beginPath();ctx.arc(px,py,sz,0,Math.PI*2);
-  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fill();
-  ctx.strokeStyle=color;ctx.lineWidth=2*devicePixelRatio;ctx.stroke();
-  ctx.beginPath();ctx.arc(px,py,sz*.45,0,Math.PI*2);
-  ctx.fillStyle=color;ctx.fill();
-}
-
-function drawGuide(s,r,color,isActive){
-  const p=i2s(s,r.x,r.y);
-  ctx.strokeStyle=color;ctx.lineWidth=(isActive?2.5:1.5)*devicePixelRatio;
-  ctx.setLineDash(isActive?[]:[6*devicePixelRatio,4*devicePixelRatio]);
-  ctx.strokeRect(p.x,p.y,r.w*s.zoom,r.h*s.zoom);ctx.setLineDash([]);
-  const isMobile=window.matchMedia('(max-width:700px)').matches;
-  const sz=(isMobile?14:8)*devicePixelRatio;
-  for(const h of Object.values(corners(r))){const q=i2s(s,h.x,h.y);drawHandle(q.x,q.y,color,sz)}
-}
-
-function draw(){
-  ctx.clearRect(0,0,cv.width,cv.height);const s=st();
-  if(!s.img){ctx.fillStyle='rgba(122,134,158,0.28)';ctx.font=`${12*devicePixelRatio}px system-ui`;ctx.textAlign='center';ctx.fillText('Load a front or back image above',cv.width/2,cv.height/2);return}
-  ctx.fillStyle='#03040a';ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.filter=contrast?'contrast(1.35) saturate(0.75)':'none';
-  ctx.drawImage(s.img,s.ox,s.oy,s.iw*s.zoom,s.ih*s.zoom);ctx.filter='none';
-  if(s.outer)drawGuide(s,s.outer,'#ff5f5f',curGuide==='outer');
-  if(s.inner)drawGuide(s,s.inner,'#4a9eff',curGuide==='inner');
-}
-
-// Pointer events — mode-aware
-cv.addEventListener('pointerdown',e=>{
-  if(cropping)return;
-  const s=st();if(!s.img)return;
-  cv.setPointerCapture(e.pointerId);
-  const{x,y}=evtXY(e);last={x,y};
-  if(touchMode==='pan'){
-    drag={shape:'pan',kind:'pan'};
-  } else {
-    // In guide mode, any drag moves that guide
-    drag={shape:touchMode,kind:'move'};
-    curGuide=touchMode;
-  }
-});
-cv.addEventListener('pointermove',e=>{
-  const s=st();if(!s.img||!drag)return;
-  const{x,y}=evtXY(e);
-  const dx=(x-last.x)/s.zoom,dy=(y-last.y)/s.zoom;
-  if(drag.shape==='pan'){s.ox+=x-last.x;s.oy+=y-last.y;}
-  else{moveRect(s,drag.shape,drag.kind,dx,dy);updateMetrics();}
-  last={x,y};draw();
-});
-cv.addEventListener('pointerup',()=>drag=null);
-cv.addEventListener('pointercancel',()=>drag=null);
-
-// Pinch to zoom
-cv.addEventListener('touchstart',e=>{
-  if(e.touches.length===2){
-    e.preventDefault();
-    const t1=evtXYfromTouch(e.touches[0]);
-    const t2=evtXYfromTouch(e.touches[1]);
-    pinchStart={dist:Math.hypot(t2.x-t1.x,t2.y-t1.y),zoom:st().zoom};
-  }
-},{passive:false});
-cv.addEventListener('touchmove',e=>{
-  if(e.touches.length===2&&pinchStart){
-    e.preventDefault();
-    const t1=evtXYfromTouch(e.touches[0]);
-    const t2=evtXYfromTouch(e.touches[1]);
-    const dist=Math.hypot(t2.x-t1.x,t2.y-t1.y);
-    const s=st();
-    s.zoom=Math.max(.08,Math.min(30,pinchStart.zoom*(dist/pinchStart.dist)));
-    draw();
-  }
-},{passive:false});
-cv.addEventListener('touchend',()=>pinchStart=null);
-
-// Desktop scroll zoom (Ctrl/Cmd only)
-cv.addEventListener('wheel',e=>{
-  if(!e.ctrlKey&&!e.metaKey)return;
-  e.preventDefault();
-  const s=st();if(!s.img)return;
-  const f=e.deltaY<0?1.06:.94;
-  s.zoom=Math.max(.08,Math.min(30,s.zoom*f));
-  draw();
-},{passive:false});
-
-// Arrow keys
-window.addEventListener('keydown',e=>{
-  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
-  const s=st();if(!s.img)return;e.preventDefault();
-  const d=e.shiftKey?10:1;
-  moveRect(s,curGuide,'move',e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0,e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0);
-  draw();updateMetrics();
+document.addEventListener('DOMContentLoaded',function(){
+  wireUpload('#inDF','ff','#dnFF','#uzAF',false,deepFiles);
+  wireUpload('#inDB','fb','#dnFB','#uzAB',false,deepFiles);
+  wireUpload('#inDA','angled','#dnA','#uzAA',true,deepFiles);
+  wireUpload('#inFF2','ff','#dnFF2','#uzFF2',false,authFiles);
+  wireUpload('#inFB2','fb','#dnFB2','#uzFB2',false,authFiles);
+  wireUpload('#inFA2','angled','#dnA2','#uzFA2',true,authFiles);
 });
 
-function calcMetrics(side){
-  const s=states[side];if(!s.img||!s.outer||!s.inner)return null;
-  const o=s.outer,i=s.inner;
-  const L=i.x-o.x,R=(o.x+o.w)-(i.x+i.w),T=i.y-o.y,B=(o.y+o.h)-(i.y+i.h);
-  return{L,R,T,B,lr:gradeRatio(L,R),tb:gradeRatio(T,B),lrStr:ratioStr(L,R),tbStr:ratioStr(T,B)};
+function compressFile(file,quality,maxPx){
+  return new Promise(function(res,rej){
+    const img=new Image();
+    img.onload=function(){
+      const MAX=maxPx||1600;let w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      res(c.toDataURL('image/jpeg',quality||0.85).split(',')[1]);
+    };
+    img.onerror=rej;img.src=URL.createObjectURL(file);
+  });
 }
-function ratioStr(a,b){const s=a+b;if(s<1)return'—';return`${Math.round(100*Math.min(a,b)/s)}/${Math.round(100*Math.max(a,b)/s)}`}
-function gradeRatio(a,b){const s=a+b;if(s<1)return null;const p=Math.max(a,b)/s*100;if(p<=55)return{label:'PSA 10 / BGS 9.5+',cls:'good'};if(p<=60)return{label:'PSA 9 / BGS 9',cls:'good'};if(p<=65)return{label:'PSA 8 / BGS 8',cls:'warn'};if(p<=75)return{label:'PSA 6–7 range',cls:'warn'};return{label:'PSA ≤5 range',cls:'bad'}}
-function setMetric(vEl,gEl,m,key){if(!m){vEl.textContent='—';vEl.className='v';gEl.textContent='';return}const g=m[key];vEl.textContent=m[key+'Str'];vEl.className='v'+(g?' '+g.cls:'');if(g){gEl.textContent=g.label;gEl.className='g '+g.cls}else gEl.textContent=''}
-function updateMetrics(){
-  const f=calcMetrics('front'),b=calcMetrics('back');
-  setMetric($('#rFL'),$('#rFLg'),f,'lr');setMetric($('#rFT'),$('#rFTg'),f,'tb');
-  setMetric($('#rBL'),$('#rBLg'),b,'lr');setMetric($('#rBT'),$('#rBTg'),b,'tb');
-  const lines=[];
-  if(f)lines.push(`Front: ${f.lrStr} L/R, ${f.tbStr} T/B`);
-  if(b)lines.push(`Back: ${b.lrStr} L/R, ${b.tbStr} T/B`);
-  if(!lines.length){$('#summary').innerHTML='Load images and align the guides.';return}
-  lines.push('');lines.push('<b>Note:</b> Pre-screen only. Verify against current PSA / BGS / CGC standards before submitting.');
-  $('#summary').innerHTML=lines.join('<br>');
-}
-function exportCsv(){
-  const rows=[['side','LR','TB','L','R','T','B']];
-  for(const k of['front','back']){const m=calcMetrics(k);if(m)rows.push([k,m.lrStr,m.tbStr,m.L.toFixed(1),m.R.toFixed(1),m.T.toFixed(1),m.B.toFixed(1)])}
-  dl('centering.csv',rows.map(r=>r.join(',')).join('\n'),'text/csv');
+
+const AI_PROMPT=`You are an expert TCG card grader with years of experience grading for PSA, BGS (Beckett), and CGC. Analyze the provided card photo(s) and give a detailed, honest pre-grade assessment.
+
+Structure your response with EXACTLY these 6 numbered sections:
+
+1. CENTERING
+2. SURFACE
+3. EDGES
+4. CORNERS
+5. OVERALL GRADE ESTIMATE
+6. SUBMIT RECOMMENDATION
+
+For section 5, always include PSA, BGS, and CGC grade estimates as numbers (e.g. PSA: 8-9, BGS: 8.5, CGC: 8.5).
+For section 6, start with a clear Yes or No recommendation.
+
+IMPORTANT: Look extremely carefully at the entire card surface for ANY scratches, gouges, linear marks, creases, or surface disruptions. Be suspicious and assume damage may exist — look hard for it. Do not give a clean surface assessment unless you have carefully examined every area of the card.`;
+
+async function runAI(){
+  const out=$('#deepOut'),dot=$('#aiDot'),status=$('#aiStatus'),btn=$('#runBtn');
+  const hasAny=deepFiles.ff||deepFiles.fb||(deepFiles.angled&&deepFiles.angled.length);
+  if(!hasAny){out.className='ai-body placeholder';out.innerHTML='<span class="placeholder-icon">⚠️</span>Upload at least one card photo first.';return}
+  btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Preparing…';
+  out.className='ai-body';out.innerHTML='<span class="spinner"></span>Preparing images…';
+  const totalImgs=(deepFiles.ff?1:0)+(deepFiles.fb?1:0)+(deepFiles.angled?deepFiles.angled.length:0);
+  const quality=totalImgs>=4?0.65:totalImgs===3?0.72:totalImgs===2?0.82:0.92;
+  const maxPx=totalImgs>=4?1200:totalImgs===3?1400:1600;
+  try{
+    const parts=[];
+    parts.push({text:AI_PROMPT});
+    if(deepFiles.ff){status.textContent='Processing front…';const b64=await compressFile(deepFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(deepFiles.fb){status.textContent='Processing back…';const b64=await compressFile(deepFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(deepFiles.angled&&deepFiles.angled.length){for(let i=0;i<deepFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(deepFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
+    status.textContent='Analyzing…';out.innerHTML='<span class="spinner"></span>Analyzing your card…';
+    const resp=await fetch('https://psa-sucks.com/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:parts}]})});
+    if(!resp.ok){const err=await resp.json().catch(function(){return{}});throw new Error(err.error&&err.error.message?err.error.message:'HTTP '+resp.status)}
+    const data=await resp.json();
+    const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim():'No response received.';
+    lastRawText=text;dot.className='ai-dot live';status.textContent='Done';parseAndRender(text);
+  }catch(e){dot.className='ai-dot';status.textContent='Error';out.className='ai-body raw';out.textContent='Error: '+e.message;}
+  finally{btn.disabled=false}
 }
 
 function parseAndRender(text){
@@ -607,18 +363,21 @@ function parseAndRender(text){
     if(good.test(content))return{cls:'badge-good',label:'Clean'};
     return{cls:'badge-neutral',label:'See notes'};
   }
+
   function extractGrades(content){
     const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);
     const bgs=content.match(/BGS[:\s]*([0-9]+(?:\.[0-9]+)?(?:\s*[-–]\s*[0-9]+(?:\.[0-9]+)?)?)/i);
     const cgc=content.match(/CGC[:\s]*([0-9]+(?:\.[0-9]+)?(?:\s*[-–]\s*[0-9]+(?:\.[0-9]+)?)?)/i);
     return{psa:psa?psa[1].trim():null,bgs:bgs?bgs[1].trim():null,cgc:cgc?cgc[1].trim():null};
   }
+
   function cleanContent(content){
     return content.split('\n').slice(1).join('\n')
       .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
       .replace(/\*(.+?)\*/g,'<em>$1</em>')
       .replace(/^\s*[-•*]\s*/gm,'• ').trim();
   }
+
   const html=['<div class="ai-sections">'];
   for(const def of sectionDefs){
     const content=sections[def.key];if(!content)continue;
@@ -626,6 +385,7 @@ function parseAndRender(text){
     const cleaned=cleanContent(content);
     const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
     html.push('<div class="ai-section"><div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div><div class="ai-section-body">');
+
     if(def.key==='grade'){
       const g=extractGrades(content);
       if(g.psa||g.bgs||g.cgc){
@@ -639,77 +399,170 @@ function parseAndRender(text){
     } else if(def.key==='submit'){
       const sc=badge.cls==='badge-good'?'submit-yes':badge.cls==='badge-bad'?'submit-no':'submit-maybe';
       html.push('<div class="submit-box '+sc+'">'+paras+'</div>');
-    } else {html.push(paras)}
+    } else {
+      html.push(paras);
+    }
     html.push('</div></div>');
   }
   html.push('</div>');
   out.innerHTML=html.join('');
 }
 
-let deepFiles={ff:null,fb:null,angled:[]};
-function wireUpload(inputId,key,nameId,uzId,multi){
-  $(inputId).addEventListener('change',e=>{
-    const files=[...e.target.files];if(!files.length)return;
-    if(multi){deepFiles[key]=files;$(nameId).textContent=files.length+' photo(s)'}
-    else{deepFiles[key]=files[0];$(nameId).textContent=files[0].name.length>18?files[0].name.slice(0,16)+'…':files[0].name}
-    $(uzId).classList.add('has-file');
-  });
-}
-wireUpload('#inDF','ff','#dnFF','#uzAF',false);
-wireUpload('#inDB','fb','#dnFB','#uzAB',false);
-wireUpload('#inDA','angled','#dnA','#uzAA',true);
+// Auth tab
+const AUTH_PROMPT=`You are an expert TCG card authenticator. Your sole job is to determine if the provided card is GENUINE or a COUNTERFEIT.
 
-function compressFile(file,quality,maxPx){
-  return new Promise(function(res,rej){
-    const img=new Image();
-    img.onload=function(){
-      const MAX=maxPx||1600;let w=img.width,h=img.height;
-      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
-      const c=document.createElement('canvas');c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      res(c.toDataURL('image/jpeg',quality||0.85).split(',')[1]);
-    };
-    img.onerror=rej;img.src=URL.createObjectURL(file);
-  });
-}
+Examine every detail carefully:
+- Print quality: dot pattern sharpness, color registration, any blurriness or pixelation
+- Font accuracy: correct typefaces, spacing, kerning, weight vs known genuine cards
+- Color fidelity: correct hues, saturation, black levels, any color shift
+- Hologram, foil, or stamp accuracy if present
+- Card stock and texture cues visible in any angled shots
+- Back design: correct pattern, colors, borders, symmetry
+- Any "off" feeling, inconsistencies, or tells that experienced collectors recognize
 
-async function runAI(){
-  const out=$('#deepOut'),dot=$('#aiDot'),status=$('#aiStatus'),btn=$('#runBtn');
-  const hasAny=deepFiles.ff||deepFiles.fb||(deepFiles.angled&&deepFiles.angled.length);
-  if(!hasAny){out.className='ai-body placeholder';out.textContent='Upload at least one card photo first.';return}
+Structure your response with EXACTLY these 4 numbered sections:
+
+1. PRINT & COLOR
+2. FONT & TEXT
+3. HOLOGRAM & STOCK
+4. VERDICT
+
+For section 4 (VERDICT), conclude with EXACTLY this format on its own line:
+VERDICT: [Genuine|Suspicious|Likely Fake] — CONFIDENCE: [0-100]%
+
+Be skeptical. Default to Suspicious if ANYTHING looks off. Only call Genuine if everything checks out perfectly across all images provided.`;
+
+async function runAuth(){
+  const out=$('#authOut'),dot=$('#authDot'),status=$('#authStatus'),btn=$('#runAuthBtn');
+  const hasAny=authFiles.ff||authFiles.fb||(authFiles.angled&&authFiles.angled.length);
+  if(!hasAny){out.className='ai-body placeholder';out.innerHTML='<span class="placeholder-icon">⚠️</span>Upload at least one card photo first.';return}
   btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Preparing…';
   out.className='ai-body';out.innerHTML='<span class="spinner"></span>Preparing images…';
-  const totalImgs=(deepFiles.ff?1:0)+(deepFiles.fb?1:0)+(deepFiles.angled?deepFiles.angled.length:0);
+  const totalImgs=(authFiles.ff?1:0)+(authFiles.fb?1:0)+(authFiles.angled?authFiles.angled.length:0);
   const quality=totalImgs>=4?0.65:totalImgs===3?0.72:totalImgs===2?0.82:0.92;
   const maxPx=totalImgs>=4?1200:totalImgs===3?1400:1600;
   try{
     const parts=[];
-    parts.push({text:'You are an expert TCG card grader with years of experience grading for PSA, BGS (Beckett), and CGC. Analyze the provided card photo(s) and give a detailed, honest pre-grade assessment.\n\nStructure your response with EXACTLY these 6 numbered sections:\n\n1. CENTERING\n2. SURFACE\n3. EDGES\n4. CORNERS\n5. OVERALL GRADE ESTIMATE\n6. SUBMIT RECOMMENDATION\n\nFor section 5, always include PSA, BGS, and CGC grade estimates as numbers (e.g. PSA: 8-9, BGS: 8.5, CGC: 8.5).\nFor section 6, start with a clear Yes or No recommendation.\n\nIMPORTANT: Look extremely carefully at the entire card surface for ANY scratches, gouges, linear marks, creases, or surface disruptions. Be suspicious and assume damage may exist — look hard for it. Do not give a clean surface assessment unless you have carefully examined every area of the card.'});
-    if(deepFiles.ff){status.textContent='Processing front…';const b64=await compressFile(deepFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
-    if(deepFiles.fb){status.textContent='Processing back…';const b64=await compressFile(deepFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
-    if(deepFiles.angled&&deepFiles.angled.length){for(let i=0;i<deepFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(deepFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
-    status.textContent='Analyzing…';out.innerHTML='<span class="spinner"></span>Analyzing your card…';
+    parts.push({text:AUTH_PROMPT});
+    if(authFiles.ff){status.textContent='Processing front…';const b64=await compressFile(authFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(authFiles.fb){status.textContent='Processing back…';const b64=await compressFile(authFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(authFiles.angled&&authFiles.angled.length){for(let i=0;i<authFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(authFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
+    status.textContent='Analyzing…';out.innerHTML='<span class="spinner"></span>Checking authenticity…';
     const resp=await fetch('https://psa-sucks.com/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:parts}]})});
     if(!resp.ok){const err=await resp.json().catch(function(){return{}});throw new Error(err.error&&err.error.message?err.error.message:'HTTP '+resp.status)}
     const data=await resp.json();
     const text=data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts?data.candidates[0].content.parts.map(function(p){return p.text||''}).join('\n').trim():'No response received.';
-    lastRawText=text;dot.className='ai-dot live';status.textContent='Done';parseAndRender(text);
+    dot.className='ai-dot live';status.textContent='Done';renderAuth(text);
   }catch(e){dot.className='ai-dot';status.textContent='Error';out.className='ai-body raw';out.textContent='Error: '+e.message;}
   finally{btn.disabled=false}
 }
 
+function renderAuth(text){
+  const out=$('#authOut');out.className='ai-body';
+  const sectionDefs=[
+    {key:'print',icon:'🖨️',title:'Print & Color',patterns:[/1\.\s*PRINT/i]},
+    {key:'font',icon:'🔤',title:'Font & Text',patterns:[/2\.\s*FONT/i]},
+    {key:'holo',icon:'✨',title:'Hologram & Stock',patterns:[/3\.\s*HOLOGRAM/i]},
+    {key:'verdict',icon:'🛡️',title:'Verdict',patterns:[/4\.\s*VERDICT/i]},
+  ];
+  const lines=text.split('\n');
+  const sections={};let currentKey=null,currentLines=[];
+  for(const line of lines){
+    let matched=false;
+    for(const def of sectionDefs){
+      if(def.patterns.some(p=>p.test(line))){
+        if(currentKey)sections[currentKey]=currentLines.join('\n').trim();
+        currentKey=def.key;currentLines=[line];matched=true;break;
+      }
+    }
+    if(!matched&&currentKey)currentLines.push(line);
+  }
+  if(currentKey)sections[currentKey]=currentLines.join('\n').trim();
+  if(Object.keys(sections).length<2){out.className='ai-body raw';out.textContent=text;return}
+
+  function parseVerdict(content){
+    const m=content.match(/VERDICT\s*:\s*(Genuine|Suspicious|Likely Fake)\s*[—\-–]\s*CONFIDENCE\s*:\s*([0-9]+)\s*%/i);
+    if(!m)return null;
+    return{verdict:m[1],confidence:parseInt(m[2],10)};
+  }
+  function cleanText(content){
+    return content.split('\n').slice(1).join('\n')
+      .replace(/VERDICT\s*:.*CONFIDENCE\s*:.*%/gi,'')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^\s*[-•*]\s*/gm,'• ').trim();
+  }
+  function sectionBadge(key,content){
+    if(key==='verdict'){
+      const v=parseVerdict(content);
+      if(!v)return{cls:'badge-neutral',label:'See notes'};
+      if(v.verdict==='Genuine')return{cls:'badge-good',label:'✓ Genuine'};
+      if(v.verdict==='Likely Fake')return{cls:'badge-bad',label:'✗ Likely Fake'};
+      return{cls:'badge-warn',label:'⚠ Suspicious'};
+    }
+    const bad=/off|incorrect|wrong|blurr|pixelat|mismatch|inconsistent|poor|fake|counterfeit/i;
+    const warn=/slight|minor|small|faint|hard to tell/i;
+    const good=/correct|accurate|matches|clean|sharp|consistent|genuine/i;
+    if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
+    if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
+    if(good.test(content))return{cls:'badge-good',label:'Looks good'};
+    return{cls:'badge-neutral',label:'See notes'};
+  }
+
+  const html=['<div class="ai-sections">'];
+  for(const def of sectionDefs){
+    const content=sections[def.key];if(!content)continue;
+    const badge=sectionBadge(def.key,content);
+    const cleaned=cleanText(content);
+    const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
+    html.push('<div class="ai-section"><div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div><div class="ai-section-body">');
+    if(def.key==='verdict'){
+      const v=parseVerdict(content);
+      if(v){
+        const cls=v.verdict==='Genuine'?'genuine':v.verdict==='Likely Fake'?'fake':'suspicious';
+        const icon=v.verdict==='Genuine'?'✅':v.verdict==='Likely Fake'?'🚨':'⚠️';
+        const sublabel=v.verdict==='Genuine'?'No signs of counterfeiting detected':v.verdict==='Likely Fake'?'Signs of counterfeit detected':'Requires closer inspection';
+        html.push(
+          '<div class="auth-verdict '+cls+'">'+
+          '<div class="auth-verdict-icon">'+icon+'</div>'+
+          '<div class="auth-verdict-info">'+
+            '<div class="auth-verdict-label">'+v.verdict+'</div>'+
+            '<div class="auth-verdict-sub">'+sublabel+'</div>'+
+            '<div class="conf-bar-wrap"><div class="conf-bar" style="width:'+v.confidence+'%"></div></div>'+
+          '</div>'+
+          '<div class="auth-confidence">'+
+            '<div class="conf-num">'+v.confidence+'%</div>'+
+            '<div class="conf-label">Confidence</div>'+
+          '</div>'+
+          '</div>'
+        );
+      }
+    }
+    html.push(paras+'</div></div>');
+  }
+  html.push('</div>');
+  out.innerHTML=html.join('');
+}
+
+function clearAuth(){
+  authFiles={ff:null,fb:null,angled:[]};
+  ['#uzFF2','#uzFB2','#uzFA2'].forEach(function(id){$(id).classList.remove('has-file')});
+  ['#dnFF2','#dnFB2','#dnA2'].forEach(function(id){$(id).textContent='tap to load'});
+  $('#authOut').className='ai-body placeholder';
+  $('#authOut').innerHTML='<span class="placeholder-icon">🛡️</span>Upload card photos above, then tap <strong style="color:var(--text)">Check Authenticity</strong>.<br>Free for everyone. No account needed.';
+  $('#authDot').className='ai-dot';$('#authStatus').textContent='Ready';
+}
 function exportDeep(){if(!lastRawText){alert('Run the AI analysis first.');return}dl('ai_pregrade_report.txt',lastRawText,'text/plain')}
 function clearDeep(){
   deepFiles={ff:null,fb:null,angled:[]};lastRawText='';
   ['#uzAF','#uzAB','#uzAA'].forEach(function(id){$(id).classList.remove('has-file')});
   ['#dnFF','#dnFB','#dnA'].forEach(function(id){$(id).textContent='tap to load'});
   $('#deepOut').className='ai-body placeholder';
-  $('#deepOut').textContent='Upload card photos then tap Analyze — free for everyone.';
+  $('#deepOut').innerHTML='<span class="placeholder-icon">🃏</span>Upload card photos above, then tap <strong style="color:var(--text)">Analyze card with AI</strong>.<br>Free for everyone. No account needed.';
   $('#aiDot').className='ai-dot';$('#aiStatus').textContent='Ready';
 }
 function dl(name,text,type){const b=new Blob([text],{type:type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}
-
-setTimeout(resizeCanvas,60);
 </script>
+
 </body>
 </html>
