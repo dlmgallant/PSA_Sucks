@@ -500,12 +500,12 @@ function renderAuth(text){
       if(v.verdict==='Likely Fake')return{cls:'badge-bad',label:'✗ Likely Fake'};
       return{cls:'badge-warn',label:'⚠ Suspicious'};
     }
-    const bad=/off|incorrect|wrong|blurr|pixelat|mismatch|inconsistent|poor|fake|counterfeit/i;
+    const bad=/(?<!no\s{0,10}(?:visible|sign of|evidence of)\s{0,10})\b(off|incorrect|wrong|blurr|pixelat|mismatch|inconsistent|poor|fake|counterfeit)\b/i;
     const warn=/slight|minor|small|faint|hard to tell/i;
-    const good=/correct|accurate|matches|clean|sharp|consistent|genuine/i;
+    const good=/correct|accurate|matches|clean|sharp|consistent|genuine|no\s+(visible|sign|evidence)/i;
+    if(good.test(content))return{cls:'badge-good',label:'Looks good'};
     if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
     if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
-    if(good.test(content))return{cls:'badge-good',label:'Looks good'};
     return{cls:'badge-neutral',label:'See notes'};
   }
 
