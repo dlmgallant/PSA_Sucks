@@ -325,12 +325,12 @@ async function runAI(){
 function parseAndRender(text){
   const out=$('#deepOut');out.className='ai-body';
   const sectionDefs=[
-    {key:'centering',icon:'📐',title:'Centering',patterns:[/1\.\s*CENTERING/i]},
-    {key:'surface',icon:'🔍',title:'Surface Condition',patterns:[/2\.\s*SURFACE/i]},
-    {key:'edges',icon:'📏',title:'Edges',patterns:[/3\.\s*EDGES/i]},
-    {key:'corners',icon:'🔲',title:'Corners',patterns:[/4\.\s*CORNERS/i]},
-    {key:'grade',icon:'🏆',title:'Grade Estimate',patterns:[/5\.\s*OVERALL/i]},
-    {key:'submit',icon:'📬',title:'Submit Recommendation',patterns:[/6\.\s*SUBMIT/i]},
+    {key:'centering',icon:'📐',title:'Centering',patterns:[/1\.\s*\**CENTERING/i]},
+    {key:'surface',icon:'🔍',title:'Surface Condition',patterns:[/2\.\s*\**SURFACE/i]},
+    {key:'edges',icon:'📏',title:'Edges',patterns:[/3\.\s*\**EDGES/i]},
+    {key:'corners',icon:'🔲',title:'Corners',patterns:[/4\.\s*\**CORNERS/i]},
+    {key:'grade',icon:'🏆',title:'Grade Estimate',patterns:[/5\.\s*\**OVERALL/i]},
+    {key:'submit',icon:'📬',title:'Submit Recommendation',patterns:[/6\.\s*\**SUBMIT/i]},
   ];
   const lines=text.split('\n');
   const sections={};let currentKey=null,currentLines=[];
@@ -460,10 +460,10 @@ async function runAuth(){
 function renderAuth(text){
   const out=$('#authOut');out.className='ai-body';
   const sectionDefs=[
-    {key:'print',icon:'🖨️',title:'Print & Color',patterns:[/1\.\s*PRINT/i]},
-    {key:'font',icon:'🔤',title:'Font & Text',patterns:[/2\.\s*FONT/i]},
-    {key:'holo',icon:'✨',title:'Hologram & Stock',patterns:[/3\.\s*HOLOGRAM/i]},
-    {key:'verdict',icon:'🛡️',title:'Verdict',patterns:[/4\.\s*VERDICT/i]},
+    {key:'print',icon:'🖨️',title:'Print & Color',patterns:[/1\.\s*\**PRINT/i]},
+    {key:'font',icon:'🔤',title:'Font & Text',patterns:[/2\.\s*\**FONT/i]},
+    {key:'holo',icon:'✨',title:'Hologram & Stock',patterns:[/3\.\s*\**HOLOGRAM/i]},
+    {key:'verdict',icon:'🛡️',title:'Verdict',patterns:[/4\.\s*\**VERDICT/i]},
   ];
   const lines=text.split('\n');
   const sections={};let currentKey=null,currentLines=[];
@@ -500,10 +500,10 @@ function renderAuth(text){
       if(v.verdict==='Likely Fake')return{cls:'badge-bad',label:'✗ Likely Fake'};
       return{cls:'badge-warn',label:'⚠ Suspicious'};
     }
-    const bad=/(?<!no\s{0,10}(?:visible|sign of|evidence of)\s{0,10})\b(off|incorrect|wrong|blurr|pixelat|mismatch|inconsistent|poor|fake|counterfeit)\b/i;
-    const warn=/slight|minor|small|faint|hard to tell/i;
     const good=/correct|accurate|matches|clean|sharp|consistent|genuine|no\s+(visible|sign|evidence)/i;
-    if(good.test(content))return{cls:'badge-good',label:'Looks good'};
+    const warn=/slight|minor|small|faint|hard to tell|uncertain|unclear/i;
+    const bad=/\boff\b|incorrect|wrong|blurr|pixelat(?!ion.*look)|mismatch|inconsistent|poor|counterfeit/i;
+    if(good.test(content)&&!bad.test(content))return{cls:'badge-good',label:'Looks good'};
     if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
     if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
     return{cls:'badge-neutral',label:'See notes'};
