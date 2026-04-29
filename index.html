@@ -355,12 +355,12 @@ function parseAndRender(text){
     }
     if(key==='grade'){const psa=content.match(/PSA[:\s]*([0-9]+(?:\s*[-–]\s*[0-9]+)?)/i);if(psa)return{cls:'badge-warn',label:'PSA '+psa[1].trim()};return{cls:'badge-neutral',label:'See notes'}}
     if(key==='centering'){const ratio=content.match(/([4-6][0-9])\s*\/\s*([4-6][0-9])/);if(ratio)return{cls:'badge-neutral',label:ratio[0]}}
-    const bad=/significant|major|defect|damage|scratch|scuff|whitening|chip|fray|blunt|poor|heavy|severe|crease|bend/i;
-    const warn=/minor|slight|faint|small|mild/i;
-    const good=/excellent|clean|sharp|perfect|no\s(visible|sign)|minimal|great|strong/i;
-    if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
-    if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
-    if(good.test(content))return{cls:'badge-good',label:'Clean'};
+    const clearlyBad=/\b(significant\s+scratch|major\s+|heavy\s+wear|severe|crease|damage(?!d\s+area)|scuff|whitening|chipping|fray|blunt\s+corner)/i;
+    const clearlyGood=/no\s+(visible|noticeable|sign|significant|evidence)|clean|sharp|perfect|excellent|minimal|great|strong|smooth|well.centered|balanced|pack.fresh/i;
+    const mixed=/slight|minor|faint|mild|marginally/i;
+    if(clearlyGood.test(content))return{cls:'badge-good',label:'Clean'};
+    if(clearlyBad.test(content))return{cls:'badge-bad',label:'Issues found'};
+    if(mixed.test(content))return{cls:'badge-warn',label:'Minor notes'};
     return{cls:'badge-neutral',label:'See notes'};
   }
 
