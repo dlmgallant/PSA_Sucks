@@ -481,7 +481,7 @@ function renderAuth(text){
   if(Object.keys(sections).length<2){out.className='ai-body raw';out.textContent=text;return}
 
   function parseVerdict(content){
-    const m=content.match(/VERDICT\s*:\s*(Genuine|Suspicious|Likely Fake)\s*[—\-–]\s*CONFIDENCE\s*:\s*([0-9]+)\s*%/i);
+    const m=content.match(/(?:^|\n)\s*[-–]?\s*\**VERDICT\**\s*:\s*(Genuine|Suspicious|Likely Fake)\s*[—\-–]\s*CONFIDENCE\s*:\s*([0-9]+)\s*%/im);
     if(!m)return null;
     return{verdict:m[1],confidence:parseInt(m[2],10)};
   }
@@ -500,12 +500,12 @@ function renderAuth(text){
       if(v.verdict==='Likely Fake')return{cls:'badge-bad',label:'✗ Likely Fake'};
       return{cls:'badge-warn',label:'⚠ Suspicious'};
     }
-    const good=/correct|accurate|matches|clean|sharp|consistent|genuine|no\s+(visible|sign|evidence)/i;
-    const warn=/slight|minor|small|faint|hard to tell|uncertain|unclear/i;
-    const bad=/\boff\b|incorrect|wrong|blurr|pixelat(?!ion.*look)|mismatch|inconsistent|poor|counterfeit/i;
-    if(good.test(content)&&!bad.test(content))return{cls:'badge-good',label:'Looks good'};
-    if(bad.test(content))return{cls:'badge-bad',label:'Issues found'};
-    if(warn.test(content))return{cls:'badge-warn',label:'Minor issues'};
+    const clearlyBad=/significant|major|heavy|severe|crease|damage|counterfeit|fake|incorrect|wrong|mismatch/i;
+    const clearlyGood=/excellent|clean|sharp|perfect|no\s+(visible|sign)|minimal|great|strong|correct|accurate|consistent|genuine/i;
+    const mixed=/slight|minor|faint|mild|uncertain|slightly\s+off|marginally/i;
+    if(clearlyBad.test(content))return{cls:'badge-warn',label:'Worth noting'};
+    if(mixed.test(content))return{cls:'badge-neutral',label:'Minor notes'};
+    if(clearlyGood.test(content))return{cls:'badge-good',label:'Looks good'};
     return{cls:'badge-neutral',label:'See notes'};
   }
 
