@@ -101,6 +101,21 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
 .suspicious .conf-bar{background:var(--warning)}
 .fake .conf-bar{background:var(--danger)}
 
+.condition-tier{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--rad);margin-bottom:10px;border:1px solid}
+.condition-tier.mint{background:#06150f;border-color:#1a4a2a}
+.condition-tier.near-mint{background:#0a1a0a;border-color:#1e3e1e}
+.condition-tier.lightly-played{background:#1a160a;border-color:#4a3510}
+.condition-tier.moderately-played{background:#1a100a;border-color:#4a2a10}
+.condition-tier.heavily-played{background:#150606;border-color:#4a1a1a}
+.condition-tier-icon{font-size:26px;line-height:1;flex-shrink:0}
+.condition-tier-info{flex:1}
+.condition-tier-label{font-size:14px;font-weight:700;margin-bottom:2px}
+.mint .condition-tier-label{color:#3ecf82}
+.near-mint .condition-tier-label{color:#5dd67a}
+.lightly-played .condition-tier-label{color:var(--warning)}
+.moderately-played .condition-tier-label{color:#ff9040}
+.heavily-played .condition-tier-label{color:var(--danger)}
+.condition-tier-sub{font-size:11px;color:var(--muted)}
 .tabs{display:flex;gap:2px;padding:3px;background:var(--panel);border-radius:var(--rad);border:1px solid var(--border);width:fit-content}
 .tab{padding:7px 16px;font-size:12px;font-weight:600;border:none;background:none;color:var(--muted);cursor:pointer;border-radius:6px;transition:all .15s;letter-spacing:.02em}
 .tab.on{background:var(--panel2);color:var(--text);box-shadow:0 1px 3px #00000040}
@@ -120,12 +135,69 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
 </header>
 <main>
   <div class="tabs">
-    <button class="tab on" id="tGrade" onclick="switchTab('grade')">AI Pre-Grade <span class="free-badge">FREE</span></button>
+    <button class="tab on" id="tCond" onclick="switchTab('cond')">🔎 Condition</button>
+    <button class="tab" id="tGrade" onclick="switchTab('grade')">AI Pre-Grade <span class="free-badge">FREE</span></button>
     <button class="tab" id="tAuth" onclick="switchTab('auth')">🛡️ Fake Detector <span class="free-badge">FREE</span></button>
   </div>
 
+  <!-- CONDITION TAB -->
+  <div id="secCond" class="sec">
+    <div class="hero">
+      <h2>🔎 Condition Guide</h2>
+      <p>Upload your card and get a plain-language condition assessment across all four areas — no grading jargon, no PSA numbers. Just an honest look at what you've got.</p>
+      <div class="hero-badges">
+        <span class="hbadge">📐 Centering</span>
+        <span class="hbadge">🔍 Surface</span>
+        <span class="hbadge">📏 Edges</span>
+        <span class="hbadge">🔲 Corners</span>
+        <span class="hbadge">⭐ Condition Tier</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Card photos</div>
+      <div class="row">
+        <div class="upload-zone" id="uzCF">
+          <div class="ico">🔆</div>
+          <div class="lbl">Front — flat scan</div>
+          <div class="name" id="dnCF">tap to load</div>
+          <input type="file" accept="image/*" id="inCF">
+        </div>
+        <div class="upload-zone" id="uzCB">
+          <div class="ico">🔆</div>
+          <div class="lbl">Back — flat scan</div>
+          <div class="name" id="dnCB">tap to load</div>
+          <input type="file" accept="image/*" id="inCBk">
+        </div>
+        <div class="upload-zone" id="uzCA">
+          <div class="ico">📐</div>
+          <div class="lbl">Angled photos (multi)</div>
+          <div class="name" id="dnCA">tap to load</div>
+          <input type="file" accept="image/*" multiple id="inCA">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <button class="run-btn" id="runCondBtn" onclick="runCond()">🔎 Assess Condition</button>
+        <button onclick="clearCond()">Clear</button>
+      </div>
+    </div>
+    <div class="ai-wrap">
+      <div class="ai-header">
+        <div class="ai-dot" id="condDot"></div>
+        <span class="ai-label">GPT-4o Condition Guide</span>
+        <span class="ai-status" id="condStatus">Ready</span>
+      </div>
+      <div class="ai-body placeholder" id="condOut">
+        <span class="placeholder-icon">🔎</span>
+        Upload card photos above, then tap <strong style="color:var(--text)">Assess Condition</strong>.<br>
+        Free for everyone. No account needed.
+      </div>
+    </div>
+  </div>
+
   <!-- AI PRE-GRADE TAB -->
-  <div id="secGrade" class="sec">
+  <div id="secGrade" class="sec" style="display:none">
     <div class="hero">
       <h2>AI Card Pre-Grade</h2>
       <p>Upload front, back, and angled shots. GPT-4o analyzes centering, surface, edges, and corners — then gives you a grade estimate before you submit.</p>
@@ -244,14 +316,17 @@ const $=s=>document.querySelector(s);
 let lastRawText='';
 
 function switchTab(t){
+  $('#tCond').classList.toggle('on',t==='cond');
   $('#tGrade').classList.toggle('on',t==='grade');
   $('#tAuth').classList.toggle('on',t==='auth');
+  $('#secCond').style.display=t==='cond'?'flex':'none';
   $('#secGrade').style.display=t==='grade'?'flex':'none';
   $('#secAuth').style.display=t==='auth'?'flex':'none';
 }
 
 let deepFiles={ff:null,fb:null,angled:[]};
 let authFiles={ff:null,fb:null,angled:[]};
+let condFiles={ff:null,fb:null,angled:[]};
 
 function wireUpload(inputId,key,nameId,uzId,multi,target){
   const t=target||deepFiles;
@@ -269,6 +344,9 @@ document.addEventListener('DOMContentLoaded',function(){
   wireUpload('#inFF2','ff','#dnFF2','#uzFF2',false,authFiles);
   wireUpload('#inFB2','fb','#dnFB2','#uzFB2',false,authFiles);
   wireUpload('#inFA2','angled','#dnA2','#uzFA2',true,authFiles);
+  wireUpload('#inCF','ff','#dnCF','#uzCF',false,condFiles);
+  wireUpload('#inCBk','fb','#dnCB','#uzCB',false,condFiles);
+  wireUpload('#inCA','angled','#dnCA','#uzCA',true,condFiles);
 });
 
 function compressFile(file,quality,maxPx){
@@ -556,6 +634,143 @@ function clearAuth(){
   $('#authOut').innerHTML='<span class="placeholder-icon">🛡️</span>Upload card photos above, then tap <strong style="color:var(--text)">Check Authenticity</strong>.<br>Free for everyone. No account needed.';
   $('#authDot').className='ai-dot';$('#authStatus').textContent='Ready';
 }
+const COND_PROMPT=`You are a knowledgeable TCG card collector helping someone understand the condition of their card in plain, friendly language. Avoid grading jargon and PSA/BGS numbers entirely.
+
+Assess the card across exactly these 4 sections:
+
+1. CENTERING
+2. SURFACE
+3. EDGES
+4. CORNERS
+
+Then conclude with:
+
+5. OVERALL CONDITION
+
+For each of sections 1-4, describe what you see in plain language. Be specific and honest but approachable — like a knowledgeable friend, not a grading robot.
+
+For section 5 (OVERALL CONDITION), give:
+- A condition tier on its own line in EXACTLY this format:
+TIER: [Mint|Near Mint|Lightly Played|Moderately Played|Heavily Played]
+- Followed by 2-3 sentences summarizing the card's overall condition in plain language and what (if anything) the owner should be aware of.
+
+Condition tier guide:
+- Mint: Essentially perfect. No visible wear anywhere.
+- Near Mint: Very minor imperfections only visible under close inspection. Still excellent.
+- Lightly Played: Small signs of handling — very minor edge wear, faint surface marks. Still presentable.
+- Moderately Played: Noticeable wear on edges/corners, visible surface marks. Clearly used.
+- Heavily Played: Significant wear, creases, heavy scratching or damage.
+
+Be honest. Don't default to Near Mint just to be nice.`;
+
+async function runCond(){
+  const out=$('#condOut'),dot=$('#condDot'),status=$('#condStatus'),btn=$('#runCondBtn');
+  const hasAny=condFiles.ff||condFiles.fb||(condFiles.angled&&condFiles.angled.length);
+  if(!hasAny){out.className='ai-body placeholder';out.innerHTML='<span class="placeholder-icon">⚠️</span>Upload at least one card photo first.';return}
+  btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Preparing…';
+  out.className='ai-body';out.innerHTML='<span class="spinner"></span>Preparing images…';
+  const totalImgs=(condFiles.ff?1:0)+(condFiles.fb?1:0)+(condFiles.angled?condFiles.angled.length:0);
+  const quality=totalImgs>=4?0.65:totalImgs===3?0.72:totalImgs===2?0.82:0.92;
+  const maxPx=totalImgs>=4?1200:totalImgs===3?1400:1600;
+  try{
+    const parts=[{text:COND_PROMPT}];
+    if(condFiles.ff){status.textContent='Processing front…';const b64=await compressFile(condFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(condFiles.fb){status.textContent='Processing back…';const b64=await compressFile(condFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
+    if(condFiles.angled&&condFiles.angled.length){for(let i=0;i<condFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(condFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
+    status.textContent='Assessing…';out.innerHTML='<span class="spinner"></span>Assessing condition…';
+    const resp=await fetch('https://psa-sucks.com/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts}]})});
+    if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||'HTTP '+resp.status)}
+    const data=await resp.json();
+    const text=data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim()||'No response received.';
+    dot.className='ai-dot live';status.textContent='Done';renderCond(text);
+  }catch(e){dot.className='ai-dot';status.textContent='Error';out.className='ai-body raw';out.textContent='Error: '+e.message;}
+  finally{btn.disabled=false}
+}
+
+function renderCond(text){
+  const out=$('#condOut');out.className='ai-body';
+  const defs=[
+    {key:'centering',icon:'📐',title:'Centering',patterns:[/1\.\s*\**CENTERING/i]},
+    {key:'surface',icon:'🔍',title:'Surface',patterns:[/2\.\s*\**SURFACE/i]},
+    {key:'edges',icon:'📏',title:'Edges',patterns:[/3\.\s*\**EDGES/i]},
+    {key:'corners',icon:'🔲',title:'Corners',patterns:[/4\.\s*\**CORNERS/i]},
+    {key:'overall',icon:'⭐',title:'Overall Condition',patterns:[/5\.\s*\**OVERALL/i]},
+  ];
+  const lines=text.split('\n');
+  const sections={};let cur=null,curLines=[];
+  for(const line of lines){
+    let matched=false;
+    for(const def of defs){if(def.patterns.some(p=>p.test(line))){if(cur)sections[cur]=curLines.join('\n').trim();cur=def.key;curLines=[line];matched=true;break;}}
+    if(!matched&&cur)curLines.push(line);
+  }
+  if(cur)sections[cur]=curLines.join('\n').trim();
+  if(Object.keys(sections).length<2){out.className='ai-body raw';out.textContent=text;return}
+
+  const tierMap={
+    'Mint':{cls:'mint',icon:'✨',sub:'Essentially perfect'},
+    'Near Mint':{cls:'near-mint',icon:'⭐',sub:'Very minor imperfections only'},
+    'Lightly Played':{cls:'lightly-played',icon:'👍',sub:'Small signs of handling'},
+    'Moderately Played':{cls:'moderately-played',icon:'⚠️',sub:'Noticeable wear present'},
+    'Heavily Played':{cls:'heavily-played',icon:'🔴',sub:'Significant wear or damage'},
+  };
+
+  function parseTier(content){
+    const m=content.match(/TIER\s*:\s*(Mint|Near Mint|Lightly Played|Moderately Played|Heavily Played)/i);
+    return m?m[1]:null;
+  }
+  function sectionBadge(key,content){
+    if(key==='overall'){
+      const t=parseTier(content);
+      if(!t)return{cls:'badge-neutral',label:'See notes'};
+      if(t==='Mint'||t==='Near Mint')return{cls:'badge-good',label:t};
+      if(t==='Lightly Played')return{cls:'badge-warn',label:t};
+      return{cls:'badge-bad',label:t};
+    }
+    const good=/no\s+(visible|noticeable|sign)|clean|sharp|perfect|excellent|minimal|well.centered|balanced/i;
+    const warn=/slight|minor|faint|mild|marginally|small/i;
+    const bad=/significant|major|heavy|severe|crease|damage|scratch|whitening|chip|fray|blunt/i;
+    if(bad.test(content))return{cls:'badge-bad',label:'Wear present'};
+    if(warn.test(content))return{cls:'badge-warn',label:'Minor wear'};
+    if(good.test(content))return{cls:'badge-good',label:'Clean'};
+    return{cls:'badge-neutral',label:'See notes'};
+  }
+  function cleanText(content){
+    return content.split('\n').slice(1).join('\n')
+      .replace(/TIER\s*:.*$/gim,'')
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/^\s*[-•*]\s*/gm,'• ').trim();
+  }
+
+  const html=['<div class="ai-sections">'];
+  for(const def of defs){
+    const content=sections[def.key];if(!content)continue;
+    const badge=sectionBadge(def.key,content);
+    const cleaned=cleanText(content);
+    const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
+    html.push('<div class="ai-section"><div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div><div class="ai-section-body">');
+    if(def.key==='overall'){
+      const tier=parseTier(content);
+      if(tier&&tierMap[tier]){
+        const t=tierMap[tier];
+        html.push('<div class="condition-tier '+t.cls+'"><div class="condition-tier-icon">'+t.icon+'</div><div class="condition-tier-info"><div class="condition-tier-label">'+tier+'</div><div class="condition-tier-sub">'+t.sub+'</div></div></div>');
+      }
+    }
+    html.push(paras+'</div></div>');
+  }
+  html.push('</div>');
+  out.innerHTML=html.join('');
+}
+
+function clearCond(){
+  condFiles={ff:null,fb:null,angled:[]};
+  ['#uzCF','#uzCB','#uzCA'].forEach(id=>$(id).classList.remove('has-file'));
+  ['#dnCF','#dnCB','#dnCA'].forEach(id=>$(id).textContent='tap to load');
+  $('#condOut').className='ai-body placeholder';
+  $('#condOut').innerHTML='<span class="placeholder-icon">🔎</span>Upload card photos above, then tap <strong style="color:var(--text)">Assess Condition</strong>.<br>Free for everyone. No account needed.';
+  $('#condDot').className='ai-dot';$('#condStatus').textContent='Ready';
+}
+
 function exportDeep(){if(!lastRawText){alert('Run the AI analysis first.');return}dl('ai_pregrade_report.txt',lastRawText,'text/plain')}
 function clearDeep(){
   deepFiles={ff:null,fb:null,angled:[]};lastRawText='';
