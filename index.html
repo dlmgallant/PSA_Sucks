@@ -731,12 +731,21 @@ function renderCond(text){
       if(t==='Lightly Played')return{cls:'badge-warn',label:t};
       return{cls:'badge-bad',label:t};
     }
-    const good=/no\s+(visible|noticeable|sign)|clean|sharp|perfect|excellent|minimal|well.centered|balanced/i;
-    const warn=/slight|minor|faint|mild|marginally|small/i;
-    const bad=/significant|major|heavy|severe|crease|damage|scratch|whitening|chip|fray|blunt/i;
+    if(key==='centering'){
+      const offBad=/noticeably|significantly|heavily|very\s+off|poor|badly/i;
+      const offWarn=/slightly|marginally|a\s+bit|not\s+perfect|noticeable/i;
+      const centered=/well.centered|nicely\s+(aligned|centered)|even|balanced|perfectly|looks\s+good/i;
+      if(centered.test(content)&&!offBad.test(content))return{cls:'badge-good',label:'Well centered'};
+      if(offBad.test(content))return{cls:'badge-bad',label:'Off center'};
+      if(offWarn.test(content))return{cls:'badge-warn',label:'Slightly off'};
+      return{cls:'badge-neutral',label:'See notes'};
+    }
+    const good=/no\s+(visible|noticeable|sign|obvious|any)|can't\s+spot|don't\s+see|clean|sharp|perfect|excellent|minimal|well.centered|balanced|smooth|intact|crisp/i;
+    const bad=/significant|major|heavy|severe|crease|damage|scratch|whitening|chip|fray(?!ing\s+or)|blunt(?!\s+corner\s+appear)/i;
+    const warn=/slight|minor|faint|mild|marginally|small|slightly/i;
+    if(good.test(content)&&!bad.test(content))return{cls:'badge-good',label:'Clean'};
     if(bad.test(content))return{cls:'badge-bad',label:'Wear present'};
     if(warn.test(content))return{cls:'badge-warn',label:'Minor wear'};
-    if(good.test(content))return{cls:'badge-good',label:'Clean'};
     return{cls:'badge-neutral',label:'See notes'};
   }
   function cleanText(content){
