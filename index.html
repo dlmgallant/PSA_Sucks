@@ -181,6 +181,7 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
       <div class="toolbar">
         <button class="run-btn" id="runCondBtn" onclick="runCond()">🔎 Assess Condition</button>
         <button onclick="clearCond()">Clear</button>
+        <button id="condToRepairBtn" onclick="sendToRepair('cond')" style="display:none">🔧 Send to Repair Guide</button>
       </div>
     </div>
     <div class="ai-wrap">
@@ -238,6 +239,7 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
         <button class="run-btn" id="runBtn" onclick="runAI()">⚡ Analyze card with AI</button>
         <button onclick="exportDeep()">Export report</button>
         <button onclick="clearDeep()">Clear</button>
+        <button id="gradeToRepairBtn" onclick="sendToRepair('grade')" style="display:none">🔧 Send to Repair Guide</button>
       </div>
     </div>
     <div class="ai-wrap">
@@ -571,10 +573,8 @@ function parseAndRender(text){
     html.push('</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button id="sendToRepairGrade" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
-  const gradeRepairBtn=document.getElementById('sendToRepairGrade');
-  if(gradeRepairBtn)gradeRepairBtn.addEventListener('click',function(){sendToRepair('grade');});
+  $('#gradeToRepairBtn').style.display='inline-block';
 }
 
 // Auth tab
@@ -855,10 +855,8 @@ function renderCond(text){
     html.push(paras+'</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button id="sendToRepairCond" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
-  const condRepairBtn=document.getElementById('sendToRepairCond');
-  if(condRepairBtn)condRepairBtn.addEventListener('click',function(){sendToRepair('cond');});
+  $('#condToRepairBtn').style.display='inline-block';
 }
 
 const REPAIR_PROMPT=`You are a knowledgeable and responsible card care expert familiar with sports cards, TCG cards (Pokémon, Yu-Gi-Oh, One Piece, etc.), and vintage cards. Your job is to advise collectors on safe, non-altering ways to care for and improve their cards.
@@ -1010,6 +1008,7 @@ function clearRepair(){
 
 function clearCond(){
   condFiles={ff:null,fb:null,angled:[]};lastCondText='';
+  $('#condToRepairBtn').style.display='none';
   ['#uzCF','#uzCB','#uzCA'].forEach(id=>$(id).classList.remove('has-file'));
   ['#dnCF','#dnCB','#dnCA'].forEach(id=>$(id).textContent='tap to load');
   $('#condOut').className='ai-body placeholder';
@@ -1020,6 +1019,7 @@ function clearCond(){
 function exportDeep(){if(!lastRawText){alert('Run the AI analysis first.');return}dl('ai_pregrade_report.txt',lastRawText,'text/plain')}
 function clearDeep(){
   deepFiles={ff:null,fb:null,angled:[]};lastRawText='';lastGradeText='';
+  $('#gradeToRepairBtn').style.display='none';
   ['#uzAF','#uzAB','#uzAA'].forEach(function(id){$(id).classList.remove('has-file')});
   ['#dnFF','#dnFB','#dnA'].forEach(function(id){$(id).textContent='tap to load'});
   $('#deepOut').className='ai-body placeholder';
