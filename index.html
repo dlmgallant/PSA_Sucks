@@ -575,6 +575,7 @@ function parseAndRender(text){
   html.push('</div>');
   out.innerHTML=html.join('');
   $('#gradeToRepairBtn').style.display='inline-block';
+  alert('grade repair button should now be visible');
 }
 
 // Auth tab
@@ -983,7 +984,7 @@ function renderRepair(text){
 }
 
 function sendToRepair(source){
-  console.log('sendToRepair called with source:', source);
+  alert('sendToRepair fired: '+source);
   const text=source==='cond'?lastCondText:lastGradeText;
   console.log('text length:', text?text.length:0);
   if(!text){console.log('no text found, returning');return;}
