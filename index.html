@@ -181,7 +181,6 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
       <div class="toolbar">
         <button class="run-btn" id="runCondBtn" onclick="runCond()">🔎 Assess Condition</button>
         <button onclick="clearCond()">Clear</button>
-        <button id="condToRepairBtn" onclick="sendToRepair('cond')" style="display:none">🔧 Send to Repair Guide</button>
       </div>
     </div>
     <div class="ai-wrap">
@@ -239,7 +238,6 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
         <button class="run-btn" id="runBtn" onclick="runAI()">⚡ Analyze card with AI</button>
         <button onclick="exportDeep()">Export report</button>
         <button onclick="clearDeep()">Clear</button>
-        <button id="gradeToRepairBtn" onclick="sendToRepair('grade')" style="display:none">🔧 Send to Repair Guide</button>
       </div>
     </div>
     <div class="ai-wrap">
@@ -342,9 +340,18 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
       </div>
     </div>
 
+    <div class="card" id="repairSourceCard">
+      <div class="card-title">Use findings from another tab</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button onclick="loadRepairSource('cond')" id="loadCondBtn" style="font:inherit;border-radius:var(--rad);border:1px solid var(--border2);background:var(--panel2);color:var(--muted);padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s">📋 Load from Condition tab</button>
+        <button onclick="loadRepairSource('grade')" id="loadGradeBtn" style="font:inherit;border-radius:var(--rad);border:1px solid var(--border2);background:var(--panel2);color:var(--muted);padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s">📋 Load from Pre-Grade tab</button>
+      </div>
+      <div id="repairSourcePreview" style="display:none;background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rad);padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.6;max-height:100px;overflow-y:auto"></div>
+    </div>
+
     <div class="card">
-      <div class="card-title">Describe the issue (optional)</div>
-      <textarea id="repairDesc" placeholder="e.g. light surface scratches on the front, small bend near the top-left corner, fingerprint marks on the back..." style="width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rad);color:var(--text);font-family:inherit;font-size:13px;padding:10px 12px;resize:vertical;min-height:72px;line-height:1.6;outline:none"></textarea>
+      <div class="card-title">Or describe the issue manually</div>
+      <textarea id="repairDesc" placeholder="e.g. light surface scratches on the front, small bend near the top-left corner..." style="width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rad);color:var(--text);font-family:inherit;font-size:13px;padding:10px 12px;resize:vertical;min-height:72px;line-height:1.6;outline:none"></textarea>
     </div>
 
     <div class="card">
@@ -429,10 +436,6 @@ document.addEventListener('DOMContentLoaded',function(){
   wireUpload('#inRF','ff','#dnRF','#uzRF',false,repairFiles);
   wireUpload('#inRBk','fb','#dnRB','#uzRB',false,repairFiles);
   wireUpload('#inRA','angled','#dnRA','#uzRA',true,repairFiles);
-  document.body.addEventListener('click',function(e){
-    const btn=e.target.closest('[data-repair]');
-    if(btn)sendToRepair(btn.getAttribute('data-repair'));
-  });
 });
 
 function compressFile(file,quality,maxPx){
@@ -574,8 +577,6 @@ function parseAndRender(text){
   }
   html.push('</div>');
   out.innerHTML=html.join('');
-  $('#gradeToRepairBtn').style.display='inline-block';
-  alert('grade repair button should now be visible');
 }
 
 // Auth tab
@@ -857,7 +858,6 @@ function renderCond(text){
   }
   html.push('</div>');
   out.innerHTML=html.join('');
-  $('#condToRepairBtn').style.display='inline-block';
 }
 
 const REPAIR_PROMPT=`You are a knowledgeable and responsible card care expert familiar with sports cards, TCG cards (Pokémon, Yu-Gi-Oh, One Piece, etc.), and vintage cards. Your job is to advise collectors on safe, non-altering ways to care for and improve their cards.
@@ -983,17 +983,26 @@ function renderRepair(text){
   out.innerHTML=html.join('');
 }
 
-function sendToRepair(source){
-  alert('sendToRepair fired: '+source);
+function loadRepairSource(source){
   const text=source==='cond'?lastCondText:lastGradeText;
-  console.log('text length:', text?text.length:0);
-  if(!text){console.log('no text found, returning');return;}
-  const lines=text.split('\n').filter(l=>l.trim());
-  const summary='The following findings were identified by the AI '+(source==='cond'?'Condition Guide':'Pre-Grade')+':\n\n'+lines.slice(0,40).join('\n');
-  console.log('summary preview:', summary.slice(0,100));
-  $('#repairDesc').value=summary;
-  switchTab('repair');
-  window.scrollTo({top:0,behavior:'smooth'});
+  const preview=$('#repairSourcePreview');
+  const condBtn=$('#loadCondBtn');
+  const gradeBtn=$('#loadGradeBtn');
+  if(!text){
+    preview.style.display='block';
+    preview.style.color='var(--warning)';
+    preview.textContent='No results found from the '+(source==='cond'?'Condition':'Pre-Grade')+' tab yet. Run an analysis there first.';
+    return;
+  }
+  const lines=text.split('\n').filter(l=>l.trim()).slice(0,40).join('\n');
+  $('#repairDesc').value='Findings from the AI '+(source==='cond'?'Condition Guide':'Pre-Grade')+':\n\n'+lines;
+  preview.style.display='block';
+  preview.style.color='var(--success)';
+  preview.textContent='✓ Findings loaded — tap Get Repair Guide below.';
+  condBtn.style.borderColor=source==='cond'?'var(--success)':'var(--border2)';
+  condBtn.style.color=source==='cond'?'var(--success)':'var(--muted)';
+  gradeBtn.style.borderColor=source==='grade'?'var(--success)':'var(--border2)';
+  gradeBtn.style.color=source==='grade'?'var(--success)':'var(--muted)';
 }
 
 function clearRepair(){
@@ -1009,7 +1018,6 @@ function clearRepair(){
 
 function clearCond(){
   condFiles={ff:null,fb:null,angled:[]};lastCondText='';
-  $('#condToRepairBtn').style.display='none';
   ['#uzCF','#uzCB','#uzCA'].forEach(id=>$(id).classList.remove('has-file'));
   ['#dnCF','#dnCB','#dnCA'].forEach(id=>$(id).textContent='tap to load');
   $('#condOut').className='ai-body placeholder';
@@ -1020,7 +1028,6 @@ function clearCond(){
 function exportDeep(){if(!lastRawText){alert('Run the AI analysis first.');return}dl('ai_pregrade_report.txt',lastRawText,'text/plain')}
 function clearDeep(){
   deepFiles={ff:null,fb:null,angled:[]};lastRawText='';lastGradeText='';
-  $('#gradeToRepairBtn').style.display='none';
   ['#uzAF','#uzAB','#uzAA'].forEach(function(id){$(id).classList.remove('has-file')});
   ['#dnFF','#dnFB','#dnA'].forEach(function(id){$(id).textContent='tap to load'});
   $('#deepOut').className='ai-body placeholder';
