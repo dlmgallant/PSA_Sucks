@@ -571,7 +571,7 @@ function parseAndRender(text){
     html.push('</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button data-repair="grade" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
+  html.push('<div style="margin-top:12px"><button onclick="window.sendToRepair(\'grade\')" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
 }
 
@@ -853,7 +853,7 @@ function renderCond(text){
     html.push(paras+'</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button data-repair="cond" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
+  html.push('<div style="margin-top:12px"><button onclick="window.sendToRepair(\'cond\')" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
 }
 
@@ -980,16 +980,16 @@ function renderRepair(text){
   out.innerHTML=html.join('');
 }
 
-function sendToRepair(source){
+window.sendToRepair=function sendToRepair(source){
+  console.log('sendToRepair called with source:', source);
   const text=source==='cond'?lastCondText:lastGradeText;
-  if(!text)return;
-  // Extract the meaningful findings to pass as context
+  console.log('text length:', text?text.length:0);
+  if(!text){console.log('no text found, returning');return;}
   const lines=text.split('\n').filter(l=>l.trim());
-  // Build a concise summary of issues found
   const summary='The following findings were identified by the AI '+(source==='cond'?'Condition Guide':'Pre-Grade')+':\n\n'+lines.slice(0,40).join('\n');
+  console.log('summary preview:', summary.slice(0,100));
   $('#repairDesc').value=summary;
   switchTab('repair');
-  // Scroll to top
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
