@@ -427,6 +427,10 @@ document.addEventListener('DOMContentLoaded',function(){
   wireUpload('#inRF','ff','#dnRF','#uzRF',false,repairFiles);
   wireUpload('#inRBk','fb','#dnRB','#uzRB',false,repairFiles);
   wireUpload('#inRA','angled','#dnRA','#uzRA',true,repairFiles);
+  document.body.addEventListener('click',function(e){
+    const btn=e.target.closest('[data-repair]');
+    if(btn)sendToRepair(btn.getAttribute('data-repair'));
+  });
 });
 
 function compressFile(file,quality,maxPx){
@@ -567,7 +571,7 @@ function parseAndRender(text){
     html.push('</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button onclick="sendToRepair(\'grade\')" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
+  html.push('<div style="margin-top:12px"><button data-repair="grade" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
 }
 
@@ -849,7 +853,7 @@ function renderCond(text){
     html.push(paras+'</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button onclick="sendToRepair(\'cond\')" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
+  html.push('<div style="margin-top:12px"><button data-repair="cond" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
 }
 
