@@ -571,8 +571,10 @@ function parseAndRender(text){
     html.push('</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button onclick="window.sendToRepair(\'grade\')" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
+  html.push('<div style="margin-top:12px"><button id="sendToRepairGrade" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
+  const gradeRepairBtn=document.getElementById('sendToRepairGrade');
+  if(gradeRepairBtn)gradeRepairBtn.addEventListener('click',function(){sendToRepair('grade');});
 }
 
 // Auth tab
@@ -853,8 +855,10 @@ function renderCond(text){
     html.push(paras+'</div></div>');
   }
   html.push('</div>');
-  html.push('<div style="margin-top:12px"><button onclick="window.sendToRepair(\'cond\')" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
+  html.push('<div style="margin-top:12px"><button id="sendToRepairCond" style="display:inline-flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:9px 16px;border-radius:7px;cursor:pointer">🔧 Send findings to Repair Guide</button></div>');
   out.innerHTML=html.join('');
+  const condRepairBtn=document.getElementById('sendToRepairCond');
+  if(condRepairBtn)condRepairBtn.addEventListener('click',function(){sendToRepair('cond');});
 }
 
 const REPAIR_PROMPT=`You are a knowledgeable and responsible card care expert familiar with sports cards, TCG cards (Pokémon, Yu-Gi-Oh, One Piece, etc.), and vintage cards. Your job is to advise collectors on safe, non-altering ways to care for and improve their cards.
@@ -980,7 +984,7 @@ function renderRepair(text){
   out.innerHTML=html.join('');
 }
 
-window.sendToRepair=function sendToRepair(source){
+function sendToRepair(source){
   console.log('sendToRepair called with source:', source);
   const text=source==='cond'?lastCondText:lastGradeText;
   console.log('text length:', text?text.length:0);
