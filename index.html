@@ -138,7 +138,6 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
     <button class="tab on" id="tCond" onclick="switchTab('cond')">🔎 Condition</button>
     <button class="tab" id="tGrade" onclick="switchTab('grade')">AI Pre-Grade</button>
     <button class="tab" id="tAuth" onclick="switchTab('auth')">🛡️ Fake Detector</button>
-    <button class="tab" id="tRepair" onclick="switchTab('repair')">🔧 Card Repair</button>
   </div>
 
   <!-- CONDITION TAB -->
@@ -302,80 +301,6 @@ button.run-btn:disabled{opacity:.45;cursor:not-allowed}
       </div>
     </div>
   </div>
-
-  <!-- REPAIR TAB -->
-  <div id="secRepair" class="sec" style="display:none">
-    <div class="hero">
-      <h2>🔧 Card Repair Guide</h2>
-      <p>Works for Pokémon, sports cards, vintage, and more. Upload your card and describe the issue — or run the Condition tab first and paste the findings. Get safe, honest advice on what can and can't be fixed.</p>
-    </div>
-
-    <!-- Legal disclaimer -->
-    <div style="background:#1f0a0a;border:1px solid #4a1a1a;border-radius:var(--rad);padding:13px 16px;font-size:12px;line-height:1.7;color:#ff9090">
-      <strong style="color:#ff6060">⚠️ Important:</strong> This tool only advises on safe, non-altering card care. It will never suggest fixing whitening, re-inking edges or corners, re-coloring any printed area, or any treatment that alters the card's original physical state. Altering a card before grading submission is considered fraud by all major grading companies and may result in a permanent ban.
-    </div>
-
-    <div class="card">
-      <div class="card-title">Card photos</div>
-      <div class="row">
-        <div class="upload-zone" id="uzRF">
-          <div class="ico">🔆</div>
-          <div class="lbl">Front — flat scan</div>
-          <div class="name" id="dnRF">tap to load</div>
-          <input type="file" accept="image/*" id="inRF">
-        </div>
-        <div class="upload-zone" id="uzRB">
-          <div class="ico">🔆</div>
-          <div class="lbl">Back — flat scan</div>
-          <div class="name" id="dnRB">tap to load</div>
-          <input type="file" accept="image/*" id="inRBk">
-        </div>
-        <div class="upload-zone" id="uzRA">
-          <div class="ico">🔎</div>
-          <div class="lbl">Close-ups of damage (multi)</div>
-          <div class="name" id="dnRA">tap to load</div>
-          <input type="file" accept="image/*" multiple id="inRA">
-        </div>
-      </div>
-      <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6">
-        💡 <strong style="color:var(--text)">Tip:</strong> Got a dent, scratch, or bend? Upload a zoomed-in photo of just that area for a more accurate repair guide. You don't need all three slots — even a single close-up works.
-      </div>
-    </div>
-
-    <div class="card" id="repairSourceCard">
-      <div class="card-title">Use findings from another tab</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <button onclick="loadRepairSource('cond')" id="loadCondBtn" style="font:inherit;border-radius:var(--rad);border:1px solid var(--border2);background:var(--panel2);color:var(--muted);padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s">📋 Load from Condition tab</button>
-        <button onclick="loadRepairSource('grade')" id="loadGradeBtn" style="font:inherit;border-radius:var(--rad);border:1px solid var(--border2);background:var(--panel2);color:var(--muted);padding:7px 12px;cursor:pointer;font-size:12px;font-weight:600;transition:all .12s">📋 Load from Pre-Grade tab</button>
-      </div>
-      <div id="repairSourcePreview" style="display:none;background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rad);padding:10px 12px;font-size:12px;color:var(--muted);line-height:1.6;max-height:100px;overflow-y:auto"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Or describe the issue manually</div>
-      <textarea id="repairDesc" placeholder="e.g. light surface scratches on the front, small bend near the top-left corner..." style="width:100%;background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rad);color:var(--text);font-family:inherit;font-size:13px;padding:10px 12px;resize:vertical;min-height:72px;line-height:1.6;outline:none"></textarea>
-    </div>
-
-    <div class="card">
-      <div class="toolbar">
-        <button class="run-btn" id="runRepairBtn" onclick="runRepair()">🔧 Get Repair Guide</button>
-        <button onclick="clearRepair()">Clear</button>
-      </div>
-    </div>
-
-    <div class="ai-wrap">
-      <div class="ai-header">
-        <div class="ai-dot" id="repairDot"></div>
-        <span class="ai-label">GPT-4o Card Repair Guide</span>
-        <span class="ai-status" id="repairStatus">Ready</span>
-      </div>
-      <div class="ai-body placeholder" id="repairOut">
-        <span class="placeholder-icon">🔧</span>
-        Upload card photos and tap <strong style="color:var(--text)">Get Repair Guide</strong>.
-        Safe, honest advice only — no altering, no doctoring.
-      </div>
-    </div>
-  </div>
 </main>
 
 <footer style="text-align:center;padding:24px 16px 36px;border-top:1px solid var(--border);margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:10px">
@@ -404,17 +329,14 @@ function switchTab(t){
   $('#tCond').classList.toggle('on',t==='cond');
   $('#tGrade').classList.toggle('on',t==='grade');
   $('#tAuth').classList.toggle('on',t==='auth');
-  $('#tRepair').classList.toggle('on',t==='repair');
   $('#secCond').style.display=t==='cond'?'flex':'none';
   $('#secGrade').style.display=t==='grade'?'flex':'none';
   $('#secAuth').style.display=t==='auth'?'flex':'none';
-  $('#secRepair').style.display=t==='repair'?'flex':'none';
 }
 
 let deepFiles={ff:null,fb:null,angled:[]};
 let authFiles={ff:null,fb:null,angled:[]};
 let condFiles={ff:null,fb:null,angled:[]};
-let repairFiles={ff:null,fb:null,angled:[]};
 
 function wireUpload(inputId,key,nameId,uzId,multi,target){
   const t=target||deepFiles;
@@ -435,9 +357,6 @@ document.addEventListener('DOMContentLoaded',function(){
   wireUpload('#inCF','ff','#dnCF','#uzCF',false,condFiles);
   wireUpload('#inCBk','fb','#dnCB','#uzCB',false,condFiles);
   wireUpload('#inCA','angled','#dnCA','#uzCA',true,condFiles);
-  wireUpload('#inRF','ff','#dnRF','#uzRF',false,repairFiles);
-  wireUpload('#inRBk','fb','#dnRB','#uzRB',false,repairFiles);
-  wireUpload('#inRA','angled','#dnRA','#uzRA',true,repairFiles);
 });
 
 function compressFile(file,quality,maxPx){
@@ -861,162 +780,6 @@ function renderCond(text){
   html.push('</div>');
   out.innerHTML=html.join('');
 }
-
-const REPAIR_PROMPT=`You are a knowledgeable and responsible card care expert familiar with sports cards, TCG cards (Pokémon, Yu-Gi-Oh, One Piece, etc.), and vintage cards. Your job is to advise collectors on safe, non-altering ways to care for and improve their cards.
-
-CRITICAL RULES — you must follow these absolutely without exception:
-- NEVER suggest fixing, touching up, or treating edge whitening or corner whitening in any way
-- NEVER suggest re-inking, re-coloring, painting, or chemically treating any part of the card's printed surface
-- NEVER suggest any treatment that alters the card's original physical state or appearance in a way that could be considered doctoring
-- If a user asks about whitening, edges, or corners that appear worn or discolored, clearly explain that nothing can or should be done — and why
-- If the only issues visible are whitening or color loss, tell the user honestly that safe care options are limited and explain the fraud risk of altering
-
-The collector may provide flat scans of the front and back, and/or close-up photos of specific damage areas. If close-up photos are provided, treat them as the primary evidence for that specific issue and analyze them in detail.
-
-WHAT YOU CAN ADVISE ON:
-- Safe surface cleaning (removing dirt, oils, fingerprints using dry or slightly damp microfiber)
-- Light bend or warp correction using controlled pressure and humidity (book press, penny sleeve stack method)
-- Proper storage and sleeving to prevent further damage
-- Handling best practices going forward
-- Whether the card is worth attempting any care at all given visible condition
-
-Structure your response with EXACTLY these sections:
-
-1. WHAT I SEE
-2. WHAT CAN BE SAFELY ADDRESSED
-3. WHAT CANNOT BE FIXED
-4. STEP-BY-STEP CARE GUIDE
-5. STORAGE & PREVENTION
-
-For section 3, be honest and direct. If something can't be fixed without altering the card, say so clearly and explain why attempting it would be considered doctoring.
-
-For section 4, only include steps for issues that are genuinely safe to address. If there is nothing safe to do, say so — do not invent steps just to fill the section.
-
-Keep language friendly and plain — like advice from a knowledgeable collector, not a legal document.`;
-
-async function runRepair(){
-  const out=$('#repairOut'),dot=$('#repairDot'),status=$('#repairStatus'),btn=$('#runRepairBtn');
-  const hasAny=repairFiles.ff||repairFiles.fb||(repairFiles.angled&&repairFiles.angled.length);
-  const desc=$('#repairDesc').value.trim();
-  if(!hasAny&&!desc){out.className='ai-body placeholder';out.innerHTML='<span class="placeholder-icon">⚠️</span>Upload at least one card photo or describe the issue first.';return}
-  btn.disabled=true;dot.className='ai-dot thinking';status.textContent='Preparing…';
-  out.className='ai-body';out.innerHTML='<span class="spinner"></span>Preparing…';
-  const totalImgs=(repairFiles.ff?1:0)+(repairFiles.fb?1:0)+(repairFiles.angled?repairFiles.angled.length:0);
-  const quality=totalImgs>=3?0.72:totalImgs===2?0.82:0.92;
-  const maxPx=1600;
-  try{
-    const parts=[{text:REPAIR_PROMPT}];
-    if(desc)parts.push({text:'The collector describes the issue as: '+desc});
-    if(repairFiles.ff){status.textContent='Processing front…';const b64=await compressFile(repairFiles.ff,quality,maxPx);parts.push({text:'FLAT FRONT:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
-    if(repairFiles.fb){status.textContent='Processing back…';const b64=await compressFile(repairFiles.fb,quality,maxPx);parts.push({text:'FLAT BACK:'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}
-    if(repairFiles.angled&&repairFiles.angled.length){for(let i=0;i<repairFiles.angled.length;i++){status.textContent='Processing angled '+(i+1)+'…';const b64=await compressFile(repairFiles.angled[i],quality,maxPx);parts.push({text:'ANGLED PHOTO '+(i+1)+':'});parts.push({inlineData:{mimeType:'image/jpeg',data:b64}})}}
-    status.textContent='Analyzing…';out.innerHTML='<span class="spinner"></span>Building repair guide…';
-    const resp=await fetch('https://psa-sucks.com/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts}]})});
-    if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||'HTTP '+resp.status)}
-    const data=await resp.json();
-    const text=data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim()||'No response received.';
-    dot.className='ai-dot live';status.textContent='Done';renderRepair(text);
-  }catch(e){dot.className='ai-dot';status.textContent='Error';out.className='ai-body raw';out.textContent='Error: '+e.message;}
-  finally{btn.disabled=false}
-}
-
-function renderRepair(text){
-  const out=$('#repairOut');out.className='ai-body';
-  const defs=[
-    {key:'see',icon:'🔍',title:'What I See',patterns:[/1\.\s*\**WHAT\s+I\s+SEE/i]},
-    {key:'can',icon:'✅',title:'What Can Be Safely Addressed',patterns:[/2\.\s*\**WHAT\s+CAN\s+BE/i]},
-    {key:'cannot',icon:'🚫',title:'What Cannot Be Fixed',patterns:[/3\.\s*\**WHAT\s+CANNOT/i]},
-    {key:'steps',icon:'🔧',title:'Step-by-Step Care Guide',patterns:[/4\.\s*\**STEP/i]},
-    {key:'storage',icon:'📦',title:'Storage & Prevention',patterns:[/5\.\s*\**STORAGE/i]},
-  ];
-  const lines=text.split('\n');
-  const sections={};let cur=null,curLines=[];
-  for(const line of lines){
-    let matched=false;
-    for(const def of defs){if(def.patterns.some(p=>p.test(line))){if(cur)sections[cur]=curLines.join('\n').trim();cur=def.key;curLines=[line];matched=true;break;}}
-    if(!matched&&cur)curLines.push(line);
-  }
-  if(cur)sections[cur]=curLines.join('\n').trim();
-  if(Object.keys(sections).length<2){out.className='ai-body raw';out.textContent=text;return}
-
-  function repairBadge(key,content){
-    if(key==='can'){
-      const nothing=/nothing\s+safe|no\s+safe|cannot\s+safely|nothing\s+can/i;
-      if(nothing.test(content))return{cls:'badge-neutral',label:'Nothing safe to do'};
-      return{cls:'badge-good',label:'Fixable'};
-    }
-    if(key==='cannot'){
-      const none=/nothing|no\s+issues|all\s+issues|everything/i;
-      if(none.test(content))return{cls:'badge-good',label:'Nothing unfixable'};
-      return{cls:'badge-bad',label:'Cannot be fixed'};
-    }
-    if(key==='steps'){
-      const none=/nothing\s+to\s+do|no\s+steps|no\s+safe\s+steps/i;
-      if(none.test(content))return{cls:'badge-neutral',label:'No action needed'};
-      return{cls:'badge-warn',label:'Action recommended'};
-    }
-    return{cls:'badge-neutral',label:'See notes'};
-  }
-
-  function cleanText(c){
-    return c.split('\n').slice(1).join('\n')
-      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g,'<em>$1</em>')
-      .replace(/^\s*[-•*]\s*/gm,'• ')
-      .replace(/^\s*(\d+)\.\s+/gm,'$1. ')
-      .trim();
-  }
-
-  const html=['<div class="ai-sections">'];
-  for(const def of defs){
-    const content=sections[def.key];if(!content)continue;
-    const badge=repairBadge(def.key,content);
-    const cleaned=cleanText(content);
-    const paras=cleaned.split('\n\n').filter(p=>p.trim()).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
-    const isCannotSection=def.key==='cannot';
-    const sectionStyle=isCannotSection?'border-color:#4a1a1a;':'';
-    html.push('<div class="ai-section" style="'+sectionStyle+'"><div class="ai-section-head"><span class="ai-section-icon">'+def.icon+'</span><span class="ai-section-title">'+def.title+'</span><span class="ai-section-badge '+badge.cls+'">'+badge.label+'</span></div><div class="ai-section-body">');
-    if(isCannotSection){
-      html.push('<div style="background:#1f0a0a;border:1px solid #4a1a1a;border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#ff9090;line-height:1.6">⚠️ Attempting to fix these issues before grading is considered <strong>card doctoring</strong> and may result in a permanent ban from grading companies.</div>');
-    }
-    html.push(paras+'</div></div>');
-  }
-  html.push('</div>');
-  out.innerHTML=html.join('');
-}
-
-function loadRepairSource(source){
-  const text=source==='cond'?lastCondText:lastGradeText;
-  const preview=$('#repairSourcePreview');
-  const condBtn=$('#loadCondBtn');
-  const gradeBtn=$('#loadGradeBtn');
-  if(!text){
-    preview.style.display='block';
-    preview.style.color='var(--warning)';
-    preview.textContent='No results found from the '+(source==='cond'?'Condition':'Pre-Grade')+' tab yet. Run an analysis there first.';
-    return;
-  }
-  const lines=text.split('\n').filter(l=>l.trim()).slice(0,40).join('\n');
-  $('#repairDesc').value='Findings from the AI '+(source==='cond'?'Condition Guide':'Pre-Grade')+':\n\n'+lines;
-  preview.style.display='block';
-  preview.style.color='var(--success)';
-  preview.textContent='✓ Findings loaded — tap Get Repair Guide below.';
-  condBtn.style.borderColor=source==='cond'?'var(--success)':'var(--border2)';
-  condBtn.style.color=source==='cond'?'var(--success)':'var(--muted)';
-  gradeBtn.style.borderColor=source==='grade'?'var(--success)':'var(--border2)';
-  gradeBtn.style.color=source==='grade'?'var(--success)':'var(--muted)';
-}
-
-function clearRepair(){
-  repairFiles={ff:null,fb:null,angled:[]};
-  ['#uzRF','#uzRB','#uzRA'].forEach(id=>$(id).classList.remove('has-file'));
-  ['#dnRF','#dnRB','#dnRA'].forEach(id=>$(id).textContent='tap to load');
-  $('#repairDesc').value='';
-  $('#repairOut').className='ai-body placeholder';
-  $('#repairOut').innerHTML='<span class="placeholder-icon">🔧</span>Upload card photos and tap <strong style="color:var(--text)">Get Repair Guide</strong>.<br>Safe, honest advice only — no altering, no doctoring.';
-  $('#repairDot').className='ai-dot';$('#repairStatus').textContent='Ready';
-}
-
 
 function clearCond(){
   condFiles={ff:null,fb:null,angled:[]};lastCondText='';
