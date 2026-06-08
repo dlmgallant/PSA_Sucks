@@ -501,28 +501,56 @@ function parseAndRender(text){
 }
 
 // Auth tab
-const AUTH_PROMPT=`You are an expert card authenticator with experience across sports cards, TCG cards (Pokémon, Yu-Gi-Oh, One Piece, etc.), and vintage cards. Your sole job is to determine if the provided card is GENUINE or a COUNTERFEIT.
+const AUTH_PROMPT=`You are an expert card authenticator with deep experience across Pokémon, Yu-Gi-Oh, One Piece, sports cards, and vintage cards — including modern high-end variants like rainbow rares, alternate arts, and full-art holos.
 
-Examine every detail carefully:
-- Print quality: dot pattern sharpness, color registration, any blurriness or pixelation
-- Font accuracy: correct typefaces, spacing, kerning, weight vs known genuine cards
-- Color fidelity: correct hues, saturation, black levels, any color shift
-- Hologram, foil, or stamp accuracy if present
-- Card stock and texture cues visible in any angled shots
+STEP 1 — PHOTO SUFFICIENCY CHECK
+Before analyzing anything, assess what you've been given. If the image is too dark, too blurry, too low resolution, or only shows a single angle of a foil card, state that clearly and explain what additional photos would help. Do not guess when photos are insufficient — say so.
+
+STEP 2 — CARD TYPE IDENTIFICATION
+Identify what kind of card this appears to be:
+- Non-foil / common
+- Standard holo (mirror foil background)
+- Full-art or alternate-art holo
+- Rainbow rare / hyper rare (full card prismatic foil)
+- Vintage (pre-2000)
+- Sports card (jersey, auto, refractor, etc.)
+
+This matters because authentication logic differs by card type.
+
+STEP 3 — ANALYSIS (apply based on card type identified above)
+
+FOR ALL CARDS:
+- Print quality: dot pattern sharpness, color registration, blurriness, pixelation
+- Font accuracy: correct typefaces, spacing, kerning, weight
+- Color fidelity: correct hues, saturation, black levels, any color cast
 - Back design: correct pattern, colors, borders, symmetry
-- Any "off" feeling, inconsistencies, or tells that experienced collectors recognize
+- Overall proportions and border widths
 
-Structure your response with EXACTLY these 4 numbered sections:
+FOR FOIL / HOLO / RAINBOW RARE CARDS (critical):
+Genuine foil diffracts and scatters light — it produces shifting, multi-directional color and never looks like a flat mirror. Fake foil is typically flat metallic ink that creates uniform, mirror-like glare with no depth or color shift. Look for:
+- Does the foil show color variation and light scatter, or does it look like a single flat reflective surface?
+- On rainbow rares: genuine cards show smooth prismatic gradients across the whole card. Fakes often show banding, flat sections, or inconsistent color transitions.
+- Angled shots are critical for foil cards. If none were provided, note this as a limitation.
+- Hologram/stamp accuracy if present
 
-1. PRINT & COLOR
-2. FONT & TEXT
-3. HOLOGRAM & STOCK
-4. VERDICT
+STEP 4 — VERDICT
+Structure your response with EXACTLY these sections:
 
-For section 4 (VERDICT), conclude with EXACTLY this format on its own line:
+1. PHOTO QUALITY
+2. CARD TYPE
+3. PRINT & COLOR
+4. FONT & TEXT
+5. FOIL & TEXTURE (write "N/A — non-foil card" if not applicable)
+6. VERDICT
+
+For section 6, conclude with EXACTLY this format on its own line:
 VERDICT: [Genuine|Suspicious|Likely Fake] — CONFIDENCE: [0-100]%
 
-Be skeptical. Default to Suspicious if ANYTHING looks off. Only call Genuine if everything checks out perfectly across all images provided.`;
+Important confidence rules:
+- Never exceed 85% confidence from photos alone — physical inspection is always needed to be certain
+- Default to Suspicious if ANYTHING looks off or photos are inconclusive
+- Only call Genuine if everything checks out across all sections
+- If foil behavior cannot be assessed from the photos provided, cap confidence at 60% and explain why`;
 
 async function runAuth(){
   const out=$('#authOut'),dot=$('#authDot'),status=$('#authStatus'),btn=$('#runAuthBtn');
@@ -552,10 +580,12 @@ async function runAuth(){
 function renderAuth(text){
   const out=$('#authOut');out.className='ai-body';
   const sectionDefs=[
-    {key:'print',icon:'🖨️',title:'Print & Color',patterns:[/1\.\s*\**PRINT/i]},
-    {key:'font',icon:'🔤',title:'Font & Text',patterns:[/2\.\s*\**FONT/i]},
-    {key:'holo',icon:'✨',title:'Hologram & Stock',patterns:[/3\.\s*\**HOLOGRAM/i]},
-    {key:'verdict',icon:'🛡️',title:'Verdict',patterns:[/4\.\s*\**VERDICT/i]},
+    {key:'photo',icon:'📷',title:'Photo Quality',patterns:[/1\.\s*\**PHOTO/i]},
+    {key:'cardtype',icon:'🃏',title:'Card Type',patterns:[/2\.\s*\**CARD\s*TYPE/i]},
+    {key:'print',icon:'🖨️',title:'Print & Color',patterns:[/3\.\s*\**PRINT/i]},
+    {key:'font',icon:'🔤',title:'Font & Text',patterns:[/4\.\s*\**FONT/i]},
+    {key:'foil',icon:'✨',title:'Foil & Texture',patterns:[/5\.\s*\**FOIL/i]},
+    {key:'verdict',icon:'🛡️',title:'Verdict',patterns:[/6\.\s*\**VERDICT/i]},
   ];
   const lines=text.split('\n');
   const sections={};let currentKey=null,currentLines=[];
