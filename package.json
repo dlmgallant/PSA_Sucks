@@ -9,9 +9,10 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "gsap": "^3.12.5",
+    "html2canvas": "^1.4.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "gsap": "^3.12.5"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
