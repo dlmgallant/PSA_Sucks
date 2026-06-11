@@ -32,6 +32,7 @@ export default function TradeAdvisor({ injectedWants, injectedMyItems, onConsume
   const [myRate, setMyRate] = useState(initialRates.my);
   const [theirRate, setTheirRate] = useState(initialRates.their);
   const [activeOfferIdx, setActiveOfferIdx] = useState(0);
+  const [showRates, setShowRates] = useState(false);
 
   useEffect(() => {
     try { localStorage.setItem(LS_RATES, JSON.stringify({ my: myRate, their: theirRate })); } catch { /* noop */ }
@@ -219,7 +220,7 @@ CRITICAL: Return ONLY the JSON object below — no commentary before or after. E
 
       <div className="trade-grid">
         <div className="panel">
-          <div className="panel-title">Your side · what you're trading away</div>
+          <div className="trade-step-label"><span className="num">1</span> Your side — what you give</div>
           {myItems.map(i => (
             <div className="t-item" key={i.id}>
               <span className="ti-name">{i.name}</span>
@@ -237,22 +238,31 @@ CRITICAL: Return ONLY the JSON object below — no commentary before or after. E
             <input className="field num" type="number" placeholder="$" value={myVal} onChange={e => setMyVal(e.target.value)} />
             <button className="btn-sub" onClick={addMyItem}>Add</button>
           </div>
-          <div className="rate-row" style={{ marginTop: 12 }}>
-            <span className="panel-title" style={{ margin: 0 }}>Their credit on your items</span>
-            {MY_PRESETS.map(r => (
-              <button key={r} className={`rate-chip ${myRate === r ? 'on' : ''}`} onClick={() => setMyRate(r)}>{r}%</button>
-            ))}
+
+          <div className="rate-summary" style={{ marginTop: 12 }} onClick={() => setShowRates(v => !v)}>
+            <span className="rs-text">Trade credit · <strong>{myRate}%</strong> on yours, their items at <strong>{theirRate}%</strong></span>
+            <span className="rs-chev">{showRates ? 'Hide ▲' : 'Adjust ▼'}</span>
           </div>
-          <div className="rate-row" style={{ marginTop: 8 }}>
-            <span className="panel-title" style={{ margin: 0 }}>Their items priced at</span>
-            {THEIR_PRESETS.map(r => (
-              <button key={r} className={`rate-chip ${theirRate === r ? 'on' : ''}`} onClick={() => setTheirRate(r)}>{r}%</button>
-            ))}
-          </div>
+          {showRates && (
+            <div className="rate-detail">
+              <div className="rate-row">
+                <span className="panel-title" style={{ margin: 0 }}>Their credit on your items</span>
+                {MY_PRESETS.map(r => (
+                  <button key={r} className={`rate-chip ${myRate === r ? 'on' : ''}`} onClick={() => setMyRate(r)}>{r}%</button>
+                ))}
+              </div>
+              <div className="rate-row">
+                <span className="panel-title" style={{ margin: 0 }}>Their items priced at</span>
+                {THEIR_PRESETS.map(r => (
+                  <button key={r} className={`rate-chip ${theirRate === r ? 'on' : ''}`} onClick={() => setTheirRate(r)}>{r}%</button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="panel">
-          <div className="panel-title">Their offers</div>
+          <div className="trade-step-label"><span className="num">2</span> Their offers — what you get</div>
           <div className="offer-tabs">
             {offers.map((o, i) => (
               <button key={o.id} className={`offer-tab ${i === activeOfferIdx ? 'on' : ''}`} onClick={() => setActiveOfferIdx(i)}>
