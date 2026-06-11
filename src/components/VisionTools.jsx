@@ -6,6 +6,7 @@ import {
   COND_SECTIONS, condBadge, parseTier, TIER_MAP,
 } from '../lib/parsers.js';
 import { AI_PROMPT, AUTH_PROMPT, COND_PROMPT } from '../lib/prompts.js';
+import ResultSlab from './ResultSlab.jsx';
 
 function UploadZone({ label, hint, multi, file, onChange }) {
   const inputRef = useRef(null);
@@ -43,7 +44,7 @@ function Section({ title, badge, children }) {
 
 const EMPTY = { ff: null, fb: null, angled: [] };
 
-function VisionTool({ cert, title, blurb, runLabel, prompt, sections, badgeFn, renderExtra, stripRe, exportName, placeholder }) {
+function VisionTool({ cert, title, blurb, runLabel, prompt, sections, badgeFn, renderExtra, stripRe, exportName, placeholder, slabConfig }) {
   const [files, setFiles] = useState(EMPTY);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('Ready');
@@ -101,6 +102,24 @@ function VisionTool({ cert, title, blurb, runLabel, prompt, sections, badgeFn, r
       <div className="panel">
         {!result && !busy && <div className="out placeholder">{placeholder}</div>}
         {busy && <div className="out placeholder"><span className="spinner" />{status}</div>}
+
+        {/* THE SLAB — your card, graded and framed */}
+        {result && !result.error && result.sections && slabConfig && (() => {
+          const sc = slabConfig(result.sections);
+          if (!sc) return null;
+          return (
+            <ResultSlab
+              imageFile={files.ff}
+              gradeLine={sc.gradeLine}
+              gradeLabel={sc.gradeLabel}
+              certLine={sc.certLine}
+              badgeCls={sc.badgeCls}
+              badgeText={sc.badgeText}
+              subLine={sc.subLine}
+            />
+          );
+        })()}
+
         {result?.error && <div className="out raw">Error: {result.error}</div>}
         {result && !result.error && !result.sections && <div className="out raw">{result.raw}</div>}
         {result?.sections && (
@@ -138,6 +157,25 @@ export function PreGrade() {
       badgeFn={gradeBadge}
       exportName="ai_pregrade_report.txt"
       placeholder="Upload card photos above, then tap Analyze card with AI."
+      slabConfig={(secs) => {
+        const g = secs.grade ? extractGrades(secs.grade) : {};
+        const gradeLine = g.psa ? `PSA ${g.psa}` : g.bgs ? `BGS ${g.bgs}` : g.cgc ? `CGC ${g.cgc}` : null;
+        if (!gradeLine) return null;
+        const submitBadge = secs.submit ? gradeBadge('submit', secs.submit) : null;
+        const centerBadge = secs.centering ? gradeBadge('centering', secs.centering) : null;
+        const surfaceBadge = secs.surface ? gradeBadge('surface', secs.surface) : null;
+        const subParts = [];
+        if (centerBadge) subParts.push('Centering: ' + centerBadge.label);
+        if (surfaceBadge) subParts.push('Surface: ' + surfaceBadge.label);
+        return {
+          gradeLine,
+          gradeLabel: 'Grade est.',
+          certLine: 'Pre-Grade · 2026',
+          badgeCls: submitBadge?.cls || 'badge-neutral',
+          badgeText: submitBadge?.label || 'See report',
+          subLine: subParts.join(' · ') || null,
+        };
+      }}
       renderExtra={(key, content) => {
         if (key === 'grade') {
           const g = extractGrades(content);
@@ -168,6 +206,20 @@ export function ConditionGuide() {
       badgeFn={condBadge}
       stripRe={/TIER\s*:.*$/gim}
       placeholder="Upload card photos above, then tap Assess condition."
+      slabConfig={(secs) => {
+        const tier = secs.overall ? parseTier(secs.overall) : null;
+        if (!tier) return null;
+        const t = TIER_MAP[tier];
+        const badge = condBadge('overall', secs.overall);
+        return {
+          gradeLine: tier,
+          gradeLabel: 'Condition',
+          certLine: 'Condition Guide · 2026',
+          badgeCls: badge.cls,
+          badgeText: tier,
+          subLine: t?.sub || null,
+        };
+      }}
       renderExtra={(key, content) => {
         if (key !== 'overall') return null;
         const tier = parseTier(content);
@@ -198,6 +250,19 @@ export function FakeDetector() {
       badgeFn={authBadge}
       stripRe={/VERDICT\s*:.*CONFIDENCE\s*:.*%/gi}
       placeholder="Upload card photos above, then tap Check authenticity."
+      slabConfig={(secs) => {
+        const v = secs.verdict ? parseVerdict(secs.verdict) : null;
+        if (!v) return null;
+        const cls = v.verdict === 'Genuine' ? 'badge-good' : v.verdict === 'Likely Fake' ? 'badge-bad' : 'badge-warn';
+        return {
+          gradeLine: `${v.confidence}%`,
+          gradeLabel: 'Confidence',
+          certLine: 'Authenticity Check · 2026',
+          badgeCls: cls,
+          badgeText: v.verdict === 'Genuine' ? '✓ Genuine' : v.verdict === 'Likely Fake' ? '✗ Likely Fake' : '⚠ Suspicious',
+          subLine: `Verdict: ${v.verdict} · Confidence: ${v.confidence}%`,
+        };
+      }}
       renderExtra={(key, content) => {
         if (key !== 'verdict') return null;
         const v = parseVerdict(content);
