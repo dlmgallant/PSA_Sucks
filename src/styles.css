@@ -439,10 +439,10 @@ select.field { width: auto; }
    ============================================================ */
 .result-slab-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 10px 0; }
 .result-slab { width: min(340px, 82vw); aspect-ratio: auto; padding: 12px; }
-.result-slab-card { position: relative; border-radius: 11px; overflow: hidden; background: #0a0a14; border: 1px solid #ffffff1f; min-height: 340px; display: flex; align-items: center; justify-content: center; }
-.result-slab-card .foil { position: absolute; inset: 0; background: var(--foil-grad); background-size: 300% 300%; opacity: .22; mix-blend-mode: color-dodge; pointer-events: none; }
-.result-slab-card .foil-grain { position: absolute; inset: 0; background: repeating-linear-gradient(105deg, #ffffff09 0 2px, transparent 2px 6px); mix-blend-mode: overlay; pointer-events: none; }
-.rs-card-img { width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 1; padding: 8px; display: block; max-height: 420px; }
+.result-slab-card { position: relative; border-radius: 11px; overflow: hidden; background: #0a0a14; border: 1px solid #ffffff1f; aspect-ratio: 63 / 88; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px #00000060, inset 0 2px 14px #00000070; }
+.result-slab-card .foil { position: absolute; inset: 0; background: var(--foil-grad); background-size: 300% 300%; opacity: .22; mix-blend-mode: color-dodge; pointer-events: none; z-index: 2; }
+.result-slab-card .foil-grain { position: absolute; inset: 0; background: repeating-linear-gradient(105deg, #ffffff09 0 2px, transparent 2px 6px); mix-blend-mode: overlay; pointer-events: none; z-index: 2; }
+.rs-card-img { width: 100%; height: 100%; object-fit: cover; object-position: center; position: relative; z-index: 1; display: block; }
 .rs-card-placeholder { width: 60%; aspect-ratio: 63 / 88; border-radius: 8px; background: linear-gradient(150deg, #1b1b29, #101018); border: 1px solid #ffffff1f; display: flex; align-items: center; justify-content: center; position: relative; }
 .rs-card-placeholder span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 .rs-badge { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 4; filter: drop-shadow(0 4px 12px #00000080); }
@@ -451,5 +451,5 @@ select.field { width: auto; }
 .rs-save { font-size: 13px; padding: 12px 22px; }
 .rs-hint { font-family: var(--font-mono); font-size: 10px; color: var(--faint); letter-spacing: .06em; }
 @media (max-width: 480px) {
-  .result-slab-card { min-height: 280px; }
+  .result-slab-card { aspect-ratio: 63 / 88; }
 }
