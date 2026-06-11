@@ -462,3 +462,11 @@ select.field { width: auto; }
 @media (max-width: 480px) {
   .result-slab-card { aspect-ratio: 63 / 88; }
 }
+
+/* ============ COLLECTION CLEAN UP ============ */
+.filter-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); align-self: center; }
+.empty-icon { font-size: 2.4rem; margin-bottom: 10px; }
+.search-results { display: flex; flex-direction: column; gap: 8px; margin-top: 11px; max-height: 340px; overflow-y: auto; }
+.search-result-row { display: flex; align-items: center; gap: 11px; background: #0e0e16; border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; }
+.search-result-row img { width: 36px; border-radius: 4px; flex-shrink: 0; }
+.c-num { color: var(--muted); font-weight: 400; font-size: 12px; }
