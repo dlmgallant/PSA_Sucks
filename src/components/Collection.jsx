@@ -1,0 +1,306 @@
+import { useState, useEffect, useRef } from 'react';
+import { CARDS_API, LS_COLLECTION, tcgplayerSearchUrl } from '../config.js';
+
+const MOCK_COLLECTION = [
+  { id: 'c1', name: "Charizard VMAX 074/073", set: "Champion's Path", type: 'Rainbow Rare', value: 174.18, condition: 'NM', status: 'have', focus: 'Charizard' },
+  { id: 'c2', name: 'Charizard ex 223/197', set: 'Obsidian Flames', type: 'Special Illustration Rare', value: 109.46, condition: 'NM', status: 'have', focus: 'Charizard' },
+  { id: 'c3', name: 'Charizard 6/108', set: 'EX Power Keepers', type: 'Reverse Holo', value: 144.84, condition: 'LP', status: 'have', focus: 'Charizard' },
+  { id: 'c4', name: 'Charizard-EX 100/106', set: 'Flashfire', type: 'Ultra Rare', value: 266.08, condition: 'NM', status: 'have', focus: 'Charizard' },
+  { id: 'c5', name: 'Charizard 146/144', set: 'Skyridge', type: 'Secret Rare', value: 2524.86, condition: 'NM', status: 'have', focus: 'Charizard' },
+  { id: 'c6', name: 'Pikachu 049/203', set: 'Evolving Skies', type: 'Reverse Holo', value: 0.60, condition: 'NM', status: 'have', focus: 'Pikachu' },
+  { id: 'c7', name: 'Pikachu ex 063/193', set: 'Paldea Evolved', type: 'Double Rare', value: 4.17, condition: 'NM', status: 'have', focus: 'Pikachu' },
+  { id: 'c8', name: 'Pikachu 065/202', set: 'Sword & Shield Base', type: 'Reverse Holo', value: 1.26, status: 'have', focus: 'Pikachu' },
+  { id: 'c9', name: 'Mimikyu 97/149', set: 'Sun & Moon Base', type: 'Holo Rare', value: 18.50, status: 'have', focus: 'Mimikyu' },
+  { id: 'c10', name: 'Mimikyu VMAX 115/264', set: 'Fusion Strike', type: 'Rare Holo V', value: 12.00, status: 'have', focus: 'Mimikyu' },
+];
+const MOCK_WANTS = [
+  { id: 'w1', name: 'Charizard 4/102', set: 'Base Set', type: 'Holo Rare', value: 380.00, status: 'want', focus: 'Charizard' },
+  { id: 'w2', name: 'Charizard 3/110', set: 'Legendary Collection', type: 'Reverse Holo', value: 1110.97, status: 'want', focus: 'Charizard' },
+  { id: 'w3', name: 'Shining Charizard 107/105', set: 'Neo Destiny 1st Ed.', type: 'Secret Rare', value: 2067.48, status: 'want', focus: 'Charizard' },
+  { id: 'w4', name: 'Charizard-EX XY121', set: 'XY Black Star Promos', type: 'Promo', value: 163.31, status: 'want', focus: 'Charizard' },
+  { id: 'w5', name: 'Surfing Pikachu V 021/028 (JP)', set: '25th Anniversary Collection', type: 'Double Rare', value: 6.64, status: 'want', focus: 'Pikachu' },
+  { id: 'w6', name: "Ash's Pikachu SM112", set: 'SM Black Star Promos', type: 'Promo', value: 28.00, status: 'want', focus: 'Pikachu' },
+  { id: 'w7', name: 'Flying Pikachu V 006/025', set: '25th Anniversary Collection', type: 'Ultra Rare', value: 22.00, status: 'want', focus: 'Pikachu' },
+  { id: 'w8', name: 'Mimikyu ex 250/193', set: 'Paldea Evolved', type: 'Special Illustration Rare', value: 35.00, status: 'want', focus: 'Mimikyu' },
+  { id: 'w9', name: 'Mimikyu 097/189', set: 'Darkness Ablaze', type: 'Rare Holo', value: 8.50, status: 'want', focus: 'Mimikyu' },
+];
+
+const CONDITIONS = ['NM', 'LP', 'MP', 'HP', 'DMG'];
+const CONDITION_MULT = { NM: 1.0, LP: 0.85, MP: 0.65, HP: 0.45, DMG: 0.25 };
+
+function loadCollection() {
+  try {
+    const raw = localStorage.getItem(LS_COLLECTION);
+    if (raw) return JSON.parse(raw);
+  } catch { /* fall through */ }
+  return [...MOCK_COLLECTION, ...MOCK_WANTS];
+}
+
+function marketPrice(card) {
+  const p = card.tcgplayer?.prices;
+  if (!p) return 0;
+  return p.holofoil?.market || p.normal?.market || p.reverseHolofoil?.market || p['1stEditionHolofoil']?.market || 0;
+}
+
+function csvEscape(v) {
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+export default function Collection({ onSendToTrade, onSendToMySide, onGradeCard }) {
+  const [allCards, setAllCards] = useState(loadCollection);
+  const [activeFocus, setActiveFocus] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [search, setSearch] = useState('');
+  const [tableMode, setTableMode] = useState(false);
+  const [tmQuery, setTmQuery] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshNote, setRefreshNote] = useState('');
+
+  // API search/add
+  const [apiSearch, setApiSearch] = useState('');
+  const [apiResults, setApiResults] = useState([]);
+  const [apiLoading, setApiLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+  const [addStatus, setAddStatus] = useState('have');
+  const [addFocus, setAddFocus] = useState('Other');
+  const [addCondition, setAddCondition] = useState('NM');
+  const searchTimeout = useRef(null);
+  const tmInputRef = useRef(null);
+
+  useEffect(() => {
+    try { localStorage.setItem(LS_COLLECTION, JSON.stringify(allCards)); } catch { /* storage full/blocked */ }
+  }, [allCards]);
+
+  useEffect(() => {
+    if (tableMode && tmInputRef.current) tmInputRef.current.focus();
+  }, [tableMode]);
+
+  const focuses = ['All', ...Array.from(new Set(allCards.map(c => c.focus).filter(Boolean)))];
+
+  async function searchCards(q) {
+    if (!q.trim()) { setApiResults([]); return; }
+    setApiLoading(true); setApiError('');
+    try {
+      const res = await fetch(`${CARDS_API}?q=name:"${encodeURIComponent(q)}"&pageSize=20&orderBy=-set.releaseDate`);
+      const data = await res.json();
+      setApiResults(data.data || []);
+    } catch {
+      setApiError('Search failed — check your connection');
+    }
+    setApiLoading(false);
+  }
+
+  function handleApiSearchChange(e) {
+    const q = e.target.value;
+    setApiSearch(q);
+    clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => searchCards(q), 500);
+  }
+
+  function addFromApi(card) {
+    const nm = marketPrice(card);
+    const newCard = {
+      id: `api-${card.id}-${addCondition}`,
+      apiId: card.id,
+      name: `${card.name} ${card.number}/${card.set?.printedTotal || card.set?.total || '?'}`,
+      set: card.set?.name || 'Unknown Set',
+      type: card.rarity || '—',
+      value: nm * (CONDITION_MULT[addCondition] || 1),
+      condition: addCondition,
+      status: addStatus,
+      focus: addFocus || card.name,
+      image: card.images?.small,
+    };
+    setAllCards(prev => prev.find(c => c.id === newCard.id) ? prev : [...prev, newCard]);
+  }
+
+  // NEW: re-pull live prices for API-added cards (sequential, gentle on rate limits)
+  async function refreshPrices() {
+    const apiCards = allCards.filter(c => c.apiId);
+    if (!apiCards.length) { setRefreshNote('No API-added cards to refresh'); return; }
+    setRefreshing(true);
+    let updated = 0;
+    for (const c of apiCards) {
+      try {
+        const res = await fetch(`${CARDS_API}/${c.apiId}`);
+        const data = await res.json();
+        const nm = marketPrice(data.data || {});
+        if (nm > 0) {
+          setAllCards(prev => prev.map(x => x.id === c.id
+            ? { ...x, value: nm * (CONDITION_MULT[x.condition || 'NM'] || 1) }
+            : x));
+          updated++;
+        }
+        await new Promise(r => setTimeout(r, 350));
+      } catch { /* skip card, keep going */ }
+    }
+    setRefreshing(false);
+    setRefreshNote(`${updated} price${updated === 1 ? '' : 's'} refreshed`);
+  }
+
+  // NEW: CSV export (TCGPlayer-friendly columns)
+  function exportCsv() {
+    const header = 'Name,Set,Rarity,Condition,Status,Focus,Market Value';
+    const rows = allCards.map(c =>
+      [c.name, c.set, c.type, c.condition || 'NM', c.status, c.focus || '', c.value.toFixed(2)].map(csvEscape).join(','));
+    const blob = new Blob([header + '\n' + rows.join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'psa-sucks-collection.csv';
+    a.click();
+  }
+
+  const filtered = allCards.filter(c => {
+    const focusMatch = activeFocus === 'All' || c.focus === activeFocus;
+    const statusMatch = filterStatus === 'all' || c.status === filterStatus;
+    const q = search.toLowerCase();
+    const searchMatch = !q || c.name.toLowerCase().includes(q) || c.set.toLowerCase().includes(q);
+    return focusMatch && statusMatch && searchMatch;
+  });
+
+  const inFocus = c => activeFocus === 'All' || c.focus === activeFocus;
+  const haveCount = allCards.filter(c => inFocus(c) && c.status === 'have').length;
+  const wantCount = allCards.filter(c => inFocus(c) && c.status === 'want').length;
+  const totalVal = allCards.filter(c => inFocus(c) && c.status === 'have').reduce((s, c) => s + c.value, 0);
+
+  function toggleStatus(id) {
+    setAllCards(prev => prev.map(c => c.id === id ? { ...c, status: c.status === 'have' ? 'want' : 'have' } : c));
+  }
+  function updateCondition(id, newCondition) {
+    setAllCards(prev => prev.map(c => {
+      if (c.id !== id) return c;
+      const oldMult = CONDITION_MULT[c.condition || 'NM'] || 1;
+      return { ...c, condition: newCondition, value: (c.value / oldMult) * (CONDITION_MULT[newCondition] || 1) };
+    }));
+  }
+  function removeCard(id) { setAllCards(prev => prev.filter(c => c.id !== id)); }
+
+  // Table Mode live match
+  const tmMatch = (() => {
+    const q = tmQuery.trim().toLowerCase();
+    if (!q) return null;
+    const m = allCards.find(c => c.name.toLowerCase().includes(q) || c.set.toLowerCase().includes(q));
+    return m ? { type: m.status, card: m } : { type: 'unknown' };
+  })();
+
+  const wants = allCards.filter(c => c.status === 'want');
+
+  return (
+    <div className="tool-view wide">
+      <div className="tool-head">
+        <div className="th-cert">EDGE · 001</div>
+        <h2>Collection</h2>
+        <p>Haves, wants, live TCGPlayer prices, condition-adjusted values. Saved on this device automatically.</p>
+      </div>
+
+      <div className="stat-strip">
+        <div className="stat"><div className="s-num gold">${totalVal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div><div className="s-lbl">Owned value</div></div>
+        <div className="stat"><div className="s-num">{haveCount}</div><div className="s-lbl">Have</div></div>
+        <div className="stat"><div className="s-num">{wantCount}</div><div className="s-lbl">Want</div></div>
+        <div className="stat"><div className="s-num">{focuses.length - 1}</div><div className="s-lbl">Focuses</div></div>
+      </div>
+
+      <div className="run-bar">
+        <button className="btn-run" onClick={() => setTableMode(true)}>Table Mode</button>
+        {wants.length > 0 && <button className="btn-sub" onClick={() => onSendToTrade(wants)}>Send wants → Trade</button>}
+        <button className="btn-sub" onClick={exportCsv}>Export CSV</button>
+        <button className="btn-sub" disabled={refreshing} onClick={refreshPrices}>{refreshing ? 'Refreshing…' : 'Refresh prices'}</button>
+        {refreshNote && <span className="status">{refreshNote}</span>}
+      </div>
+
+      <div className="panel">
+        <div className="panel-title">Add cards · live search with TCGPlayer market prices</div>
+        <input className="field" placeholder="Search any card — e.g. Charizard ex" value={apiSearch} onChange={handleApiSearchChange} />
+        <div className="add-row">
+          <select className="field" value={addStatus} onChange={e => setAddStatus(e.target.value)}>
+            <option value="have">I have it</option>
+            <option value="want">I want it</option>
+          </select>
+          <select className="field" value={addCondition} onChange={e => setAddCondition(e.target.value)}>
+            {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <input className="field" placeholder="Focus (e.g. Charizard)" value={addFocus} onChange={e => setAddFocus(e.target.value)} />
+        </div>
+        {apiLoading && <div className="out placeholder"><span className="spinner" />Searching…</div>}
+        {apiError && <div className="out placeholder">{apiError}</div>}
+        {apiResults.length > 0 && (
+          <div className="card-list" style={{ marginTop: 11, maxHeight: 300, overflowY: 'auto' }}>
+            {apiResults.map(card => (
+              <div className="api-result" key={card.id}>
+                {card.images?.small && <img src={card.images.small} alt="" loading="lazy" />}
+                <div className="c-info">
+                  <div className="c-name">{card.name} {card.number}/{card.set?.printedTotal || '?'}</div>
+                  <div className="c-meta">{card.set?.name} · {card.rarity || '—'} · ${marketPrice(card).toFixed(2)}</div>
+                </div>
+                <button className="icon-btn" onClick={() => addFromApi(card)}>+ Add</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="panel">
+        <div className="panel-title">Your cards</div>
+        <div className="chip-row" style={{ marginBottom: 10 }}>
+          {focuses.map(f => (
+            <button key={f} className={`chip ${activeFocus === f ? 'on' : ''}`} onClick={() => setActiveFocus(f)}>{f}</button>
+          ))}
+        </div>
+        <div className="chip-row" style={{ marginBottom: 12 }}>
+          {['all', 'have', 'want'].map(s => (
+            <button key={s} className={`chip ${filterStatus === s ? 'on' : ''}`} onClick={() => setFilterStatus(s)}>
+              {s === 'all' ? 'Everything' : s === 'have' ? 'Have' : 'Want'}
+            </button>
+          ))}
+          <input className="field" style={{ flex: 1, minWidth: 140, width: 'auto' }} placeholder="Filter…" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <div className="card-list">
+          {filtered.length === 0 && <div className="out placeholder">Nothing matches. Add cards above or clear the filters.</div>}
+          {filtered.map(c => (
+            <div className="c-card" key={c.id}>
+              {c.image && <img src={c.image} alt="" loading="lazy" />}
+              <span className={`pill ${c.status}`}>{c.status}</span>
+              <div className="c-info">
+                <div className="c-name">{c.name}</div>
+                <div className="c-meta">{c.set} · {c.type}</div>
+              </div>
+              <span className="c-val">${c.value.toFixed(2)}</span>
+              <select className="cond-select" value={c.condition || 'NM'} onChange={e => updateCondition(c.id, e.target.value)} aria-label="Condition">
+                {CONDITIONS.map(x => <option key={x} value={x}>{x}</option>)}
+              </select>
+              <div className="c-actions">
+                {c.status === 'have' && <>
+                  <button className="icon-btn" title="Run AI Pre-Grade on this card" onClick={() => onGradeCard(c)}>Grade</button>
+                  <button className="icon-btn" title="Add to your side of a trade" onClick={() => onSendToMySide(c)}>Trade</button>
+                </>}
+                {c.status === 'want' && (
+                  <a className="icon-btn" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                    href={tcgplayerSearchUrl(c.name)} target="_blank" rel="noopener noreferrer" title="Find on TCGPlayer">Buy</a>
+                )}
+                <button className="icon-btn" onClick={() => toggleStatus(c.id)} title="Flip have/want">⇄</button>
+                <button className="icon-btn" onClick={() => removeCard(c.id)} title="Remove">✕</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {tableMode && (
+        <div className="table-mode" role="dialog" aria-label="Table Mode">
+          <div className="tm-head">
+            <h3>Table Mode</h3>
+            <button className="btn-sub" onClick={() => { setTableMode(false); setTmQuery(''); }}>Close</button>
+          </div>
+          <input ref={tmInputRef} className="field tm-search" placeholder="Type a card name…" value={tmQuery} onChange={e => setTmQuery(e.target.value)} />
+          <div className={`tm-verdict ${tmMatch ? tmMatch.type : 'unknown'}`}>
+            {!tmMatch && <><div className="tm-big" style={{ color: 'var(--muted)' }}>?</div><div className="tm-card-meta">Search your list — built for one-handed use at a show table.</div></>}
+            {tmMatch?.type === 'have' && <><div className="tm-big">HAVE IT</div><div className="tm-card-name">{tmMatch.card.name}</div><div className="tm-card-meta">{tmMatch.card.set} · ${tmMatch.card.value.toFixed(2)}</div></>}
+            {tmMatch?.type === 'want' && <><div className="tm-big">WANT IT</div><div className="tm-card-name">{tmMatch.card.name}</div><div className="tm-card-meta">{tmMatch.card.set} · market ${tmMatch.card.value.toFixed(2)}</div></>}
+            {tmMatch?.type === 'unknown' && <><div className="tm-big" style={{ color: 'var(--muted)' }}>NOT LISTED</div><div className="tm-card-meta">"{tmQuery}" isn't in your collection or wants.</div></>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

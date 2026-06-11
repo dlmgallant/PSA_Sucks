@@ -1,0 +1,12 @@
+# dependencies — never commit these, Vercel installs them itself
+node_modules
+
+# build output — Vercel generates this
+dist
+
+# local / editor junk
+.DS_Store
+*.log
+.vercel
+.env
+.env.local
