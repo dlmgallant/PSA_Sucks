@@ -22,12 +22,34 @@ export default function ResultSlab({ imageFile, gradeLine, gradeLabel, certLine,
   const foilRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const dragRef = useRef(null);
+
+  // drag-to-reposition the card inside the slab window
+  function onImgPointerDown(e) {
+    e.preventDefault();
+    const start = { px: e.clientX, py: e.clientY, ox: offset.x, oy: offset.y };
+    dragRef.current = start;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+  function onImgPointerMove(e) {
+    if (!dragRef.current) return;
+    const d = dragRef.current;
+    setOffset({ x: d.ox + (e.clientX - d.px), y: d.oy + (e.clientY - d.py) });
+  }
+  function onImgPointerUp(e) {
+    dragRef.current = null;
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch { /* noop */ }
+  }
 
   // convert uploaded File → object URL
   useEffect(() => {
     if (!imageFile) return;
     const url = URL.createObjectURL(imageFile);
     setImgSrc(url);
+    setZoom(1);
+    setOffset({ x: 0, y: 0 });
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
@@ -121,7 +143,18 @@ export default function ResultSlab({ imageFile, gradeLine, gradeLabel, certLine,
           <div className="slab-card result-slab-card">
             <div className="foil" ref={foilRef} />
             <div className="foil-grain" />
-            {imgSrc && <img className="rs-card-img" src={imgSrc} alt="Your graded card" />}
+            {imgSrc && (
+              <img
+                className="rs-card-img"
+                src={imgSrc}
+                alt="Your graded card"
+                draggable="false"
+                onPointerDown={onImgPointerDown}
+                onPointerMove={onImgPointerMove}
+                onPointerUp={onImgPointerUp}
+                style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}
+              />
+            )}
             {!imgSrc && (
               <div className="rs-card-placeholder">
                 <span>Your card</span>
@@ -145,6 +178,21 @@ export default function ResultSlab({ imageFile, gradeLine, gradeLabel, certLine,
       </div>
 
       <div className="rs-actions">
+        {imgSrc && (
+          <div className="rs-adjust">
+            <span className="rs-adjust-label">Drag the card to center it · zoom</span>
+            <div className="rs-zoom-row">
+              <input
+                className="rs-zoom"
+                type="range" min="1" max="3" step="0.02"
+                value={zoom}
+                onChange={e => setZoom(parseFloat(e.target.value))}
+                aria-label="Zoom card"
+              />
+              <button className="rs-reset" onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}>Reset</button>
+            </div>
+          </div>
+        )}
         <button className="btn-primary rs-save" onClick={saveAsPng} disabled={saving}>
           {saving ? 'Saving…' : 'Save slab as PNG'}
         </button>
