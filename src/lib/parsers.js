@@ -104,20 +104,29 @@ export function condBadge(key, content) {
     if (t === 'Lightly Played') return { cls: 'badge-warn', label: t };
     return { cls: 'badge-bad', label: t };
   }
+
+  // Drop negated clauses so "no noticeable scratches" can't read as damage
+  const cleaned = content.replace(
+    /\b(?:no|not|without|don'?t\s+see|can'?t\s+spot|free\s+of|nothing)\b[^.;]*/gi,
+    ''
+  );
+
   if (key === 'centering') {
     const offBad = /noticeably|significantly|heavily|very\s+off|poor|badly/i;
     const offWarn = /slightly|marginally|a\s+bit|not\s+perfect|noticeable/i;
     const centered = /well.centered|nicely\s+(aligned|centered)|even|balanced|perfectly|looks\s+good/i;
-    if (centered.test(content) && !offBad.test(content)) return { cls: 'badge-good', label: 'Well centered' };
-    if (offBad.test(content)) return { cls: 'badge-bad', label: 'Off center' };
-    if (offWarn.test(content)) return { cls: 'badge-warn', label: 'Slightly off' };
+    if (centered.test(cleaned) && !offBad.test(cleaned)) return { cls: 'badge-good', label: 'Well centered' };
+    if (offBad.test(cleaned)) return { cls: 'badge-bad', label: 'Off center' };
+    if (offWarn.test(cleaned)) return { cls: 'badge-warn', label: 'Slightly off' };
     return { cls: 'badge-neutral', label: 'See notes' };
   }
-  const bad = /significant|major|heavy|severe|crease|damage|scratch|whitening|chip|fray|blunt|fold|bend|round(?:ed)?\s+corner|wear|mark|scuff|disrupts|detracts|visible\s+(line|issue|sign)|noticeable/i;
-  const good = /no\s+(visible|noticeable|sign|obvious|any)|can't\s+spot|don't\s+see|clean|sharp|perfect|excellent|minimal|smooth|intact|crisp/i;
-  const warn = /slight|minor|faint|mild|marginally|small|slightly|a\s+bit/i;
-  if (bad.test(content)) return { cls: 'badge-bad', label: 'Wear present' };
-  if (warn.test(content)) return { cls: 'badge-warn', label: 'Minor wear' };
-  if (good.test(content)) return { cls: 'badge-good', label: 'Clean' };
+
+  const bad  = /significant|major|heavy|severe|crease|whitening|chip|fray|blunt|fold|bend|rounded\s+corner|deep\s+scratch|obvious\s+wear|noticeable\s+wear/i;
+  const warn = /slight|minor|faint|mild|small|light\s+wear|some\s+wear|white\s+spot/i;
+  const good = /clean|sharp|perfect|excellent|minimal|smooth|intact|crisp/i;
+
+  if (bad.test(cleaned))  return { cls: 'badge-bad',  label: 'Wear present' };
+  if (warn.test(cleaned)) return { cls: 'badge-warn', label: 'Minor wear' };
+  if (good.test(cleaned)) return { cls: 'badge-good', label: 'Clean' };
   return { cls: 'badge-neutral', label: 'See notes' };
 }
