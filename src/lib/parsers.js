@@ -94,8 +94,6 @@ export const TIER_MAP = {
 export function parseTier(content) {
   const m = content.match(/TIER\s*:\s*(Mint|Near Mint|Lightly Played|Moderately Played|Heavily Played)/i);
   return m ? m[1] : null;
-}
-
 export function condBadge(key, content) {
   if (key === 'overall') {
     const t = parseTier(content);
@@ -121,12 +119,17 @@ export function condBadge(key, content) {
     return { cls: 'badge-neutral', label: 'See notes' };
   }
 
-  const bad  = /significant|major|heavy|severe|crease|whitening|chip|fray|blunt|fold|bend|rounded\s+corner|deep\s+scratch|obvious\s+wear|noticeable\s+wear/i;
-  const warn = /slight|minor|faint|mild|small|light\s+wear|some\s+wear|white\s+spot/i;
-  const good = /clean|sharp|perfect|excellent|minimal|smooth|intact|crisp/i;
+  const DAMAGE = String.raw`scratch(?:es)?|whitening|chip(?:ping|ped)?|fray(?:ing|ed)?|crease|fold|bend|scuff|wear|mark(?:s)?|white\s+spot(?:s)?|rounded\s+corner`;
+  const QUAL   = String.raw`slight(?:ly)?|minor|faint|mild|light|small|subtle|barely|a\s+bit|very\s+little`;
+  const SEVERE = /significant|major|heavy|severe|deep|obvious|pronounced|extensive|crease|fold|bend|rounded\s+corner/i;
 
-  if (bad.test(cleaned))  return { cls: 'badge-bad',  label: 'Wear present' };
-  if (warn.test(cleaned)) return { cls: 'badge-warn', label: 'Minor wear' };
-  if (good.test(cleaned)) return { cls: 'badge-good', label: 'Clean' };
+  const unqualified = new RegExp(String.raw`(?<!(?:${QUAL})\s+)(?:${DAMAGE})`, 'i');
+  const qualified   = new RegExp(String.raw`(?:${QUAL})\s+(?:${DAMAGE})`, 'i');
+  const good        = /clean|sharp|perfect|excellent|minimal|smooth|intact|crisp|vibrant/i;
+
+  if (SEVERE.test(cleaned))      return { cls: 'badge-bad',  label: 'Wear present' };
+  if (qualified.test(cleaned))   return { cls: 'badge-warn', label: 'Minor wear' };
+  if (unqualified.test(cleaned)) return { cls: 'badge-warn', label: 'Minor wear' };
+  if (good.test(cleaned))        return { cls: 'badge-good', label: 'Clean' };
   return { cls: 'badge-neutral', label: 'See notes' };
 }
